@@ -29,7 +29,6 @@ type LoginFormInputs = z.infer<typeof loginSchema>
 
 export function LoginForm({ className, ...props }: React.ComponentPropsWithoutRef<"div">) {
   const login = useLoginMutation()
-
   const {
     register,
     handleSubmit,
@@ -48,6 +47,10 @@ export function LoginForm({ className, ...props }: React.ComponentPropsWithoutRe
   }
 
   return (
+    <>
+    {login.isPending && <div className={'absolute top-0 right-0 bg-[rgba(0,0,0,0.3)] w-full h-full  flex items-center justify-center z-20'}>
+      <p className={'text-4xl text-black'}>LOADING</p>
+    </div>}
     <div className={cn("flex flex-col gap-6", className)} {...props}>
       <Card className="px-10">
         <CardHeader className="text-center">
@@ -127,5 +130,6 @@ export function LoginForm({ className, ...props }: React.ComponentPropsWithoutRe
         </CardContent>
       </Card>
     </div>
+    </>
   )
 }
