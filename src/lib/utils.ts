@@ -7,11 +7,12 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 const axiosInstance = axios.create({
-  baseURL: process.env.BASE_URL || "http://localhost:8080/api",
+  baseURL: "http://localhost:8080/api",
   timeout: 1000,
   headers: {
     "Content-Type": "application/json",
   },
+  withCredentials: true,
 });
 
 export const createFetcher = <T = unknown, B = undefined>(
@@ -38,7 +39,22 @@ export const createFetcher = <T = unknown, B = undefined>(
       ...(body && method !== "GET" ? { data: body } : {}), // Ensure body is only sent with non-GET requests
     };
 
-    const response = await axiosInstance<T>(config);
-    return response.data;
+    try {
+      const response = await axiosInstance<T>(config);
+      return response.data;
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        console.error("Axios error in createFetcher:", {
+          message: error.message,
+          url: config.url,
+          method: config.method,
+          status: error.response?.status,
+          data: error.response?.data,
+        });
+      } else {
+        console.error("Unexpected error in createFetcher:", error);
+      }
+      throw error; // Rethrow the error after logging
+    }
   };
 };
