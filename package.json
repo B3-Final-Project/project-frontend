@@ -10,7 +10,7 @@
     "prepare": "husky",
     "test": "",
     "sops:decrypt": "AWS_PROFILE=b3 sops --decrypt --input-type dotenv --output-type dotenv .env.enc > .env",
-    "sops:encrypt": "AWS_PROFILE=b3 sops --encrypt --input-type dotenv --kms arn:aws:kms:eu-west-3:989418411786:key/mrk-aab2b8d1dcaa4886a120afd58f023fcf .env > .env.enc"
+    "sops:encrypt": "AWS_PROFILE=b3 sops --encrypt --input-type dotenv --kms arn:aws:kms:eu-west-3:989418411786:key/c1c80af3-4a26-4a6f-bcc0-18a9fdcc82ba .env > .env.enc"
   },
   "dependencies": {
     "@radix-ui/react-dialog": "^1.1.6",
