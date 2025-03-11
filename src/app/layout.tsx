@@ -1,11 +1,12 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import ReactQueryClientProvider from "@/app/providers/QueryClientProvider";
+import ReactQueryClientProvider from "@/providers/ReactQueryClientProvider";
+import { SidebarProvider } from "@/components/ui/sidebar";
+import { SidebarComponent } from "@/components/Sidebar";
 
 
 export const metadata: Metadata = {
-  title: "TCGrinder",
-  description: "Name WIP",
+  title: "Holomatch",
 };
 
 export default function RootLayout({
@@ -15,11 +16,14 @@ export default function RootLayout({
 }>) {
   return (
     <ReactQueryClientProvider>
-      <html lang="en">
-        <body>
-          {children}
-        </body>
-      </html>
+      <SidebarProvider>
+        <html lang="en">
+          <body>
+            <SidebarComponent/>
+            {children}
+          </body>
+        </html>
+      </SidebarProvider>
     </ReactQueryClientProvider>
   );
 }
