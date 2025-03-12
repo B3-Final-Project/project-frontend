@@ -7,7 +7,7 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 const axiosInstance = axios.create({
-  baseURL: process.env.BASE_URL || "http://localhost:8080/api",
+  baseURL: process.env.BASE_URL,
   timeout: 1000,
   headers: {
     "Content-Type": "application/json",
