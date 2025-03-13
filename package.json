@@ -7,7 +7,6 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "prepare": "husky",
     "test": "",
     "sops:decrypt": "AWS_PROFILE=b3 sops --decrypt --input-type dotenv --output-type dotenv .env.enc > .env",
     "sops:encrypt": "AWS_PROFILE=b3 sops --encrypt --input-type dotenv --kms arn:aws:kms:eu-west-3:989418411786:key/c1c80af3-4a26-4a6f-bcc0-18a9fdcc82ba .env > .env.enc"
@@ -44,7 +43,6 @@
     "eslint": "^8",
     "eslint-config-next": "15.0.4",
     "eslint-config-prettier": "^9.1.0",
-    "husky": "^9.1.7",
     "postcss": "^8.5.3",
     "prettier": "3.4.2",
     "tailwindcss": "^3.4.17",
