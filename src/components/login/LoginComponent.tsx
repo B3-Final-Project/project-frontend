@@ -14,8 +14,8 @@ import {
 } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { useLoginMutation } from "@/hooks/react-query/auth";
 import { LoginDto } from "@/lib/routes/auth/dto/login.dto";
+import { useAuth } from "@/hooks/useAuth";
 
 const loginSchema: ZodType<LoginDto> = z.object({
   username: z
@@ -28,7 +28,7 @@ const loginSchema: ZodType<LoginDto> = z.object({
 type LoginFormInputs = z.infer<typeof loginSchema>
 
 export function LoginForm({ className, ...props }: React.ComponentPropsWithoutRef<"div">) {
-  const login = useLoginMutation()
+  const auth = useAuth()
   const {
     register,
     handleSubmit,
@@ -39,7 +39,7 @@ export function LoginForm({ className, ...props }: React.ComponentPropsWithoutRe
 
   const onSubmit = (data: LoginFormInputs) => {
     try {
-      login.mutate(data)
+      auth.login(data)
     }
     catch (error) {
       console.error(error)

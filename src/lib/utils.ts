@@ -7,13 +7,35 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 const axiosInstance = axios.create({
-  baseURL: process.env.BASE_URL || "http://localhost:3000",
-  timeout: 1000,
+  baseURL: "http://localhost:8080/api",
+  timeout: 10000,
   headers: {
     "Content-Type": "application/json",
   },
   withCredentials: true,
 });
+
+axiosInstance.interceptors.request.use(
+  (config) => {
+    // Assume you have a way to get the current token (for example, from local state or a getter)
+    // Here we assume it's already set in defaults, so this is just a fallback.
+    const token = config.headers.common["Authorization"];
+    if (token) {
+      config.headers.Authorization = token;
+    }
+    return config;
+  },
+  (error) => Promise.reject(error)
+);
+
+export const setAccessTokenHeaders = (token: string | null) => {
+  if (token) {
+    axiosInstance.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+    console.log('header is set!')
+  } else {
+    delete axiosInstance.defaults.headers.common["Authorization"];
+  }
+};
 
 export const createFetcher = <T = unknown, B = undefined>(
   path: string,

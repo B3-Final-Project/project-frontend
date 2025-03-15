@@ -3,6 +3,7 @@ import "./globals.css";
 import ReactQueryClientProvider from "@/providers/ReactQueryClientProvider";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { SidebarComponent } from "@/components/Sidebar";
+import { AuthProvider } from "@/hooks/useAuth";
 
 
 export const metadata: Metadata = {
@@ -16,14 +17,16 @@ export default function RootLayout({
 }>) {
   return (
     <ReactQueryClientProvider>
-      <SidebarProvider>
-        <html lang="en">
-          <body>
-            <SidebarComponent/>
-            {children}
-          </body>
-        </html>
-      </SidebarProvider>
+      <AuthProvider>
+        <SidebarProvider>
+          <html lang="en">
+            <body>
+              <SidebarComponent/>
+              {children}
+            </body>
+          </html>
+        </SidebarProvider>
+      </AuthProvider>
     </ReactQueryClientProvider>
   );
 }
