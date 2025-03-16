@@ -16,6 +16,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { LoginDto } from "@/lib/routes/auth/dto/login.dto";
 import { useAuth } from "@/hooks/useAuth";
+import { useRouter } from "next/navigation";
 
 const loginSchema: ZodType<LoginDto> = z.object({
   username: z
@@ -28,6 +29,7 @@ const loginSchema: ZodType<LoginDto> = z.object({
 type LoginFormInputs = z.infer<typeof loginSchema>
 
 export function LoginForm({ className, ...props }: React.ComponentPropsWithoutRef<"div">) {
+  const router = useRouter()
   const auth = useAuth()
   const {
     register,
@@ -39,7 +41,7 @@ export function LoginForm({ className, ...props }: React.ComponentPropsWithoutRe
 
   const onSubmit = (data: LoginFormInputs) => {
     try {
-      auth.login(data)
+      auth.login(data).then(()=> router.push('/'))
     }
     catch (error) {
       console.error(error)
@@ -48,9 +50,6 @@ export function LoginForm({ className, ...props }: React.ComponentPropsWithoutRe
 
   return (
     <>
-    {login.isPending && <div className={'absolute top-0 right-0 bg-[rgba(0,0,0,0.3)] w-full h-full  flex items-center justify-center z-20'}>
-      <p className={'text-4xl text-black'}>LOADING</p>
-    </div>}
     <div className={cn("flex flex-col gap-6", className)} {...props}>
       <Card className="px-10">
         <CardHeader className="text-center">
