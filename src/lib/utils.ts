@@ -18,13 +18,13 @@ const axiosInstance = axios.create({
 
 axiosInstance.interceptors.request.use(
   (config) => {
-    const token = config.headers.common && config.headers.common["Authorization"];
+    const token = config.headers.common?.["Authorization"];
     if (token) {
       config.headers.Authorization = token;
     }
     return config;
   },
-  (error) => Promise.reject(error)
+  (error) => Promise.reject(new Error(error))
 );
 
 axiosInstance.interceptors.response.use(
@@ -48,7 +48,7 @@ axiosInstance.interceptors.response.use(
         console.error("Refresh token failed:", refreshError);
       }
     }
-    return Promise.reject(error);
+    return Promise.reject(new Error(error));
   }
 );
 

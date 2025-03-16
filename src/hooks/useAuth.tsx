@@ -1,5 +1,12 @@
 'use client'
-import React, { createContext, useContext, useState, ReactNode, useEffect } from 'react';
+import React, {
+  createContext,
+  useContext,
+  useState,
+  ReactNode,
+  useEffect,
+  useMemo
+} from "react";
 import { setAccessTokenHeaders } from "@/lib/utils";
 import { LoginDto } from "@/lib/routes/auth/dto/login.dto";
 import { useLoginMutation } from "@/hooks/react-query/auth";
@@ -12,7 +19,7 @@ interface AuthContextType {
   logout: () => void;
 }
 
-const AuthContext = createContext<AuthContextType | undefined>(undefined);
+const AuthContext = createContext<Readonly<AuthContextType> | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [accessToken, setAccessToken] = useState<string | null>(null);
@@ -41,8 +48,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setAccessToken(null);
   };
 
+  const memoizedObject = useMemo(() => {
+    return {
+    accessToken, setAccessToken, login, logout }
+  }, [])
+
   return (
-    <AuthContext.Provider value={{ accessToken, setAccessToken, login, logout }}>
+    <AuthContext.Provider value={memoizedObject}>
       {children}
     </AuthContext.Provider>
   );
