@@ -14,11 +14,11 @@ import { useAuth } from "@/hooks/useAuth";
 import { useRouter } from "next/navigation";
 
 interface AuthFormProps{
-  isLogin: boolean
-  form: UseFormReturn<LoginFormInputs> | UseFormReturn<RegisterFormInputs>
-  props: ComponentPropsWithoutRef<"div">
-  children: ReactNode
-  className?: string
+  readonly isLogin: boolean
+  readonly form: UseFormReturn<LoginFormInputs> | UseFormReturn<RegisterFormInputs>
+  readonly props: ComponentPropsWithoutRef<"div">
+  readonly children: ReactNode
+  readonly className?: string
 }
 
 export default function AuthForm({isLogin, className, form, children, ...props}: AuthFormProps){

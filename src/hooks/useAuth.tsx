@@ -26,7 +26,7 @@ interface AuthContextType {
 
 const AuthContext = createContext<Readonly<AuthContextType> | undefined>(undefined);
 
-export function AuthProvider({ children }: { children: ReactNode }) {
+export function AuthProvider({ children }: { children: Readonly<ReactNode> }) {
   const [accessToken, setAccessToken] = useState<string | null>(null);
   const loginMutation = useLoginMutation()
   const registerMutation = useRegisterMutation()
