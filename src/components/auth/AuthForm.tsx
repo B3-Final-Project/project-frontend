@@ -1,53 +1,43 @@
-'use client'
-import z, { ZodType } from "zod";
-import { useForm } from "react-hook-form"
-import { zodResolver } from "@hookform/resolvers/zod"
-
-import { cn } from "@/lib/utils"
-import { Button } from "@/components/ui/button"
+import { cn } from "@/lib/utils";
 import {
-  Card,
-  CardContent,
+  Card, CardContent,
   CardDescription,
   CardHeader,
-  CardTitle,
-} from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { LoginDto } from "@/lib/routes/auth/dto/login.dto";
+  CardTitle
+} from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { ComponentPropsWithoutRef, ReactNode } from "react";
+import { UseFormReturn } from "react-hook-form";
+import { LoginFormInputs } from "@/components/auth/login/LoginComponent";
+import { RegisterFormInputs } from "@/components/auth/register/RegisterForm";
 import { useAuth } from "@/hooks/useAuth";
 import { useRouter } from "next/navigation";
 
-const loginSchema: ZodType<LoginDto> = z.object({
-  username: z
-    .string({ required_error: "Email is required" })
-    .nonempty("Email is required")
-    .email("Please enter a valid email"),
-  password: z.string({ required_error: "Password is required" }).nonempty("Password is required"),
-})
+interface AuthFormProps{
+  isLogin: boolean
+  form: UseFormReturn<LoginFormInputs> | UseFormReturn<RegisterFormInputs>
+  props: ComponentPropsWithoutRef<"div">
+  children: ReactNode
+  className?: string
+}
 
-type LoginFormInputs = z.infer<typeof loginSchema>
-
-export function LoginForm({ className, ...props }: React.ComponentPropsWithoutRef<"div">) {
-  const router = useRouter()
-  const auth = useAuth()
+export default function AuthForm({isLogin, className, form, children, ...props}: AuthFormProps){
   const {
-    register,
     handleSubmit,
-    formState: { errors },
-  } = useForm<LoginFormInputs>({
-    resolver: zodResolver(loginSchema),
-  })
+  } = form
+  const auth = useAuth()
+  const router = useRouter()
 
-  const onSubmit = (data: LoginFormInputs) => {
+  const onSubmit = (data: LoginFormInputs | RegisterFormInputs) => {
     try {
+      if (isLogin) {
       auth.login(data).then(()=> router.push('/'))
+      }
     }
     catch (error) {
       console.error(error)
     }
   }
-
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
       <Card className="px-10">
@@ -86,43 +76,24 @@ export function LoginForm({ className, ...props }: React.ComponentPropsWithoutRe
                 </span>
               </div>
               <div className="grid gap-6">
-                <div className="grid gap-2">
-                  <Label htmlFor="username">Email</Label>
-                  <Input
-                    id="username"
-                    type="email"
-                    placeholder="m@example.com"
-                    {...register("username")}
-                  />
-                  {errors.username && (
-                    <p className="text-sm text-red-600">{errors.username.message}</p>
-                  )}
-                </div>
-                <div className="grid gap-2">
-                  <div className="flex items-center">
-                    <Label htmlFor="password">Password</Label>
-                    <a
-                      href="#"
-                      className="ml-auto text-sm underline-offset-4 hover:underline"
-                    >
-                      Forgot your password?
-                    </a>
-                  </div>
-                  <Input id="password" type="password" {...register("password")} />
-                  {errors.password && (
-                    <p className="text-sm text-red-600">{errors.password.message}</p>
-                  )}
-                </div>
+                {children}
                 <Button type="submit" className="w-full">
-                  Login
+                  {isLogin ? "Login" : "Register"}
                 </Button>
               </div>
-              <div className="text-center text-sm">
+              { isLogin ? <div className="text-center text-sm">
                 Don&apos;t have an account?{" "}
-                <a href="#" className="underline underline-offset-4">
+                <a href="/register" className="underline underline-offset-4">
                   Sign up
                 </a>
-              </div>
+              </div> :
+                <div className="text-center text-sm">
+                  Already have an account?{" "}
+                  <a href="/login" className="underline underline-offset-4">
+                    Sign in
+                  </a>
+                </div>
+              }
             </div>
           </form>
         </CardContent>

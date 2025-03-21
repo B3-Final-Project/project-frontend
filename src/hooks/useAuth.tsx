@@ -9,13 +9,18 @@ import React, {
 } from "react";
 import { setAccessTokenHeaders } from "@/lib/utils";
 import { LoginDto } from "@/lib/routes/auth/dto/login.dto";
-import { useLoginMutation } from "@/hooks/react-query/auth";
+import {
+  useLoginMutation,
+  useRegisterMutation
+} from "@/hooks/react-query/auth";
+import { RegisterDto } from "@/lib/routes/auth/dto/register.dto";
 
 // Define the shape of your authentication context
 interface AuthContextType {
   accessToken: string | null;
   setAccessToken: (token: string | null) => void;
   login: (credentials: LoginDto) => Promise<void>;
+  register: (credentials: RegisterDto) => Promise<void>;
   logout: () => void;
 }
 
@@ -24,6 +29,7 @@ const AuthContext = createContext<Readonly<AuthContextType> | undefined>(undefin
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [accessToken, setAccessToken] = useState<string | null>(null);
   const loginMutation = useLoginMutation()
+  const registerMutation = useRegisterMutation()
 
   useEffect(() => {
     setAccessTokenHeaders(accessToken)
@@ -48,9 +54,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setAccessToken(null);
   };
 
+  const register = async (credentials: RegisterDto): Promise<void> => {
+    registerMutation.mutate(credentials)
+  }
+
   const memoizedObject = useMemo(() => {
     return {
-    accessToken, setAccessToken, login, logout }
+    accessToken, setAccessToken, login, register, logout }
   }, [])
 
   return (
