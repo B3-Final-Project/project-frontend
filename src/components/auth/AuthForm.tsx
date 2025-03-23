@@ -13,7 +13,7 @@ import { RegisterFormInputs } from "@/components/auth/register/RegisterForm";
 import { useAuth } from "@/hooks/useAuth";
 import { useRouter } from "next/navigation";
 
-interface AuthFormProps{
+interface AuthFormProps {
   readonly isLogin: boolean
   readonly form: UseFormReturn<LoginFormInputs> | UseFormReturn<RegisterFormInputs>
   readonly props: ComponentPropsWithoutRef<"div">
@@ -21,7 +21,7 @@ interface AuthFormProps{
   readonly className?: string
 }
 
-export default function AuthForm({isLogin, className, form, children, ...props}: AuthFormProps){
+export default function AuthForm({ isLogin, className, form, children, ...props }: AuthFormProps) {
   const {
     handleSubmit,
   } = form
@@ -31,7 +31,7 @@ export default function AuthForm({isLogin, className, form, children, ...props}:
   const onSubmit = (data: LoginFormInputs | RegisterFormInputs) => {
     try {
       if (isLogin) {
-      auth.login(data).then(()=> router.push('/'))
+        auth.login(data).then(() => router.push('/'))
       }
     }
     catch (error) {
@@ -81,7 +81,7 @@ export default function AuthForm({isLogin, className, form, children, ...props}:
                   {isLogin ? "Login" : "Register"}
                 </Button>
               </div>
-              { isLogin ? <div className="text-center text-sm">
+              {isLogin ? <div className="text-center text-sm">
                 Don&apos;t have an account?{" "}
                 <a href="/register" className="underline underline-offset-4">
                   Sign up
