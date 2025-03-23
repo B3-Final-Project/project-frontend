@@ -27,7 +27,7 @@ export function SidebarComponent() {
     <>
       {/* Desktop Sidebar (visible on md and up) */}
       <div className="hidden md:block md:w-16 lg:w-48">
-        <Sidebar className={'max-w-fit'}>
+        <Sidebar className={'md:w-16 lg:w-48'}>
           <SidebarContent>
             <SidebarGroup>
               <SidebarMenu className={'h-full flex justify-center gap-6'}>
