@@ -55,7 +55,6 @@ axiosInstance.interceptors.response.use(
 export const setAccessTokenHeaders = (token: string | null) => {
   if (token) {
     axiosInstance.defaults.headers.common["Authorization"] = `Bearer ${token}`;
-    console.log('header is set!')
   } else {
     delete axiosInstance.defaults.headers.common["Authorization"];
   }
