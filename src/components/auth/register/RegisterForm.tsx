@@ -10,9 +10,15 @@ import { Input } from "@/components/ui/input";
 
 const registerSchema: ZodType<RegisterDto> = z.object({
   username: z
-    .string({ required_error: "Email is required" })
-    .nonempty("Email is required"),
-  password: z.string({ required_error: "Password is required" }).nonempty("Password is required"),
+    .string({ required_error: "Username is required" })
+    .nonempty("Username is required")
+    .min(3,"Username must be at least 3 characters long")
+    .max(12,"Username can be a maximum of 12 characters"),
+  password: z
+    .string().min(8, "Password must be at least 8 characters")
+    .regex(/[A-Z]/, "Password must contain at least one uppercase letter")
+    .regex(/[0-9]/, "Password must contain at least one number")
+    .regex(/[^A-Za-z0-9]/, "Password must contain at least one symbol"),
   email: z
     .string({ required_error: "Email is required" })
     .nonempty("Email is required")
