@@ -10,17 +10,21 @@ import React, {
 import { setAccessTokenHeaders } from "@/lib/utils";
 import { LoginDto } from "@/lib/routes/auth/dto/login.dto";
 import {
+  useConfirmAccountMutation,
   useLoginMutation,
   useRegisterMutation
 } from "@/hooks/react-query/auth";
 import { RegisterDto } from "@/lib/routes/auth/dto/register.dto";
+import { UserData } from "@/lib/routes/auth/types/UserData";
 
 // Define the shape of your authentication context
 interface AuthContextType {
   accessToken: string | null;
   setAccessToken: (token: string | null) => void;
+  userData?: UserData;
   login: (credentials: LoginDto) => Promise<void>;
   register: (credentials: RegisterDto) => Promise<void>;
+  confirm: (code: string) => Promise<void>;
   logout: () => void;
 }
 
@@ -28,8 +32,10 @@ const AuthContext = createContext<Readonly<AuthContextType> | undefined>(undefin
 
 export function AuthProvider({ children }: { children: Readonly<ReactNode> }) {
   const [accessToken, setAccessToken] = useState<string | null>(null);
+  const [userData, setUserData] = useState<UserData>()
   const loginMutation = useLoginMutation()
   const registerMutation = useRegisterMutation()
+  const confirmMutation = useConfirmAccountMutation()
 
   useEffect(() => {
     setAccessTokenHeaders(accessToken)
@@ -38,12 +44,6 @@ export function AuthProvider({ children }: { children: Readonly<ReactNode> }) {
   useEffect(() =>{
     if (loginMutation.data?.AccessToken)
       setAccessToken(loginMutation.data?.AccessToken)
-  }, [loginMutation.data])
-
-  useEffect(() =>{
-    if (loginMutation.data?.AccessToken) {
-      setAccessToken(loginMutation.data?.AccessToken)
-    }
   }, [loginMutation.data])
 
   const login = async (credentials: LoginDto): Promise<void> => {
@@ -55,13 +55,18 @@ export function AuthProvider({ children }: { children: Readonly<ReactNode> }) {
   };
 
   const register = async (credentials: RegisterDto): Promise<void> => {
+    setUserData({email: credentials.email})
     registerMutation.mutate(credentials)
+  }
+
+  const confirm = async (code: string): Promise<void> => {
+    confirmMutation.mutate({username: userData?.email || '', code})
   }
 
   const memoizedObject = useMemo(() => {
     return {
-    accessToken, setAccessToken, login, register, logout }
-  }, [])
+    accessToken, setAccessToken, userData, login, register, confirm, logout }
+  }, [accessToken, userData])
 
   return (
     <AuthContext.Provider value={memoizedObject}>
