@@ -31,7 +31,10 @@ export default function AuthForm({ isLogin, className, form, children, ...props 
   const onSubmit = (data: LoginFormInputs | RegisterFormInputs) => {
     try {
       if (isLogin) {
-        auth.login(data).then(() => router.push('/'))
+        auth.login(data as LoginFormInputs).then(() => router.push('/'))
+      }
+      else {
+        auth.register(data as RegisterFormInputs).then(() => router.push('/confirm'))
       }
     }
     catch (error) {
