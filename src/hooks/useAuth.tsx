@@ -66,7 +66,7 @@ export function AuthProvider({ children }: { children: Readonly<ReactNode> }) {
   const memoizedObject = useMemo(() => {
     return {
     accessToken, setAccessToken, userData, login, register, confirm, logout }
-  }, [accessToken, userData])
+  }, [accessToken, confirm, login, register, userData])
 
   return (
     <AuthContext.Provider value={memoizedObject}>
