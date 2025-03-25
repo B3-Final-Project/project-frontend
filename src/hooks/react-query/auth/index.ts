@@ -2,19 +2,29 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { RegisterDto } from "@/lib/routes/auth/dto/register.dto";
 import { LoginDto } from "@/lib/routes/auth/dto/login.dto";
 import { AuthRouter } from "@/lib/routes/auth";
+import { toast } from "@/hooks/use-toast";
+import { useRouter } from "next/navigation";
 
 // Hook for Register Mutation
 export function useRegisterMutation() {
   const queryClient = useQueryClient();
+  const router = useRouter()
 
   return useMutation({
     mutationFn: async (data: RegisterDto) => AuthRouter.register(data),
     onSuccess: (data) => {
       console.log("Registration successful", data);
       queryClient.invalidateQueries({ queryKey: ["user"] }); // Refresh user data
+      toast({
+        title: "Registered Successfully",
+        })
+      router.push("/")
     },
     onError: (error) => {
       console.error("Registration failed", error);
+      toast({
+        title: "Something went wrong, user not created",
+      })
     },
   });
 }
@@ -22,15 +32,23 @@ export function useRegisterMutation() {
 // Hook for Login Mutation
 export function useLoginMutation() {
   const queryClient = useQueryClient();
+  const router = useRouter()
 
   return useMutation({
     mutationFn: async (data: LoginDto) => AuthRouter.login(data),
     onSuccess: (data) => {
       console.log("Login successful", data);
       queryClient.invalidateQueries({ queryKey: ["user"] }); // Refresh user state
+      toast({
+        title: "Logged In Successfully",
+      })
+      router.push('/')
     },
     onError: (error) => {
       console.error("Login failed", error);
+      toast({
+        title: "Something went wrong, account not confirmed",
+      })
     },
   });
 }
@@ -42,23 +60,15 @@ export function useConfirmAccountMutation() {
       AuthRouter.confirm(data),
     onSuccess: (data) => {
       console.log("Account confirmed", data);
+      toast({
+        title: "Account Confirmed",
+      })
     },
     onError: (error) => {
       console.error("Account confirmation failed", error);
-    },
-  });
-}
-
-// Hook for Refresh Token Mutation
-export function useRefreshTokenMutation() {
-  return useMutation({
-    mutationFn: async (data: { refreshToken: string }) =>
-      AuthRouter.refresh(data),
-    onSuccess: (data) => {
-      console.log("Token refreshed", data);
-    },
-    onError: (error) => {
-      console.error("Token refresh failed", error);
+      toast({
+        title: "Something went wrong, couldn't log in",
+      })
     },
   });
 }
