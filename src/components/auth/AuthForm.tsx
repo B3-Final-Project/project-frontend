@@ -11,7 +11,6 @@ import { UseFormReturn } from "react-hook-form";
 import { LoginFormInputs } from "@/components/auth/login/LoginComponent";
 import { RegisterFormInputs } from "@/components/auth/register/RegisterForm";
 import { useAuth } from "@/hooks/useAuth";
-import { useRouter } from "next/navigation";
 
 interface AuthFormProps {
   readonly isLogin: boolean
@@ -26,15 +25,14 @@ export default function AuthForm({ isLogin, className, form, children, ...props 
     handleSubmit,
   } = form
   const auth = useAuth()
-  const router = useRouter()
 
   const onSubmit = (data: LoginFormInputs | RegisterFormInputs) => {
     try {
       if (isLogin) {
-        auth.login(data as LoginFormInputs).then(() => router.push('/'))
+        auth.login(data as LoginFormInputs)
       }
       else {
-        auth.register(data as RegisterFormInputs).then(() => router.push('/confirm'))
+        auth.register(data as RegisterFormInputs)
       }
     }
     catch (error) {

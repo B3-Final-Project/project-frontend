@@ -19,26 +19,24 @@ import {
   InputOTPSlot,
 } from "@/components/ui/input-otp";
 import { useAuth } from "@/hooks/useAuth";
-import { useRouter } from "next/navigation";
 
 const FormSchema = z.object({
-  pin: z.string().min(6, {
+  code: z.string().min(6, {
     message: "Your one-time password must be 6 characters.",
   }),
 })
 
 export function ConfirmComponent() {
   const authContext = useAuth()
-  const router = useRouter()
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
-      pin: "",
+      code: "",
     },
   })
 
   function onSubmit(data: z.infer<typeof FormSchema>) {
-    authContext.confirm(data.pin).then(()=> router.push('/'))
+    authContext.confirm(data.code)
   }
 
   return (
@@ -46,7 +44,7 @@ export function ConfirmComponent() {
       <form onSubmit={form.handleSubmit(onSubmit)} className="w-2/3 space-y-6">
         <FormField
           control={form.control}
-          name="pin"
+          name="code"
           render={({ field }) => (
             <FormItem>
               <FormLabel>Confirm Email</FormLabel>

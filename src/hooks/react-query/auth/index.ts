@@ -3,10 +3,12 @@ import { RegisterDto } from "@/lib/routes/auth/dto/register.dto";
 import { LoginDto } from "@/lib/routes/auth/dto/login.dto";
 import { AuthRouter } from "@/lib/routes/auth";
 import { toast } from "@/hooks/use-toast";
+import { useRouter } from "next/navigation";
 
 // Hook for Register Mutation
 export function useRegisterMutation() {
   const queryClient = useQueryClient();
+  const router = useRouter()
 
   return useMutation({
     mutationFn: async (data: RegisterDto) => AuthRouter.register(data),
@@ -16,6 +18,7 @@ export function useRegisterMutation() {
       toast({
         title: "Registered Successfully",
         })
+      router.push("/")
     },
     onError: (error) => {
       console.error("Registration failed", error);
@@ -29,6 +32,7 @@ export function useRegisterMutation() {
 // Hook for Login Mutation
 export function useLoginMutation() {
   const queryClient = useQueryClient();
+  const router = useRouter()
 
   return useMutation({
     mutationFn: async (data: LoginDto) => AuthRouter.login(data),
@@ -38,6 +42,7 @@ export function useLoginMutation() {
       toast({
         title: "Logged In Successfully",
       })
+      router.push('/')
     },
     onError: (error) => {
       console.error("Login failed", error);
