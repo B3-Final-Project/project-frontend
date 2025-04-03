@@ -1,7 +1,7 @@
 "use client"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
-import { z } from "zod"
+import { z, ZodType } from "zod";
 import { Button } from "@/components/ui/button"
 import {
   Form,
@@ -19,8 +19,11 @@ import {
   InputOTPSlot,
 } from "@/components/ui/input-otp";
 import { useAuth } from "@/hooks/useAuth";
+import { ConfirmAccountDto } from "@/lib/routes/auth/dto/confirm-account.dto";
+import { Input } from "@/components/ui/input";
 
-const FormSchema = z.object({
+const FormSchema: ZodType<ConfirmAccountDto> = z.object({
+  username: z.string().email({message: 'must be a valid email'}),
   code: z.string().min(6, {
     message: "Your one-time password must be 6 characters.",
   }),
@@ -31,17 +34,38 @@ export function ConfirmComponent() {
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
+      username: authContext.userData?.email || '',
       code: "",
     },
   })
 
   function onSubmit(data: z.infer<typeof FormSchema>) {
-    authContext.confirm(data.code)
+    authContext.confirm(data)
   }
 
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="w-2/3 space-y-6">
+        {!authContext.userData?.email &&
+          <FormField
+            control={form.control}
+            name="username"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Email Address</FormLabel>
+                <FormControl>
+                  <Input
+                    id="username"
+                    type="email"
+                    placeholder="m@example.com"
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        }
         <FormField
           control={form.control}
           name="code"

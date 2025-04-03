@@ -14,6 +14,7 @@ import {
 } from "@/hooks/react-query/auth";
 import { RegisterDto } from "@/lib/routes/auth/dto/register.dto";
 import { UserData } from "@/lib/routes/auth/types/UserData";
+import { ConfirmAccountDto } from "@/lib/routes/auth/dto/confirm-account.dto";
 
 // Define the shape of your authentication context
 interface AuthContextType {
@@ -22,7 +23,7 @@ interface AuthContextType {
   userData?: UserData;
   login: (credentials: LoginDto) => Promise<void>;
   register: (credentials: RegisterDto) => Promise<void>;
-  confirm: (code: string) => Promise<void>;
+  confirm: (credentials: ConfirmAccountDto) => Promise<void>;
   logout: () => void;
 }
 
@@ -48,8 +49,8 @@ export function AuthProvider({ children }: { children: Readonly<ReactNode> }) {
     await registerMutation.mutateAsync(credentials);
   }, [registerMutation]);
 
-  const confirm = useCallback(async (code: string): Promise<void> => {
-    await confirmMutation.mutateAsync({ username: userData?.email || '', code });
+  const confirm = useCallback(async (credentials: ConfirmAccountDto): Promise<void> => {
+    await confirmMutation.mutateAsync(credentials);
   }, [confirmMutation, userData?.email]);
 
   const memoizedObject = useMemo(() => {

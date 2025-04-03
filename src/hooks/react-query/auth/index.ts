@@ -4,6 +4,7 @@ import { LoginDto } from "@/lib/routes/auth/dto/login.dto";
 import { AuthRouter } from "@/lib/routes/auth";
 import { toast } from "@/hooks/use-toast";
 import { useRouter } from "next/navigation";
+import { setAccessTokenHeaders } from "@/lib/utils";
 
 // Hook for Register Mutation
 export function useRegisterMutation() {
@@ -18,12 +19,14 @@ export function useRegisterMutation() {
       toast({
         title: "Registered Successfully",
         })
-      router.push("/")
+      router.push("/confirm")
     },
     onError: (error) => {
       console.error("Registration failed", error);
       toast({
+        variant: "destructive",
         title: "Something went wrong, user not created",
+        description: error.cause + error.message
       })
     },
   });
@@ -39,6 +42,7 @@ export function useLoginMutation() {
     onSuccess: (data) => {
       console.log("Login successful", data);
       queryClient.invalidateQueries({ queryKey: ["user"] }); // Refresh user state
+      setAccessTokenHeaders(data.AccessToken)
       toast({
         title: "Logged In Successfully",
       })
@@ -47,7 +51,9 @@ export function useLoginMutation() {
     onError: (error) => {
       console.error("Login failed", error);
       toast({
-        title: "Something went wrong, account not confirmed",
+        variant: "destructive",
+        title: "Something went wrong, couldn't log in",
+        description: error.cause + error.message
       })
     },
   });
@@ -55,6 +61,7 @@ export function useLoginMutation() {
 
 // Hook for Confirm Account Mutation
 export function useConfirmAccountMutation() {
+  const router = useRouter()
   return useMutation({
     mutationFn: async (data: { username: string; code: string }) =>
       AuthRouter.confirm(data),
@@ -63,11 +70,14 @@ export function useConfirmAccountMutation() {
       toast({
         title: "Account Confirmed",
       })
+      router.push('/')
     },
     onError: (error) => {
       console.error("Account confirmation failed", error);
       toast({
+        variant: "destructive",
         title: "Something went wrong, couldn't log in",
+        description: error.cause + error.message
       })
     },
   });
