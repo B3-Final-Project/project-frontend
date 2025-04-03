@@ -4,10 +4,8 @@ import React, {
   useContext,
   useState,
   ReactNode,
-  useEffect,
-  useMemo
+  useMemo, useCallback
 } from "react";
-import { setAccessTokenHeaders } from "@/lib/utils";
 import { LoginDto } from "@/lib/routes/auth/dto/login.dto";
 import {
   useConfirmAccountMutation,
@@ -37,35 +35,27 @@ export function AuthProvider({ children }: { children: Readonly<ReactNode> }) {
   const registerMutation = useRegisterMutation()
   const confirmMutation = useConfirmAccountMutation()
 
-  useEffect(() => {
-    setAccessTokenHeaders(accessToken)
-  }, [accessToken])
-
-  useEffect(() =>{
-    if (loginMutation.data?.AccessToken)
-      setAccessToken(loginMutation.data?.AccessToken)
-  }, [loginMutation.data])
-
-  const login = async (credentials: LoginDto): Promise<void> => {
-    loginMutation.mutate(credentials)
-  };
-
   const logout = () => {
     setAccessToken(null);
   };
 
-  const register = async (credentials: RegisterDto): Promise<void> => {
-    setUserData({email: credentials.email})
-    registerMutation.mutate(credentials)
-  }
+  const login = useCallback(async (credentials: LoginDto): Promise<void> => {
+    await loginMutation.mutateAsync(credentials);
+  }, [loginMutation]);
 
-  const confirm = async (code: string): Promise<void> => {
-    confirmMutation.mutate({username: userData?.email || '', code})
-  }
+  const register = useCallback(async (credentials: RegisterDto): Promise<void> => {
+    setUserData({ email: credentials.email });
+    await registerMutation.mutateAsync(credentials);
+  }, [registerMutation]);
+
+  const confirm = useCallback(async (code: string): Promise<void> => {
+    await confirmMutation.mutateAsync({ username: userData?.email || '', code });
+  }, [confirmMutation, userData?.email]);
 
   const memoizedObject = useMemo(() => {
     return {
-    accessToken, setAccessToken, userData, login, register, confirm, logout }
+      accessToken, setAccessToken, userData, login, register, confirm, logout
+    }
   }, [accessToken, confirm, login, register, userData])
 
   return (
