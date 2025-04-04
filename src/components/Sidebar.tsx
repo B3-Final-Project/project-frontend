@@ -1,17 +1,17 @@
-import Link from 'next/link'
 import {
   Sidebar,
   SidebarContent,
   SidebarGroup,
   SidebarMenu,
-  SidebarMenuItem,
   SidebarMenuButton,
-} from '@/components/ui/sidebar'
-import { Home } from 'lucide-react'
+  SidebarMenuItem,
+} from '@/components/ui/sidebar';
+import { Home } from 'lucide-react';
+import Image from "next/image";
+import Link from 'next/link';
+import { FaRegUser } from "react-icons/fa";
 import { FiMessageSquare } from "react-icons/fi";
 import { IoSettingsOutline } from "react-icons/io5";
-import { FaRegUser } from "react-icons/fa";
-import Image from "next/image";
 
 
 
@@ -61,7 +61,7 @@ export function SidebarComponent() {
       </div>
 
       {/* Mobile Bottom Navigation (visible on smaller screens) */}
-      <nav className="fixed inset-x-0 bottom-0 flex md:hidden bg-gray-50 border-t border-gray-200">
+      <nav className="fixed inset-x-0 bottom-0 flex md:hidden bg-gray-50 border-t border-gray-200 z-50">
         <div className="flex justify-around w-full">
           {items.map((item) => {
             const IconComponent = item.icon as React.ElementType<{ size: number }>;
