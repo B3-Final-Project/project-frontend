@@ -5,6 +5,7 @@ import { AuthRouter } from "@/lib/routes/auth";
 import { toast } from "@/hooks/use-toast";
 import { useRouter } from "next/navigation";
 import { setAccessTokenHeaders } from "@/lib/utils";
+import { AxiosError } from "axios";
 
 // Hook for Register Mutation
 export function useRegisterMutation() {
@@ -26,7 +27,7 @@ export function useRegisterMutation() {
       toast({
         variant: "destructive",
         title: "Something went wrong, user not created",
-        description: error.cause + error.message
+        description: process.env.NODE_ENV && error.cause + error.message
       })
     },
   });
@@ -48,12 +49,12 @@ export function useLoginMutation() {
       })
       router.push('/')
     },
-    onError: (error) => {
+    onError: (error: AxiosError) => {
       console.error("Login failed", error);
       toast({
         variant: "destructive",
         title: "Something went wrong, couldn't log in",
-        description: error.cause + error.message
+        description: process.env.NODE_ENV && error.cause + error.message
       })
     },
   });
@@ -77,7 +78,7 @@ export function useConfirmAccountMutation() {
       toast({
         variant: "destructive",
         title: "Something went wrong, couldn't log in",
-        description: error.cause + error.message
+        description: process.env.NODE_ENV && error.cause + error.message
       })
     },
   });
