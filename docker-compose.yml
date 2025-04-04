@@ -5,8 +5,6 @@ services:
       context: .
       dockerfile: Dockerfile
       target: dev
-    env_file:
-      - .env
     labels:
       - dev.dozzle.name=frontend-nextjs
     ports:
