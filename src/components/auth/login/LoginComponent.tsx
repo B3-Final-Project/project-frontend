@@ -8,7 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 
 const loginSchema: ZodType<LoginDto> = z.object({
-  username: z
+  email: z
     .string({ required_error: "Email is required" })
     .nonempty("Email is required")
     .email("Please enter a valid email"),
@@ -33,10 +33,10 @@ export function LoginForm({ className, ...props }: React.ComponentPropsWithoutRe
           id="username"
           type="email"
           placeholder="m@example.com"
-          {...register("username")}
+          {...register("email")}
         />
-        {errors.username && (
-          <p className="text-sm text-red-600">{errors.username.message}</p>
+        {errors.email && (
+          <p className="text-sm text-red-600">{errors.email.message}</p>
         )}
       </div>
       <div className="grid gap-2">
