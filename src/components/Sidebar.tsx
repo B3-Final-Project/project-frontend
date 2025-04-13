@@ -14,20 +14,19 @@ import { FaRegUser } from "react-icons/fa";
 import Image from "next/image";
 
 
-
 export function SidebarComponent() {
   const items = [
     { title: "Home", url: '/', icon: Home},
     { title: "Messages", url: '/messages', icon: FiMessageSquare},
     { title: "Open a Booster", url: '/booster'},
-    { title: "Profile", url:'/profile', icon: FaRegUser},
-    { title: "Settings", url: '/settings', icon: IoSettingsOutline},
+    { title: "Profile", url:'/login', icon: FaRegUser},
+    { title: "Settings", url: '/register', icon: IoSettingsOutline},
   ]
   return (
     <>
       {/* Desktop Sidebar (visible on md and up) */}
       <div className="hidden md:block md:w-16 lg:w-48">
-        <Sidebar className={'max-w-fit'}>
+        <Sidebar className={'md:w-16 lg:w-48'}>
           <SidebarContent>
             <SidebarGroup>
               <SidebarMenu className={'h-full flex justify-center gap-6'}>
