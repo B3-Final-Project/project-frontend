@@ -37,7 +37,7 @@ export default function RegisterForm({className, ...props}: ComponentPropsWithou
     <AuthForm form={form} className={className} props={props} isLogin={false} >
       <div className="grid gap-2">
         <div className="flex items-center">
-          <Label htmlFor="password">Username</Label>
+          <Label htmlFor="username">Username</Label>
         </div>
         <Input id="username" type="username" {...register("username")} />
         {errors.username && (
