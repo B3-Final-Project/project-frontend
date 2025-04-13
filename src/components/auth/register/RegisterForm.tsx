@@ -17,7 +17,7 @@ const registerSchema: ZodType<RegisterDto> = z.object({
   password: z
     .string().min(8, "Password must be at least 8 characters")
     .regex(/[A-Z]/, "Password must contain at least one uppercase letter")
-    .regex(/[0-9]/, "Password must contain at least one number")
+    .regex(/\d/, "Password must contain at least one number")
     .regex(/[^A-Za-z0-9]/, "Password must contain at least one symbol"),
   email: z
     .string({ required_error: "Email is required" })
@@ -49,7 +49,7 @@ export default function RegisterForm({className, ...props}: ComponentPropsWithou
         <Input
           id="email"
           type="email"
-          placeholder="m@example.com"
+          placeholder="email@example.com"
           {...register("email")}
         />
         {errors.email && (

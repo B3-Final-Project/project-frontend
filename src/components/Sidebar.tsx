@@ -14,14 +14,13 @@ import { FaRegUser } from "react-icons/fa";
 import Image from "next/image";
 
 
-
 export function SidebarComponent() {
   const items = [
     { title: "Home", url: '/', icon: Home},
     { title: "Messages", url: '/messages', icon: FiMessageSquare},
     { title: "Open a Booster", url: '/booster'},
-    { title: "Profile", url:'/profile', icon: FaRegUser},
-    { title: "Settings", url: '/settings', icon: IoSettingsOutline},
+    { title: "Profile", url:'/login', icon: FaRegUser},
+    { title: "Settings", url: '/register', icon: IoSettingsOutline},
   ]
   return (
     <>

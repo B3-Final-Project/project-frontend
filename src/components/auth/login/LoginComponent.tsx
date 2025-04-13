@@ -23,16 +23,14 @@ export function LoginForm({ className, ...props }: React.ComponentPropsWithoutRe
   })
   const {register, formState: {errors}} = form
 
-
-
   return (
-    <AuthForm className={className} form={form} isLogin={true}  props={props}>
+    <AuthForm className={className} form={form} isLogin={true} props={props}>
       <div className="grid gap-2">
         <Label htmlFor="username">Email</Label>
         <Input
           id="username"
           type="email"
-          placeholder="m@example.com"
+          placeholder="email@example.com"
           {...register("email")}
         />
         {errors.email && (
