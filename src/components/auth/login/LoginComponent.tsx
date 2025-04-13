@@ -26,9 +26,9 @@ export function LoginForm({ className, ...props }: React.ComponentPropsWithoutRe
   return (
     <AuthForm className={className} form={form} isLogin={true} props={props}>
       <div className="grid gap-2">
-        <Label htmlFor="username">Email</Label>
+        <Label htmlFor="email">Email</Label>
         <Input
-          id="username"
+          id="email"
           type="email"
           placeholder="email@example.com"
           {...register("email")}
