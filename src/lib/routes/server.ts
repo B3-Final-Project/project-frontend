@@ -3,6 +3,7 @@ export enum RESTServerRoute {
   REST_SIGNUP = 'auth/register',
   REST_CONFIRM = 'auth/confirm',
   REST_REFRESH = 'auth/refresh',
+  REST_ME = 'auth/me',
 
   REST_PREFERENCES = 'preferences',
   REST_PREFERENCES_ALL = 'preferences/all',
