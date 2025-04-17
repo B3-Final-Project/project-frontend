@@ -53,7 +53,7 @@ export default function ProfilePage() {
               >
                 <h3 className="text-2xl font-bold">John Doe</h3>
                 <Link
-                  href="/"
+                  href="/user-card"
                   className="text-sm bg-[#EFEFEF] px-3 py-1 rounded-md"
                 >
                   Aperçu
