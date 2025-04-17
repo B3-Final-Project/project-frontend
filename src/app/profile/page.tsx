@@ -7,10 +7,20 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 
 export default function ProfilePage() {
-  const [sizeScreen, setSizeScreen] = useState(window.innerWidth);
+  const [sizeScreen, setSizeScreen] = useState(0);
 
   useEffect(() => {
     setSizeScreen(window.innerWidth);
+
+    const handleResize = () => {
+      setSizeScreen(window.innerWidth);
+    };
+
+    window.addEventListener("resize", handleResize);
+
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
   }, []);
 
   return (
@@ -23,7 +33,7 @@ export default function ProfilePage() {
           <GalleryHorizontalEnd />
         </div>
         <div>
-          <div className="w-[200%] h-[600px] bg-background rounded-t-[400px] rounded-b-none shadow-lg -ml-[50%] flex justify-center">
+          <div className="w-[200%] h-[600px] md:h-[800px] bg-background rounded-t-[400px] rounded-b-none shadow-lg -ml-[50%] flex justify-center">
             <div
               className="flex flex-col items-center"
               style={{ width: `${sizeScreen}px` }}
@@ -38,13 +48,15 @@ export default function ProfilePage() {
                 />
               </div>
 
-              <div className={`flex justify-between items-center w-full px-5`}>
-                <h3>John Doe</h3>
+              <div
+                className={`flex justify-between items-center w-full  max-w-[300px]`}
+              >
+                <h3 className="text-2xl font-bold">John Doe</h3>
                 <Link
                   href="/"
                   className="text-sm bg-[#EFEFEF] px-3 py-1 rounded-md"
                 >
-                  Apercu
+                  Aperçu
                 </Link>
               </div>
 
