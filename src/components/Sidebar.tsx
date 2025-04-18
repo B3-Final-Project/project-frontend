@@ -1,3 +1,4 @@
+'use client'
 import Link from 'next/link'
 import {
   Sidebar,
@@ -12,9 +13,12 @@ import { FiMessageSquare } from "react-icons/fi";
 import { IoSettingsOutline } from "react-icons/io5";
 import { FaRegUser } from "react-icons/fa";
 import Image from "next/image";
+import { useAuth } from "react-oidc-context";
+import { Button } from "@/components/ui/button";
 
 
 export function SidebarComponent() {
+  const auth = useAuth()
   const items = [
     { title: "Home", url: '/', icon: Home},
     { title: "Messages", url: '/messages', icon: FiMessageSquare},
@@ -22,6 +26,22 @@ export function SidebarComponent() {
     { title: "Profile", url:'/login', icon: FaRegUser},
     { title: "Settings", url: '/register', icon: IoSettingsOutline},
   ]
+  const signOutRedirect = () => {
+    const clientId = "400ece0ohqfefqun2ktbv0403b";
+    const logoutUri = "/";
+    const cognitoDomain = "https://eu-west-3018afpxzg.auth.eu-west-3.amazoncognito.com";
+    window.location.href = `${cognitoDomain}/logout?client_id=${clientId}&logout_uri=${encodeURIComponent(logoutUri)}`;
+  };
+
+  if (auth.isLoading) {
+    return <div>Loading...</div>;
+  }
+
+  if (auth.error) {
+    return <div>Encountering error... {auth.error.message}</div>;
+  }
+
+
   return (
     <>
       {/* Desktop Sidebar (visible on md and up) */}
@@ -53,6 +73,7 @@ export function SidebarComponent() {
                     </SidebarMenuItem>
                   );
                 })}
+                {!auth.user && <Button onClick={() => auth.signinRedirect()}>Log In</Button>}
               </SidebarMenu>
             </SidebarGroup>
           </SidebarContent>
