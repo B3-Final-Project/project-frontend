@@ -1,21 +1,9 @@
-// hooks/useProfileCreation.ts
 'use client';
-
 import { Dispatch, SetStateAction, useCallback, useState } from 'react';
-
-import { UpdatePreferenceDto } from "@/lib/routes/preferences/dto/update-preference.dto";
 import { toast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
 import { useRouter } from 'next/navigation';
 import { useUpdatePreferenceMutation } from "@/hooks/react-query/preferences";
-
-export interface UserProfile {
-  userId?: string;
-  personalInfo: PersonalInfo;
-  preferenceInfo: PreferenceInfo;
-  locationWork: LocationWorkInfo;
-  lifestyleInfo: LifestyleInfo;
-}
 
 export interface PersonalInfo {
   name: string;
@@ -99,30 +87,17 @@ export const useProfileCreation = (): ProfileCreationApi => {
         throw new Error("You must be logged in to save a profile");
       }
 
-      const preferenceData: UpdatePreferenceDto = {
-        data: [
-          preferenceInfo.min_age.toString(),
-          preferenceInfo.max_age.toString(),
-          preferenceInfo.max_distance.toString(),
-          preferenceInfo.relationship_type
-        ]
-      };
-
-      console.log("Saving preference data:", preferenceData);
-
       try {
-        const savedPreference = preferenceMutation.mutate(preferenceData)
-        console.log("Saved preferences:", savedPreference);
+        preferenceMutation.mutate({
+          personalInfo,
+          locationWork,
+          lifestyleInfo,
+          preferenceInfo,
+        })
       } catch (error) {
         console.error("Error saving preferences:", error);
         throw new Error("Failed to save preferences");
       }
-
-      console.log("Profile data that needs additional APIs:", {
-        personalInfo,
-        locationWork,
-        lifestyleInfo,
-      });
 
       toast({
         title: "Profile saved",
