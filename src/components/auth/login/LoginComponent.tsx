@@ -6,6 +6,7 @@ import { LoginDto } from "@/lib/routes/auth/dto/login.dto";
 import AuthForm from "@/components/auth/AuthForm";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
+import Link from "next/link";
 
 const loginSchema: ZodType<LoginDto> = z.object({
   email: z
@@ -40,12 +41,12 @@ export function LoginForm({ className, ...props }: React.ComponentPropsWithoutRe
       <div className="grid gap-2">
         <div className="flex items-center">
           <Label htmlFor="password">Password</Label>
-          <a
+          <Link
             href="#"
             className="ml-auto text-sm underline-offset-4 hover:underline"
           >
             Forgot your password?
-          </a>
+          </Link>
         </div>
         <Input id="password" type="password" {...register("password")} />
         {errors.password && (

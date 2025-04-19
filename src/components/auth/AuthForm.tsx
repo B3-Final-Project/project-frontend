@@ -14,6 +14,7 @@ import { UseFormReturn } from "react-hook-form";
 import { cn, setAccessTokenHeaders } from "@/lib/utils";
 import { useAuth } from "@/hooks/useAuth";
 import { AuthRouter } from "@/lib/routes/auth";
+import Link from "next/link";
 
 // Define a type for the component props.
 interface AuthFormProps {
@@ -107,16 +108,16 @@ export default function AuthForm({ isLogin, className, form, children, ...props 
               {isLogin ? (
                 <div className="text-center text-sm">
                   Don&apos;t have an account?{" "}
-                  <a href="/register" className="underline underline-offset-4">
+                  <Link href="/register" className="underline underline-offset-4">
                     Sign up
-                  </a>
+                  </Link>
                 </div>
               ) : (
                 <div className="text-center text-sm">
                   Already have an account?{" "}
-                  <a href="/login" className="underline underline-offset-4">
+                  <Link href="/login" className="underline underline-offset-4">
                     Sign in
-                  </a>
+                  </Link>
                 </div>
               )}
             </div>
