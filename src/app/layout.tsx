@@ -23,7 +23,7 @@ export default function RootLayout({
           <html lang="en">
             <body>
               <SidebarComponent/>
-              <main className={'h-full w-full md:w-main'}>
+              <main className={'h-screen w-full md:w-main'}>
                 {children}
               </main>
               <Toaster/>
