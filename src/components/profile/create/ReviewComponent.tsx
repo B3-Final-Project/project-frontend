@@ -1,6 +1,6 @@
 'use client';
 import { Button } from "@/components/ui/button";
-import { useProfileCreation } from "@/hooks/useProfileCreation";
+import { useProfileCreation } from "@/providers/ProfileCreationProvider";
 import { PROFILE_STEPS } from "./StepComponent";
 import { Card } from "@/components/ui/card";
 import { useParams } from "next/navigation";
@@ -9,7 +9,7 @@ import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 
 export function ReviewComponent() {
-  const { personalInfo, preferences, locationWork, lifestyle, goToPreviousStep, saveProfile, goToStep } = useProfileCreation();
+  const { personalInfo, preferenceInfo, locationWork, lifestyleInfo, goToPreviousStep, saveProfile, goToStep } = useProfileCreation();
   const { step } = useParams<{ step: string }>();
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -26,10 +26,10 @@ export function ReviewComponent() {
         title: "Profile created!",
         description: "Your dating profile has been created successfully.",
       });
-    } catch (error) {
+    } catch (error: unknown) {
       toast({
         title: "Error",
-        description: "There was a problem creating your profile. Please try again.",
+        description: `There was a problem creating your profile. Please try again. ${error}`,
         variant: "destructive",
       });
     } finally {
@@ -104,7 +104,7 @@ export function ReviewComponent() {
 
           <div className="space-y-2">
             <div className="flex items-center justify-between">
-              <h3 className="text-lg font-medium">Preferences</h3>
+              <h3 className="text-lg font-medium">preferenceInfo</h3>
               <Button
                 variant="ghost"
                 size="sm"
@@ -116,17 +116,17 @@ export function ReviewComponent() {
             <Separator />
             <div className="grid grid-cols-2 gap-2 pt-2">
               <p className="text-gray-500">Age Range:</p>
-              <p>{preferences.min_age} - {preferences.max_age} years</p>
+              <p>{preferenceInfo.min_age} - {preferenceInfo.max_age} years</p>
               <p className="text-gray-500">Maximum Distance:</p>
-              <p>{preferences.max_distance} km</p>
+              <p>{preferenceInfo.max_distance} km</p>
               <p className="text-gray-500">Looking For:</p>
-              <p>{capitalize(preferences.relationship_type?.replace('-', ' ') || '')}</p>
+              <p>{capitalize(preferenceInfo.relationship_type?.replace('-', ' ') || '')}</p>
             </div>
           </div>
 
           <div className="space-y-2">
             <div className="flex items-center justify-between">
-              <h3 className="text-lg font-medium">Lifestyle</h3>
+              <h3 className="text-lg font-medium">lifestyleInfo</h3>
               <Button
                 variant="ghost"
                 size="sm"
@@ -138,25 +138,25 @@ export function ReviewComponent() {
             <Separator />
             <div className="grid grid-cols-2 gap-2 pt-2">
               <p className="text-gray-500">Smoking:</p>
-              <p>{capitalize(lifestyle.smoking || '')}</p>
+              <p>{capitalize(lifestyleInfo.smoking || '')}</p>
               <p className="text-gray-500">Drinking:</p>
-              <p>{capitalize(lifestyle.drinking || '')}</p>
-              {lifestyle.religion && (
+              <p>{capitalize(lifestyleInfo.drinking || '')}</p>
+              {lifestyleInfo.religion && (
                 <>
                   <p className="text-gray-500">Religion:</p>
-                  <p>{capitalize(lifestyle.religion)}</p>
+                  <p>{capitalize(lifestyleInfo.religion)}</p>
                 </>
               )}
-              {lifestyle.politics && (
+              {lifestyleInfo.politics && (
                 <>
                   <p className="text-gray-500">Political Views:</p>
-                  <p>{capitalize(lifestyle.politics)}</p>
+                  <p>{capitalize(lifestyleInfo.politics)}</p>
                 </>
               )}
-              {lifestyle.zodiac && (
+              {lifestyleInfo.zodiac && (
                 <>
                   <p className="text-gray-500">Zodiac Sign:</p>
-                  <p>{capitalize(lifestyle.zodiac.replace('-', ' '))}</p>
+                  <p>{capitalize(lifestyleInfo.zodiac.replace('-', ' '))}</p>
                 </>
               )}
             </div>

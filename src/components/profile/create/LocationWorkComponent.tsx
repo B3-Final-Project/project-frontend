@@ -2,11 +2,11 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useProfileCreation } from "@/hooks/useProfileCreation";
 import { PROFILE_STEPS } from "./StepComponent";
 import { Card } from "@/components/ui/card";
 import { useState } from "react";
 import { useParams } from "next/navigation";
+import { useProfileCreation } from "@/providers/ProfileCreationProvider";
 
 export function LocationWorkComponent() {
   const { locationWork, setLocationWork, goToNextStep, goToPreviousStep } = useProfileCreation();
@@ -14,7 +14,7 @@ export function LocationWorkComponent() {
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   const handleChange = (field: string, value: string) => {
-    setLocationWork({...locationWork, [field]: value });
+    setLocationWork((prev => ({ ...prev, [field]: value })));
     if (errors[field]) {
       setErrors(prev => ({ ...prev, [field]: '' }));
     }

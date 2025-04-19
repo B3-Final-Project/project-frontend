@@ -19,7 +19,7 @@ export function SidebarComponent() {
     { title: "Home", url: '/', icon: Home},
     { title: "Messages", url: '/messages', icon: FiMessageSquare},
     { title: "Open a Booster", url: '/booster'},
-    { title: "Profile", url:'/login', icon: FaRegUser},
+    { title: "Profile", url:'/profile/create/welcome', icon: FaRegUser},
     { title: "Settings", url: '/register', icon: IoSettingsOutline},
   ]
   return (
