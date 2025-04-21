@@ -32,10 +32,10 @@ export function SidebarComponent() {
     if (!confirm) {
       return
     }
-    const clientId = "400ece0ohqfefqun2ktbv0403b";
-    const logoutUri = "http://localhost:3000";
-    const cognitoDomain = "https://eu-west-3018afpxzg.auth.eu-west-3.amazoncognito.com";
-    window.location.href = `${cognitoDomain}/logout?client_id=${clientId}&logout_uri=${encodeURIComponent(logoutUri)}`;
+    const clientId = process.env.NEXT_PUBLIC_COGNITO_CLIENT_ID;
+    const logoutUri = process.env.NEXT_PUBLIC_COGNITO_CALLBACK_URL;
+    const cognitoDomain = process.env.NEXT_PUBLIC_COGNITO_USER_POOL;
+    window.location.href = `${cognitoDomain}/logout?client_id=${clientId}&logout_uri=${encodeURIComponent(logoutUri!)}`;
     await auth.removeUser()
   }
 
