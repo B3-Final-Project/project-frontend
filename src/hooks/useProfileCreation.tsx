@@ -9,8 +9,6 @@ import { PoliticsEnum } from "@/lib/routes/preferences/enums/politics.enum";
 import { ReligionEnum } from "@/lib/routes/preferences/enums/religion.enum";
 import { SmokingEnum } from "@/lib/routes/preferences/enums/smoking.enum";
 import { ZodiacEnum } from "@/lib/routes/preferences/enums/zodiac.enum";
-import { toast } from "@/hooks/use-toast";
-import { useAuth } from "@/hooks/useAuth";
 import { useRouter } from 'next/navigation';
 import { useUpdatePreferenceMutation } from "@/hooks/react-query/preferences";
 import { RelationshipTypeEnum } from "@/lib/routes/preferences/enums";
@@ -60,8 +58,7 @@ export interface ProfileCreationApi {
 
 export const useProfileCreation = (): ProfileCreationApi => {
   const router = useRouter();
-  const preferenceMutation = useUpdatePreferenceMutation()
-  const { userData } = useAuth();
+  const preferenceMutation = useUpdatePreferenceMutation("id")
 
   const [personalInfo, setPersonalInfo] = useState<PersonalInfo>({
     name: '',
@@ -92,11 +89,6 @@ export const useProfileCreation = (): ProfileCreationApi => {
   });
 
   const saveProfile = useCallback(async () => {
-    try {
-      if (!userData) {
-        throw new Error("You must be logged in to save a profile");
-      }
-
       try {
         preferenceMutation.mutate({
           personalInfo,
@@ -106,24 +98,8 @@ export const useProfileCreation = (): ProfileCreationApi => {
         })
       } catch (error) {
         console.error("Error saving preferences:", error);
-        throw new Error("Failed to save preferences");
       }
-
-      toast({
-        title: "Profile saved",
-        description: "Your profile preferences have been saved successfully.",
-      });
-
-      router.push('/profile');
-    } catch (error) {
-      console.error('Failed to save profile:', error);
-      toast({
-        title: "Couldn't save your profil",
-        description: 'Please try again or contact support if the issue persists.',
-        variant: 'destructive'
-      });
-    }
-  }, [personalInfo, preferenceInfo, locationWork, lifestyleInfo, router, userData, preferenceMutation]);
+  }, [personalInfo, preferenceInfo, locationWork, lifestyleInfo, preferenceMutation]);
 
   const goToStep = useCallback(
     (step: string) => {
