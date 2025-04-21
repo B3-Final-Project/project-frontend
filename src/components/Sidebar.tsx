@@ -23,24 +23,13 @@ export function SidebarComponent() {
     { title: "Home", url: '/', icon: Home},
     { title: "Messages", url: '/messages', icon: FiMessageSquare},
     { title: "Open a Booster", url: '/booster'},
-    { title: "Profile", url:'/login', icon: FaRegUser},
+    { title: "Profile", url:'/profile', icon: FaRegUser},
     { title: "Settings", url: '/register', icon: IoSettingsOutline},
   ]
-  const signOutRedirect = () => {
-    const clientId = "400ece0ohqfefqun2ktbv0403b";
-    const logoutUri = "/";
-    const cognitoDomain = "https://eu-west-3018afpxzg.auth.eu-west-3.amazoncognito.com";
-    window.location.href = `${cognitoDomain}/logout?client_id=${clientId}&logout_uri=${encodeURIComponent(logoutUri)}`;
-  };
-
-  if (auth.isLoading) {
-    return <div>Loading...</div>;
-  }
 
   if (auth.error) {
     return <div>Encountering error... {auth.error.message}</div>;
   }
-
 
   return (
     <>

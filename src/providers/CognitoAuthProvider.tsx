@@ -3,9 +3,9 @@ import { ReactNode } from "react";
 import { AuthProvider } from "react-oidc-context";
 
 const cognitoAuthConfig = {
-  authority: "https://cognito-idp.eu-west-3.amazonaws.com/eu-west-3_018AFPXZG",
-  client_id: "400ece0ohqfefqun2ktbv0403b",
-  redirect_uri: "https://localhost:8080/api/cognito/callback",
+  authority: process.env.COGNITO_USER_POOL,
+  client_id: process.env.COGNITO_CLIENT_ID,
+  redirect_uri: process.env.COGNITO_CALLBACK_URL,
   response_type: "code",
   scope: "email openid",
 };
