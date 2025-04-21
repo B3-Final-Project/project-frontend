@@ -73,7 +73,7 @@ export function PreferencesComponent() {
                   max={99}
                   step={1}
                   value={[minAge]}
-                  onValueChange={(value: string) => handleChange('min_age', value[0])}
+                  onValueChange={(value: string) => handleChange('min_age', Number(value[0]))}
                   className={errors.min_age ? 'border-red-500' : ''}
                 />
                 {errors.min_age && <p className="text-sm text-red-500">{errors.min_age}</p>}
