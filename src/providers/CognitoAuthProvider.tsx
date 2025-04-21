@@ -3,11 +3,14 @@ import { ReactNode } from "react";
 import { AuthProvider } from "react-oidc-context";
 
 const cognitoAuthConfig = {
-  authority: process.env.COGNITO_USER_POOL,
-  client_id: process.env.COGNITO_CLIENT_ID,
-  redirect_uri: process.env.COGNITO_CALLBACK_URL,
+  authority: "https://cognito-idp.eu-west-3.amazonaws.com/eu-west-3_018AFPXZG",
+  client_id: "400ece0ohqfefqun2ktbv0403b",
+  redirect_uri: "http://localhost:3000",
   response_type: "code",
-  scope: "email openid",
+  scope: "email openid profile",
+  onSigninCallback: () => {
+    window.history.replaceState({}, document.title, "/");
+  },
 };
 
 export function CognitoAuthProvider({children}: {children: ReactNode}){

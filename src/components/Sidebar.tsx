@@ -27,6 +27,15 @@ export function SidebarComponent() {
     { title: "Settings", url: '/register', icon: IoSettingsOutline},
   ]
 
+  const signout = async () => {
+    const confirm = window.confirm("Are you sure you want to sign out?");
+    if (!confirm) {
+      return
+    }
+    await auth.removeUser()
+    await auth.signoutSilent()
+  }
+
   if (auth.error) {
     return <div>Encountering error... {auth.error.message}</div>;
   }
@@ -63,6 +72,7 @@ export function SidebarComponent() {
                   );
                 })}
                 {!auth.user && <Button onClick={() => auth.signinRedirect()}>Log In</Button>}
+                {auth.user && <Button onClick={() => signout()}>Sign Out</Button>}
               </SidebarMenu>
             </SidebarGroup>
           </SidebarContent>
