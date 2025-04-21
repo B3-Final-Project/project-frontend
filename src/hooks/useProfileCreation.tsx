@@ -1,15 +1,25 @@
 'use client';
+
 import { Dispatch, SetStateAction, useCallback, useState } from 'react';
+
+import { DrinkingEnum } from "@/lib/routes/preferences/enums/drinking.enum";
+import { GenderEnum } from "@/lib/routes/preferences/enums/gender.enum";
+import { OrientationEnum } from "@/lib/routes/preferences/enums/orientation.enum";
+import { PoliticsEnum } from "@/lib/routes/preferences/enums/politics.enum";
+import { ReligionEnum } from "@/lib/routes/preferences/enums/religion.enum";
+import { SmokingEnum } from "@/lib/routes/preferences/enums/smoking.enum";
+import { ZodiacEnum } from "@/lib/routes/preferences/enums/zodiac.enum";
 import { toast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
 import { useRouter } from 'next/navigation';
 import { useUpdatePreferenceMutation } from "@/hooks/react-query/preferences";
+import { RelationshipTypeEnum } from "@/lib/routes/preferences/enums";
 
 export interface PersonalInfo {
   name: string;
   surname: string;
-  gender: string;
-  orientation: string;
+  gender: GenderEnum | string;
+  orientation: OrientationEnum | string;
 }
 
 export interface LocationWorkInfo {
@@ -22,15 +32,15 @@ export interface PreferenceInfo {
   min_age: number;
   max_age: number;
   max_distance: number;
-  relationship_type: string;
+  relationship_type: RelationshipTypeEnum | string;
 }
 
 export interface LifestyleInfo {
-  smoking: string;
-  drinking: string;
-  religion: string;
-  politics: string;
-  zodiac: string;
+  smoking: SmokingEnum | string;
+  drinking: DrinkingEnum | string;
+  religion: ReligionEnum | string;
+  politics: PoliticsEnum | string;
+  zodiac: ZodiacEnum | string;
 }
 
 export interface ProfileCreationApi {

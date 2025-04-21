@@ -1,13 +1,17 @@
 'use client';
+
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+
 import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { PROFILE_STEPS } from "./StepComponent";
-import { Card } from "@/components/ui/card";
-import { useState } from "react";
-import { useParams } from "next/navigation";
 import { Slider } from "@/components/ui/slider";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { formatEnumValue } from "@/lib/utils";
+import { useParams } from "next/navigation";
 import { useProfileCreation } from "@/providers/ProfileCreationProvider";
+import { useState } from "react";
+import { RelationshipTypeEnum } from "@/lib/routes/preferences/enums";
 
 export function PreferencesComponent() {
   const { preferenceInfo, setPreferenceInfo, goToNextStep, goToPreviousStep } = useProfileCreation();
@@ -119,11 +123,11 @@ export function PreferencesComponent() {
                 <SelectValue placeholder="What type of relationship?" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="casual">Casual</SelectItem>
-                <SelectItem value="long-term">Long-term Relationship</SelectItem>
-                <SelectItem value="marriage">Marriage</SelectItem>
-                <SelectItem value="friendship">Friendship</SelectItem>
-                <SelectItem value="unsure">Not sure yet</SelectItem>
+                <SelectItem value={RelationshipTypeEnum.CASUAL}>{formatEnumValue(RelationshipTypeEnum.CASUAL)}</SelectItem>
+                <SelectItem value={RelationshipTypeEnum.LONG_TERM}>{formatEnumValue(RelationshipTypeEnum.LONG_TERM)}</SelectItem>
+                <SelectItem value={RelationshipTypeEnum.MARRIAGE}>{formatEnumValue(RelationshipTypeEnum.MARRIAGE)}</SelectItem>
+                <SelectItem value={RelationshipTypeEnum.FRIENDSHIP}>{formatEnumValue(RelationshipTypeEnum.FRIENDSHIP)}</SelectItem>
+                <SelectItem value={RelationshipTypeEnum.UNSURE}>{formatEnumValue(RelationshipTypeEnum.UNSURE)}</SelectItem>
               </SelectContent>
             </Select>
             {errors.relationship_type && <p className="text-sm text-red-500">{errors.relationship_type}</p>}

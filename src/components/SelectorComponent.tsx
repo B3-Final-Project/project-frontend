@@ -1,6 +1,6 @@
 // components/SelectorComponent.tsx
 'use client';
-import { Label } from "@/components/ui/label";
+
 import {
   Select,
   SelectContent,
@@ -8,6 +8,9 @@ import {
   SelectTrigger,
   SelectValue
 } from "@/components/ui/select";
+
+import { Label } from "@/components/ui/label";
+import { formatEnumValue } from "@/lib/utils";
 
 interface SelectorComponentProps {
   value: string;
@@ -42,14 +45,11 @@ export function SelectorComponent({
           <SelectValue placeholder={placeholder || label} />
         </SelectTrigger>
         <SelectContent>
-          {options.map((option) => {
-            const newValue = option.replaceAll(' ', '-').toLowerCase();
-            return (
-              <SelectItem key={newValue} value={newValue}>
-                {option}
-              </SelectItem>
-            );
-          })}
+          {options.map((option) => (
+            <SelectItem key={option} value={option}>
+              {formatEnumValue(option)}
+            </SelectItem>
+          ))}
         </SelectContent>
       </Select>
       {errors && <p className="text-sm text-red-500">{errors}</p>}

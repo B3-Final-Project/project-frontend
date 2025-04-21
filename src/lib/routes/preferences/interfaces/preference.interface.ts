@@ -1,7 +1,5 @@
-import {
-  RelationshipTypeEnum
-} from "@/lib/routes/preferences/interfaces/relationship-type.enum";
 import { Interest } from "@/lib/routes/preferences/interfaces/interface";
+import { RelationshipTypeEnum } from "@/lib/routes/preferences/enums";
 
 export interface Preference {
   id: number;

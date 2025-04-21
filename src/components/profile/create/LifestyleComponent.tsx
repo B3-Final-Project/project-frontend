@@ -1,12 +1,18 @@
 // components/LifestyleComponent.tsx
 'use client';
+
 import { Button } from "@/components/ui/button";
-import { useProfileCreation } from "@/providers/ProfileCreationProvider";
-import { PROFILE_STEPS } from "./StepComponent";
 import { Card } from "@/components/ui/card";
-import { useState } from "react";
-import { useParams } from "next/navigation";
+import { DrinkingEnum } from "@/lib/routes/preferences/enums/drinking.enum";
+import { PROFILE_STEPS } from "./StepComponent";
+import { PoliticsEnum } from "@/lib/routes/preferences/enums/politics.enum";
+import { ReligionEnum } from "@/lib/routes/preferences/enums/religion.enum";
 import { SelectorComponent } from "@/components/SelectorComponent";
+import { SmokingEnum } from "@/lib/routes/preferences/enums/smoking.enum";
+import { ZodiacEnum } from "@/lib/routes/preferences/enums/zodiac.enum";
+import { useParams } from "next/navigation";
+import { useProfileCreation } from "@/providers/ProfileCreationProvider";
+import { useState } from "react";
 
 export function LifestyleComponent() {
   const { lifestyleInfo, setLifestyleInfo, goToNextStep, goToPreviousStep } = useProfileCreation();
@@ -41,19 +47,12 @@ export function LifestyleComponent() {
     }
   };
 
-  const smokingOptions = ['Never', 'Occasionally', 'Regularly', 'Trying to quit'];
-  const drinkingOptions = ['Never', 'Socially', 'Regularly'];
-  const religionOptions = [
-    'Atheist', 'Agnostic', 'Buddhist', 'Christian', 'Hindu', 'Jewish', 'Muslim',
-    'Spiritual but not religious', 'Other', 'Prefer not to say'
-  ];
-  const politicsOptions = [
-    'Liberal', 'Moderate', 'Conservative', 'Not political', 'Other', 'Prefer not to say'
-  ];
-  const zodiacOptions = [
-    'Aries', 'Taurus', 'Gemini', 'Cancer', 'Leo', 'Virgo', 'Libra', 'Scorpio',
-    'Sagittarius', 'Capricorn', 'Aquarius', 'Pisces', "Don't believe in zodiac"
-  ];
+  // Convert enums to arrays of options for the selectors
+  const smokingOptions = Object.values(SmokingEnum);
+  const drinkingOptions = Object.values(DrinkingEnum);
+  const religionOptions = Object.values(ReligionEnum);
+  const politicsOptions = Object.values(PoliticsEnum);
+  const zodiacOptions = Object.values(ZodiacEnum);
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">

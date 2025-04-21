@@ -1,13 +1,16 @@
 'use client';
+
 import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { GenderEnum } from "@/lib/routes/preferences/enums/gender.enum";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useProfileCreation } from "@/providers/ProfileCreationProvider";
+import { OrientationEnum } from "@/lib/routes/preferences/enums/orientation.enum";
 import { PROFILE_STEPS } from "./StepComponent";
-import { Card } from "@/components/ui/card";
-import { useState } from "react";
-import { useParams } from "next/navigation";
 import { SelectorComponent } from "@/components/SelectorComponent";
+import { useParams } from "next/navigation";
+import { useProfileCreation } from "@/providers/ProfileCreationProvider";
+import { useState } from "react";
 
 export function PersonalInfoComponent() {
   const { personalInfo, setPersonalInfo, goToNextStep, goToPreviousStep } = useProfileCreation();
@@ -34,8 +37,9 @@ export function PersonalInfoComponent() {
     if (validateForm()) goToNextStep(step as string, PROFILE_STEPS);
   };
 
-  const genderOptions = ['Male', 'Female', 'Non-binary', 'Other'];
-  const orientationOptions = ['Straight', 'Gay', 'Lesbian', 'Bisexual', 'Pansexual', 'Asexual', 'Other'];
+  // Convert enum to array of options for the selector
+  const genderOptions = Object.values(GenderEnum);
+  const orientationOptions = Object.values(OrientationEnum);
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
