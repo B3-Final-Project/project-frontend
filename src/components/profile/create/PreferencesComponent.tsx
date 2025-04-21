@@ -14,7 +14,7 @@ export function PreferencesComponent() {
   const { step } = useParams<{ step: string }>();
   const [errors, setErrors] = useState<Record<string, string>>({});
 
-  const handleChange = (field: string, value: string) => {
+  const handleChange = (field: string, value: string | number) => {
     setPreferenceInfo(prev => ({ ...prev, [field]: value }));
     if (errors[field]) {
       setErrors(prev => ({ ...prev, [field]: '' }));
@@ -73,7 +73,7 @@ export function PreferencesComponent() {
                   max={99}
                   step={1}
                   value={[minAge]}
-                  onValueChange={(value: string) => handleChange('min_age', Number(value[0]))}
+                  onValueChange={(value: number[]) => handleChange('min_age', value[0])}
                   className={errors.min_age ? 'border-red-500' : ''}
                 />
                 {errors.min_age && <p className="text-sm text-red-500">{errors.min_age}</p>}
@@ -87,7 +87,7 @@ export function PreferencesComponent() {
                   max={99}
                   step={1}
                   value={[maxAge]}
-                  onValueChange={(value: string) => handleChange('max_age', value[0])}
+                  onValueChange={(value: number[]) => handleChange('max_age', value[0])}
                   className={errors.max_age ? 'border-red-500' : ''}
                 />
                 {errors.max_age && <p className="text-sm text-red-500">{errors.max_age}</p>}
@@ -103,7 +103,7 @@ export function PreferencesComponent() {
               max={150}
               step={5}
               value={[preferenceInfo.max_distance || 50]}
-              onValueChange={(value: string) => handleChange('max_distance', value[0])}
+              onValueChange={(value: number[]) => handleChange('max_distance', value[0])}
               className={errors.max_distance ? 'border-red-500' : ''}
             />
             {errors.max_distance && <p className="text-sm text-red-500">{errors.max_distance}</p>}
