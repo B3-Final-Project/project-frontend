@@ -22,7 +22,7 @@ const getTokenFromSession = (): string | null => {
 
   if (userJson) {
     const user: User = JSON.parse(userJson);
-    return user?.access_token || null;
+    return user?.access_token ?? null;
   }
 
   return null;
