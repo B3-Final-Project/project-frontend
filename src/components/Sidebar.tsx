@@ -1,3 +1,4 @@
+'use client'
 import Link from 'next/link'
 import {
   Sidebar,
@@ -12,16 +13,37 @@ import { FiMessageSquare } from "react-icons/fi";
 import { IoSettingsOutline } from "react-icons/io5";
 import { FaRegUser } from "react-icons/fa";
 import Image from "next/image";
+import { useAuth } from "react-oidc-context";
+import { Button } from "@/components/ui/button";
 
 
 export function SidebarComponent() {
+  const auth = useAuth()
   const items = [
     { title: "Home", url: '/', icon: Home},
     { title: "Messages", url: '/messages', icon: FiMessageSquare},
     { title: "Open a Booster", url: '/booster'},
-    { title: "Profile", url:'/profile/create/welcome', icon: FaRegUser},
+    { title: "Profile", url:'/profile', icon: FaRegUser},
     { title: "Settings", url: '/register', icon: IoSettingsOutline},
   ]
+
+  const signout = async () => {
+    const confirm = window.confirm("Are you sure you want to sign out?");
+    if (!confirm) {
+      return
+    }
+    const clientId = process.env.NEXT_PUBLIC_COGNITO_CLIENT_ID;
+    const logoutUri = process.env.NEXT_PUBLIC_COGNITO_CALLBACK_URL;
+    const cognitoDomain = process.env.NEXT_PUBLIC_COGNITO_USER_POOL;
+    window.location.href = `${cognitoDomain}/logout?client_id=${clientId}&logout_uri=${encodeURIComponent(logoutUri!)}`;
+    await auth.removeUser()
+  }
+
+
+  if (auth.error) {
+    return <div>Encountering error... {auth.error.message}</div>;
+  }
+
   return (
     <>
       {/* Desktop Sidebar (visible on md and up) */}
@@ -53,6 +75,8 @@ export function SidebarComponent() {
                     </SidebarMenuItem>
                   );
                 })}
+                {!auth.user && <Button onClick={() => auth.signinRedirect()}>Log In</Button>}
+                {auth.user && <Button onClick={() => signout()}>Sign Out</Button>}
               </SidebarMenu>
             </SidebarGroup>
           </SidebarContent>
