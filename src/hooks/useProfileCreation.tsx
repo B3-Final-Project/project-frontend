@@ -12,6 +12,7 @@ import { ZodiacEnum } from "@/lib/routes/preferences/enums/zodiac.enum";
 import { useRouter } from 'next/navigation';
 import { useUpdatePreferenceMutation } from "@/hooks/react-query/preferences";
 import { RelationshipTypeEnum } from "@/lib/routes/preferences/enums";
+import { useAuth } from "react-oidc-context";
 
 export interface PersonalInfo {
   name: string;
@@ -58,7 +59,9 @@ export interface ProfileCreationApi {
 
 export const useProfileCreation = (): ProfileCreationApi => {
   const router = useRouter();
-  const preferenceMutation = useUpdatePreferenceMutation("id")
+  const { user } = useAuth()
+  const userId = user?.profile?.sub;
+  const preferenceMutation = useUpdatePreferenceMutation(userId ?? '');
 
   const [personalInfo, setPersonalInfo] = useState<PersonalInfo>({
     name: '',
@@ -89,17 +92,18 @@ export const useProfileCreation = (): ProfileCreationApi => {
   });
 
   const saveProfile = useCallback(async () => {
-      try {
-        preferenceMutation.mutate({
-          personalInfo,
-          locationWork,
-          lifestyleInfo,
-          preferenceInfo,
-        })
-      } catch (error) {
-        console.error("Error saving preferences:", error);
-      }
-  }, [personalInfo, preferenceInfo, locationWork, lifestyleInfo, preferenceMutation]);
+    if (!userId) {
+      console.error("User ID not loaded yet");
+      return;
+    }
+
+    preferenceMutation.mutate({
+      personalInfo,
+      locationWork,
+      lifestyleInfo,
+      preferenceInfo,
+    });
+  }, [userId, personalInfo, locationWork, lifestyleInfo, preferenceInfo, preferenceMutation]);
 
   const goToStep = useCallback(
     (step: string) => {
