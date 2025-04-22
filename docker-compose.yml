@@ -5,10 +5,12 @@ services:
       context: .
       dockerfile: Dockerfile
       target: dev
+    env_file:
+      - .env
     labels:
       - dev.dozzle.name=frontend-nextjs
     ports:
       - "3000:3000"
     volumes:
-      - .:/app
+      - ./src:/app/src
       - /app/node_modules

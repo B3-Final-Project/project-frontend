@@ -1,33 +1,54 @@
+'use client'
+import Link from 'next/link'
 import {
   Sidebar,
   SidebarContent,
   SidebarGroup,
   SidebarMenu,
-  SidebarMenuButton,
   SidebarMenuItem,
-} from '@/components/ui/sidebar';
-import { Home } from 'lucide-react';
-import Image from "next/image";
-import Link from 'next/link';
-import { FaRegUser } from "react-icons/fa";
+  SidebarMenuButton,
+} from '@/components/ui/sidebar'
+import { Home } from 'lucide-react'
 import { FiMessageSquare } from "react-icons/fi";
 import { IoSettingsOutline } from "react-icons/io5";
-
+import { FaRegUser } from "react-icons/fa";
+import Image from "next/image";
+import { useAuth } from "react-oidc-context";
+import { Button } from "@/components/ui/button";
 
 
 export function SidebarComponent() {
+  const auth = useAuth()
   const items = [
     { title: "Home", url: '/', icon: Home},
     { title: "Messages", url: '/messages', icon: FiMessageSquare},
     { title: "Open a Booster", url: '/booster'},
     { title: "Profile", url:'/profile', icon: FaRegUser},
-    { title: "Settings", url: '/settings', icon: IoSettingsOutline},
+    { title: "Settings", url: '/register', icon: IoSettingsOutline},
   ]
+
+  const signout = async () => {
+    const confirm = window.confirm("Are you sure you want to sign out?");
+    if (!confirm) {
+      return
+    }
+    const clientId = process.env.NEXT_PUBLIC_COGNITO_CLIENT_ID;
+    const logoutUri = process.env.NEXT_PUBLIC_COGNITO_CALLBACK_URL;
+    const cognitoDomain = process.env.NEXT_PUBLIC_COGNITO_USER_POOL;
+    window.location.href = `${cognitoDomain}/logout?client_id=${clientId}&logout_uri=${encodeURIComponent(logoutUri!)}`;
+    await auth.removeUser()
+  }
+
+
+  if (auth.error) {
+    return <div>Encountering error... {auth.error.message}</div>;
+  }
+
   return (
     <>
       {/* Desktop Sidebar (visible on md and up) */}
       <div className="hidden md:block md:w-16 lg:w-48">
-        <Sidebar className={'max-w-fit'}>
+        <Sidebar className={'md:w-16 lg:w-48'}>
           <SidebarContent>
             <SidebarGroup>
               <SidebarMenu className={'h-full flex justify-center gap-6'}>
@@ -54,6 +75,8 @@ export function SidebarComponent() {
                     </SidebarMenuItem>
                   );
                 })}
+                {!auth.user && <Button onClick={() => auth.signinRedirect()}>Log In</Button>}
+                {auth.user && <Button onClick={() => signout()}>Sign Out</Button>}
               </SidebarMenu>
             </SidebarGroup>
           </SidebarContent>
@@ -61,7 +84,7 @@ export function SidebarComponent() {
       </div>
 
       {/* Mobile Bottom Navigation (visible on smaller screens) */}
-      <nav className="fixed inset-x-0 bottom-0 flex md:hidden bg-gray-50 border-t border-gray-200 z-50">
+      <nav className="fixed inset-x-0 bottom-0 flex md:hidden bg-gray-50 border-t border-gray-200">
         <div className="flex justify-around w-full">
           {items.map((item) => {
             const IconComponent = item.icon as React.ElementType<{ size: number }>;
