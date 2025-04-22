@@ -17,7 +17,7 @@ export default function UserCard() {
 
       <div className="h-screen w-full flex items-center justify-center relative z-10">
         <Link href="/profile">
-          <MoveLeft className="absolute top-8 left-8 text-background" />
+          <MoveLeft className="absolute top-8 left-8 text-foreground" />
         </Link>
 
         <div
