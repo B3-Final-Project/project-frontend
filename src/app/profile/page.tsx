@@ -1,13 +1,8 @@
-"use client";
-
 import { Background } from "@/components/Background";
-import { DialogContentSelector } from "@/components/profile/DialogContentSelector";
 import { ProfileAvatar } from "@/components/profile/ProfileAvatar";
 import { ProfileContainer } from "@/components/profile/ProfileContainer";
+import { ProfileDialogContent } from "@/components/profile/ProfileDialogContent";
 import { ProfileHeader } from "@/components/profile/ProfileHeader";
-import { ProfileOptions } from "@/components/profile/ProfileOptions";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
-import { useState } from "react";
 
 const userData = {
   name: "John Doe",
@@ -18,8 +13,6 @@ const userData = {
 };
 
 export default function ProfilePage() {
-  const [selectedOption, setSelectedOption] = useState("");
-
   return (
     <div className="relative min-h-screen w-full overflow-hidden">
       <Background />
@@ -32,12 +25,7 @@ export default function ProfilePage() {
             location={userData.location}
             description={userData.description}
           />
-          <Dialog>
-            <ProfileOptions setSelectedOption={setSelectedOption} />
-            <DialogContent className="sm:max-w-[425px]">
-              <DialogContentSelector selectedOption={selectedOption} />
-            </DialogContent>
-          </Dialog>
+          <ProfileDialogContent />
         </ProfileContainer>
       </div>
     </div>
