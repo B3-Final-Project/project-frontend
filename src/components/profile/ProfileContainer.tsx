@@ -24,7 +24,7 @@ export function ProfileContainer({ children }: ProfileContainerProps) {
   }, []);
 
   return (
-    <div className="w-[200%] h-full min-h-[600px] md:min-h-[800px] bg-background rounded-t-[400px] rounded-b-none shadow-lg -ml-[50%] flex justify-center">
+    <div className="w-[200%] h-full min-h-screen bg-background rounded-t-[400px] rounded-b-none shadow-lg -ml-[50%] flex justify-center">
       <div
         className="flex flex-col items-center"
         style={{ width: `${sizeScreen}px` }}
