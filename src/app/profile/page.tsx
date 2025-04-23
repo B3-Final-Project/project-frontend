@@ -23,7 +23,7 @@ export default function ProfilePage() {
   return (
     <div className="relative min-h-screen w-full overflow-hidden">
       <Background />
-      <div className="relative z-10 flex flex-col justify-between h-full w-full">
+      <div className="relative z-10 flex flex-col justify-between w-full h-screen">
         <ProfileHeader />
         <ProfileContainer>
           <ProfileAvatar
