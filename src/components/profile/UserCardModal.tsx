@@ -49,7 +49,7 @@ export function UserCardModal({
   return (
     <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center">
       <div ref={modalRef}>
-        <div
+        <button
           className="w-[300px] h-[440px] md:w-[350px] md:h-[490px] lg:w-[400px] lg:h-[540px] perspective-1000 relative cursor-pointer"
           onClick={handleCardFlip}
         >
@@ -94,7 +94,7 @@ export function UserCardModal({
               </div>
             </div>
           </div>
-        </div>
+        </button>
       </div>
     </div>
   );
