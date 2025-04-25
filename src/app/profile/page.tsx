@@ -1,3 +1,7 @@
+'use client'
+        
+import { useRouter } from "next/navigation";
+import { usePreferenceQuery } from "@/hooks/react-query/preferences";
 import { Background } from "@/components/Background";
 import { ProfileAvatar } from "@/components/profile/ProfileAvatar";
 import { ProfileContainer } from "@/components/profile/ProfileContainer";
@@ -13,6 +17,19 @@ const userData = {
 };
 
 export default function ProfilePage() {
+    
+   const router = useRouter();
+  const query = usePreferenceQuery()
+
+  if (!query.data){
+    router.push("/profile/create/welcome")
+  }
+
+
+  if (query.data){
+    return JSON.stringify(query.data)
+  }
+    
   return (
     <div className="relative min-h-screen w-full overflow-hidden">
       <Background />
@@ -30,4 +47,4 @@ export default function ProfilePage() {
       </div>
     </div>
   );
-}
+ }

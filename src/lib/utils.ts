@@ -76,3 +76,15 @@ export const createFetcher = <T = unknown, B = undefined>(
     return response.data;
   };
 };
+
+/**
+ * Formats a kebab-case string into a capitalized string with spaces
+ * Example: "non-binary" → "Non Binary"
+ */
+export function formatEnumValue(value: string): string {
+  if (!value) return '';
+  return value
+    .split('-')
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ');
+}
