@@ -9,6 +9,7 @@ import {
 
 export class ProfileRouter {
   public static readonly updateProfile = createFetcher<Profile, UpdateProfileDto>(RESTServerRoute.REST_PROFILES, "PUT");
+  public static readonly createProfile = createFetcher<Profile, UpdateProfileDto>(RESTServerRoute.REST_PROFILES, "POST");
   public static readonly getProfile = createFetcher<Profile, undefined >(RESTServerRoute.REST_PROFILES, "GET");
   public static readonly getAllProfiles = createFetcher<Profile[], undefined>(RESTServerRoute.REST_PROFILES_ALL, "GET");
 }

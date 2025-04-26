@@ -12,7 +12,9 @@ import { ZodiacEnum } from "@/lib/routes/profiles/enums/zodiac.enum";
 import { useRouter } from "next/navigation";
 import { RelationshipTypeEnum } from "@/lib/routes/profiles/enums";
 import { useAuth } from "react-oidc-context";
-import { useUpdateProfileMutation } from "@/hooks/react-query/profiles";
+import {
+  useCreateProfileMutation,
+} from "@/hooks/react-query/profiles";
 
 export interface PersonalInfo {
   name: string;
@@ -61,7 +63,7 @@ export const useProfileCreation = (): ProfileCreationApi => {
   const router = useRouter();
   const { user } = useAuth();
   const userId = user?.profile?.sub;
-  const preferenceMutation = useUpdateProfileMutation();
+  const preferenceMutation = useCreateProfileMutation();
 
   const [personalInfo, setPersonalInfo] = useState<PersonalInfo>({
     name: "",

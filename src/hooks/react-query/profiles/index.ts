@@ -45,3 +45,29 @@ export function useUpdateProfileMutation() {
     },
   });
 }
+
+export function useCreateProfileMutation() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (data: UpdateProfileDto) => {
+      return ProfileRouter.createProfile(data);
+    },
+    onSuccess: (updatedProfile) => {
+      console.log("Profile updated", updatedProfile);
+      queryClient.invalidateQueries({ queryKey: ["profiles"] });
+      toast({
+        title: "Profile saved",
+        description: "Your profile profiles have been saved successfully.",
+      });
+    },
+    onError: (error) => {
+      console.error("Failed to update profile", error);
+      toast({
+        title: "Couldn't save your profil",
+        description: 'Please try again or contact support if the issue persists.',
+        variant: 'destructive'
+      });
+    },
+  });
+}
