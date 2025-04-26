@@ -3,7 +3,6 @@ import { ProfileAvatar } from "@/components/profile/ProfileAvatar";
 import { ProfileContainer } from "@/components/profile/ProfileContainer";
 import { ProfileDialogContent } from "@/components/profile/ProfileDialogContent";
 import { ProfileHeader } from "@/components/profile/ProfileHeader";
-import { useRouter } from "next/navigation";
 import {
   useProfileQuery
 } from "@/hooks/react-query/profiles";
