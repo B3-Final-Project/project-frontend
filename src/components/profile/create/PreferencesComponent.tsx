@@ -11,7 +11,7 @@ import { formatEnumValue } from "@/lib/utils";
 import { useParams } from "next/navigation";
 import { useProfileCreation } from "@/providers/ProfileCreationProvider";
 import { useState } from "react";
-import { RelationshipTypeEnum } from "@/lib/routes/preferences/enums";
+import { RelationshipTypeEnum } from "@/lib/routes/profiles/enums";
 
 export function PreferencesComponent() {
   const { preferenceInfo, setPreferenceInfo, goToNextStep, goToPreviousStep } = useProfileCreation();

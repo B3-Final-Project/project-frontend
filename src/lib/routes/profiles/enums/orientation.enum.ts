@@ -5,5 +5,6 @@ export enum OrientationEnum {
   BISEXUAL = 'bisexual',
   PANSEXUAL = 'pansexual',
   ASEXUAL = 'asexual',
-  OTHER = 'other'
+  OTHER = 'other',
+  UNKNOWN = 'unknown'
 }

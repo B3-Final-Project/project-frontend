@@ -1,3 +1,4 @@
+import { Interest } from "@/lib/routes/profiles/interfaces/interface";
 import {
   LifestyleInfo,
   LocationWorkInfo,
@@ -5,10 +6,11 @@ import {
   PreferenceInfo
 } from "@/hooks/useProfileCreation";
 
-export interface UpdatePreferenceDto {
+export interface Profile {
   userId?: string;
   personalInfo: PersonalInfo;
   preferenceInfo: PreferenceInfo;
   locationWork: LocationWorkInfo;
   lifestyleInfo: LifestyleInfo;
+  interests?: Interest[];
 }

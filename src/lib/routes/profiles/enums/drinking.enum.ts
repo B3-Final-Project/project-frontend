@@ -1,5 +1,6 @@
 export enum DrinkingEnum {
   NEVER = 'never',
   SOCIALLY = 'socially',
-  REGULARLY = 'regularly'
+  REGULARLY = 'regularly',
+  UNKNOWN = 'unknown'
 }

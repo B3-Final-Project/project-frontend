@@ -1,0 +1,14 @@
+import { RESTServerRoute } from "@/lib/routes/server";
+import { createFetcher } from "@/lib/utils";
+import {
+  UpdateProfileDto
+} from "@/lib/routes/profiles/dto/update-profile.dto";
+import {
+  Profile
+} from "@/lib/routes/profiles/interfaces/profile.interface";
+
+export class ProfileRouter {
+  public static readonly updateProfile = createFetcher<Profile, UpdateProfileDto>(RESTServerRoute.REST_PROFILES, "PUT");
+  public static readonly getProfile = createFetcher<Profile, undefined >(RESTServerRoute.REST_PROFILES, "GET");
+  public static readonly getAllProfiles = createFetcher<Profile[], undefined>(RESTServerRoute.REST_PROFILES_ALL, "GET");
+}

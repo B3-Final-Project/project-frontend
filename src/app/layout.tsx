@@ -5,6 +5,7 @@ import { SidebarProvider } from "@/components/ui/sidebar";
 import { SidebarComponent } from "@/components/Sidebar";
 import { Toaster } from "@/components/ui/toaster";
 import { CognitoAuthProvider } from "@/providers/CognitoAuthProvider";
+import { Background } from "@/components/Background";
 
 
 export const metadata: Metadata = {
@@ -22,6 +23,7 @@ export default function RootLayout({
         <SidebarProvider>
           <html lang="en">
             <body>
+              <Background/>
               <SidebarComponent/>
               <main className={'h-screen w-full md:w-main'}>
                 {children}

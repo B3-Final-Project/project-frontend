@@ -2,5 +2,6 @@ export enum SmokingEnum {
   NEVER = 'never',
   OCCASIONALLY = 'occasionally',
   REGULARLY = 'regularly',
-  TRYING_TO_QUIT = 'trying-to-quit'
+  TRYING_TO_QUIT = 'trying-to-quit',
+  UNKNOWN = 'unknown'
 }

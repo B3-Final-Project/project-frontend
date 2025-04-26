@@ -1,24 +1,24 @@
-'use client';
+"use client";
 
-import { Dispatch, SetStateAction, useCallback, useState } from 'react';
+import { Dispatch, SetStateAction, useCallback, useState } from "react";
 
-import { DrinkingEnum } from "@/lib/routes/preferences/enums/drinking.enum";
-import { GenderEnum } from "@/lib/routes/preferences/enums/gender.enum";
-import { OrientationEnum } from "@/lib/routes/preferences/enums/orientation.enum";
-import { PoliticsEnum } from "@/lib/routes/preferences/enums/politics.enum";
-import { ReligionEnum } from "@/lib/routes/preferences/enums/religion.enum";
-import { SmokingEnum } from "@/lib/routes/preferences/enums/smoking.enum";
-import { ZodiacEnum } from "@/lib/routes/preferences/enums/zodiac.enum";
-import { useRouter } from 'next/navigation';
-import { useUpdatePreferenceMutation } from "@/hooks/react-query/preferences";
-import { RelationshipTypeEnum } from "@/lib/routes/preferences/enums";
+import { DrinkingEnum } from "@/lib/routes/profiles/enums/drinking.enum";
+import { GenderEnum } from "@/lib/routes/profiles/enums/gender.enum";
+import { OrientationEnum } from "@/lib/routes/profiles/enums/orientation.enum";
+import { PoliticsEnum } from "@/lib/routes/profiles/enums/politics.enum";
+import { ReligionEnum } from "@/lib/routes/profiles/enums/religion.enum";
+import { SmokingEnum } from "@/lib/routes/profiles/enums/smoking.enum";
+import { ZodiacEnum } from "@/lib/routes/profiles/enums/zodiac.enum";
+import { useRouter } from "next/navigation";
+import { RelationshipTypeEnum } from "@/lib/routes/profiles/enums";
 import { useAuth } from "react-oidc-context";
+import { useUpdateProfileMutation } from "@/hooks/react-query/profiles";
 
 export interface PersonalInfo {
   name: string;
   surname: string;
-  gender: GenderEnum | string;
-  orientation: OrientationEnum | string;
+  gender: GenderEnum;
+  orientation: OrientationEnum;
 }
 
 export interface LocationWorkInfo {
@@ -31,15 +31,15 @@ export interface PreferenceInfo {
   min_age: number;
   max_age: number;
   max_distance: number;
-  relationship_type: RelationshipTypeEnum | string;
+  relationship_type: RelationshipTypeEnum;
 }
 
 export interface LifestyleInfo {
-  smoking: SmokingEnum | string;
-  drinking: DrinkingEnum | string;
-  religion: ReligionEnum | string;
-  politics: PoliticsEnum | string;
-  zodiac: ZodiacEnum | string;
+  smoking: SmokingEnum;
+  drinking: DrinkingEnum;
+  religion?: ReligionEnum;
+  politics?: PoliticsEnum;
+  zodiac?: ZodiacEnum;
 }
 
 export interface ProfileCreationApi {
@@ -59,20 +59,20 @@ export interface ProfileCreationApi {
 
 export const useProfileCreation = (): ProfileCreationApi => {
   const router = useRouter();
-  const { user } = useAuth()
+  const { user } = useAuth();
   const userId = user?.profile?.sub;
-  const preferenceMutation = useUpdatePreferenceMutation(userId ?? '');
+  const preferenceMutation = useUpdateProfileMutation();
 
   const [personalInfo, setPersonalInfo] = useState<PersonalInfo>({
-    name: '',
-    surname: '',
-    gender: '',
-    orientation: '',
+    name: "",
+    surname: "",
+    gender: GenderEnum.UNKNOWN,
+    orientation: OrientationEnum.ASEXUAL,
   });
 
   const [locationWork, setLocationWork] = useState<LocationWorkInfo>({
-    city: '',
-    work: '',
+    city: "",
+    work: "",
     languages: [],
   });
 
@@ -80,15 +80,12 @@ export const useProfileCreation = (): ProfileCreationApi => {
     min_age: 18,
     max_age: 99,
     max_distance: 50,
-    relationship_type: '',
+    relationship_type: RelationshipTypeEnum.UNSURE,
   });
 
   const [lifestyleInfo, setLifestyleInfo] = useState<LifestyleInfo>({
-    smoking: '',
-    drinking: '',
-    religion: '',
-    politics: '',
-    zodiac: '',
+    smoking: SmokingEnum.UNKNOWN,
+    drinking: DrinkingEnum.UNKNOWN,
   });
 
   const saveProfile = useCallback(async () => {
@@ -103,13 +100,20 @@ export const useProfileCreation = (): ProfileCreationApi => {
       lifestyleInfo,
       preferenceInfo,
     });
-  }, [userId, personalInfo, locationWork, lifestyleInfo, preferenceInfo, preferenceMutation]);
+  }, [
+    userId,
+    personalInfo,
+    locationWork,
+    lifestyleInfo,
+    preferenceInfo,
+    preferenceMutation,
+  ]);
 
   const goToStep = useCallback(
     (step: string) => {
       router.push(`/profile/create/${step}`);
     },
-    [router]
+    [router],
   );
 
   const goToNextStep = useCallback(
@@ -121,7 +125,7 @@ export const useProfileCreation = (): ProfileCreationApi => {
         saveProfile();
       }
     },
-    [goToStep, saveProfile]
+    [goToStep, saveProfile],
   );
 
   const goToPreviousStep = useCallback(
@@ -131,7 +135,7 @@ export const useProfileCreation = (): ProfileCreationApi => {
         goToStep(steps[idx - 1]);
       }
     },
-    [goToStep]
+    [goToStep],
   );
 
   return {

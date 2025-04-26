@@ -2,10 +2,10 @@
 
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { GenderEnum } from "@/lib/routes/preferences/enums/gender.enum";
+import { GenderEnum } from "@/lib/routes/profiles/enums/gender.enum";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { OrientationEnum } from "@/lib/routes/preferences/enums/orientation.enum";
+import { OrientationEnum } from "@/lib/routes/profiles/enums/orientation.enum";
 import { PROFILE_STEPS } from "./StepComponent";
 import { SelectorComponent } from "@/components/SelectorComponent";
 import { useParams } from "next/navigation";

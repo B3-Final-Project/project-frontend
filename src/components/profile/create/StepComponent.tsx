@@ -44,7 +44,7 @@ export function StepComponent() {
     },
     {
       param: 'lifestyle',
-      description: 'Your lifestyle preferences',
+      description: 'Your lifestyle profiles',
       component: <LifestyleComponent />
     },
     {

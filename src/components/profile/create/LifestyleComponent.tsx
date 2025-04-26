@@ -3,13 +3,13 @@
 
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { DrinkingEnum } from "@/lib/routes/preferences/enums/drinking.enum";
+import { DrinkingEnum } from "@/lib/routes/profiles/enums/drinking.enum";
 import { PROFILE_STEPS } from "./StepComponent";
-import { PoliticsEnum } from "@/lib/routes/preferences/enums/politics.enum";
-import { ReligionEnum } from "@/lib/routes/preferences/enums/religion.enum";
+import { PoliticsEnum } from "@/lib/routes/profiles/enums/politics.enum";
+import { ReligionEnum } from "@/lib/routes/profiles/enums/religion.enum";
 import { SelectorComponent } from "@/components/SelectorComponent";
-import { SmokingEnum } from "@/lib/routes/preferences/enums/smoking.enum";
-import { ZodiacEnum } from "@/lib/routes/preferences/enums/zodiac.enum";
+import { SmokingEnum } from "@/lib/routes/profiles/enums/smoking.enum";
+import { ZodiacEnum } from "@/lib/routes/profiles/enums/zodiac.enum";
 import { useParams } from "next/navigation";
 import { useProfileCreation } from "@/providers/ProfileCreationProvider";
 import { useState } from "react";
