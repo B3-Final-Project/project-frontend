@@ -1,9 +1,5 @@
-"use client";
-
-import { Button } from "@/components/ui/button";
-import Image from "next/image";
-import { useState } from "react";
-import { UserCardModal } from "./UserCardModal";
+import { UserCardModal } from "@/components/profile/UserCardModal";
+import Image from 'next/image'
 
 interface ProfileAvatarProps {
   name: string;
@@ -18,11 +14,6 @@ export function ProfileAvatar({
   location,
   description,
 }: ProfileAvatarProps) {
-  const [isModalOpen, setIsModalOpen] = useState(false);
-
-  const openModal = () => setIsModalOpen(true);
-  const closeModal = () => setIsModalOpen(false);
-
   return (
     <>
       <div className="w-[100px] h-[100px] border-4 border-background bg-red-500 rounded-full flex items-center justify-center -translate-y-1/2 overflow-hidden">
@@ -35,21 +26,15 @@ export function ProfileAvatar({
         />
       </div>
 
-      <div className="flex justify-between items-center w-full max-w-[300px]">
+      <div className={'flex justify-between gap-40'}>
         <h3 className="text-2xl font-bold">{name}</h3>
-        <Button variant="outline" size="sm" onClick={openModal}>
-          Aperçu
-        </Button>
+        <UserCardModal
+          name={name}
+          age={age}
+          location={location}
+          description={description}
+        />
       </div>
-
-      <UserCardModal
-        name={name}
-        age={age}
-        location={location}
-        description={description}
-        isOpen={isModalOpen}
-        onClose={closeModal}
-      />
     </>
   );
 }
