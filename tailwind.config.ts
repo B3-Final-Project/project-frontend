@@ -9,9 +9,6 @@ export default {
   ],
   theme: {
     extend: {
-      width:{
-        main: 'calc(100vw - 12rem)'
-      },
       colors: {
         sidebar: {
           DEFAULT: "hsl(var(--sidebar-background))",

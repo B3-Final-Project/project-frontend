@@ -25,7 +25,7 @@ export default function RootLayout({
             <body>
               <Background/>
               <SidebarComponent/>
-              <main className={'h-screen w-full md:w-main'}>
+              <main className={'h-screen w-full'}>
                 {children}
               </main>
               <Toaster/>

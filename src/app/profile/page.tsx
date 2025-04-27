@@ -1,11 +1,10 @@
 'use client'
-import { ProfileAvatar } from "@/components/profile/ProfileAvatar";
-import { ProfileContainer } from "@/components/profile/ProfileContainer";
 import { ProfileDialogContent } from "@/components/profile/ProfileDialogContent";
 import { ProfileHeader } from "@/components/profile/ProfileHeader";
 import {
   useProfileQuery
 } from "@/hooks/react-query/profiles";
+import { ProfileAvatar } from "@/components/profile/ProfileAvatar";
 
 const userData = {
   description:
@@ -24,10 +23,9 @@ export default function ProfilePage() {
   }
 
   return query.data && (
-    <div
-      className="relative min-h-screen overflow-hidden flex flex-col justify-between">
+    <div className="h-full w-full flex flex-col justify-between">
       <ProfileHeader />
-      <ProfileContainer>
+      <div className={"w-full h-full bg-background shadow-lg flex flex-col items-center justify-center"}>
         <ProfileAvatar
           name={query.data?.name ?? ""}
           age={query.data.min_age}
@@ -35,7 +33,7 @@ export default function ProfilePage() {
           description={userData.description}
         />
         <ProfileDialogContent />
-      </ProfileContainer>
+      </div>
     </div>
   );
 }
