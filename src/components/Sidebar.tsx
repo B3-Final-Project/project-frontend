@@ -1,3 +1,4 @@
+'use client'
 import Link from 'next/link'
 import {
   Sidebar,
@@ -13,13 +14,15 @@ import { IoSettingsOutline } from "react-icons/io5";
 import { FaRegUser } from "react-icons/fa";
 import Image from "next/image";
 import { SignInButton } from "@/components/auth/SignInButton";
+import { useAuth } from "react-oidc-context";
 
 
 export function SidebarComponent() {
+  const auth = useAuth()
   const items = [
     { title: "Home", url: '/', icon: Home},
     { title: "Messages", url: '/messages', icon: FiMessageSquare},
-    { title: "Open a Booster", url: '/booster'},
+    { canUse: true, title: "Open a Booster", url: '/booster'},
     { title: "Profile", url:'/profile', icon: FaRegUser},
     { title: "Settings", url: '/register', icon: IoSettingsOutline},
   ]
@@ -36,8 +39,9 @@ export function SidebarComponent() {
                   const IconComponent = item.icon as React.ElementType;
                   return (
                     <SidebarMenuItem key={item.url}>
+                      {auth.user &&
                       <SidebarMenuButton asChild>
-                        <Link href={item.url} className="flex items-center space-x-2">
+                          <Link href={item.url} className="flex items-center space-x-2">
                           {item.icon ? (
                             <IconComponent style={{width: '1.5rem', height: '1.5rem'}} size={40} />
                           ) : (
@@ -52,10 +56,13 @@ export function SidebarComponent() {
                           <span className="hidden lg:block">{item.title}</span>
                         </Link>
                       </SidebarMenuButton>
+                      }
                     </SidebarMenuItem>
                   );
                 })}
-              <SignInButton/>
+                <SidebarMenuItem>
+                  <SignInButton/>
+                </SidebarMenuItem>
               </SidebarMenu>
             </SidebarGroup>
           </SidebarContent>
@@ -75,6 +82,7 @@ export function SidebarComponent() {
               {item.icon ? <IconComponent size={20} /> : <Image src="/logo.svg" width={20} height={20} alt="logo" />}
             </Link>})
           }
+          <SignInButton/>
         </div>
       </nav>
     </>

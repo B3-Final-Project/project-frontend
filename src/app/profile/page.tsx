@@ -19,6 +19,10 @@ export default function ProfilePage() {
     return <div>Loading...</div>
   }
 
+  if (query.isError){
+    return <div>{JSON.stringify(query.error)}</div>
+  }
+
   return query.data && (
     <div
       className="relative min-h-screen overflow-hidden flex flex-col justify-between">
