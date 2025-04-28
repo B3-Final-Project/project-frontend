@@ -1,6 +1,7 @@
 'use client';
 
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
+import Image from 'next/image';
 
 import { motion } from 'framer-motion';
 
@@ -19,16 +20,16 @@ type PokemonCardProps = {
 export default function PokemonCard({ card, delay }: PokemonCardProps) {
   // Animation variants for the card reveal
   const variants = {
-    hidden: { 
+    hidden: {
       rotateY: 180,
       scale: 0.8,
       opacity: 0.8
     },
-    visible: { 
+    visible: {
       rotateY: 0,
       scale: 1,
       opacity: 1,
-      transition: { 
+      transition: {
         duration: 0.6,
         delay: delay * 0.2
       }
@@ -49,7 +50,7 @@ export default function PokemonCard({ card, delay }: PokemonCardProps) {
             <>
               <div className="h-48 w-full bg-white rounded-md flex items-center justify-center mb-4">
                 {/* We'd use actual images here, this is a placeholder */}
-                <div className="text-6xl">🎮</div>
+                <Image width={150} height={100} src={"/img.png"} alt={card.image}/>
               </div>
               <h3 className="font-bold text-lg mb-1">{card.name}</h3>
               <span className="px-2.5 py-0.5 rounded-full text-xs font-medium capitalize">

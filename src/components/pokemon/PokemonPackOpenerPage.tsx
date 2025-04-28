@@ -43,12 +43,12 @@ export default function PokemonPackOpenerPage() {
   const determineRarity = () => {
     const rand = Math.random();
     let cumulativeChance = 0;
-    
+
     for (const [rarity, data] of Object.entries(RARITIES)) {
       cumulativeChance += data.chance;
       if (rand <= cumulativeChance) return rarity;
     }
-    
+
     return 'common'; // Fallback in case of rounding errors
   };
 
@@ -57,12 +57,12 @@ export default function PokemonPackOpenerPage() {
     const rarity = determineRarity();
     const pokemonPool = POKEMON[rarity as keyof typeof POKEMON];
     const name = pokemonPool[Math.floor(Math.random() * pokemonPool.length)];
-    
+
     return {
       id,
       name,
       rarity,
-      image: `/pokemon/${name.toLowerCase().replace(/\s+/g, '-')}.png`, // This would require actual Pokemon images
+      image: `/img.png`, // This would require actual Pokemon images
       color: RARITIES[rarity as keyof typeof RARITIES].color,
       isRevealed: false
     };
@@ -71,43 +71,43 @@ export default function PokemonPackOpenerPage() {
   // Function to open a new pack of cards
   const openPack = () => {
     if (isOpening) return;
-    
+
     setIsOpening(true);
     setCards([]);
-    
+
     toast({
       title: "Opening pack...",
       description: "Get ready to see your cards!",
     });
-    
+
     // Generate a new set of 5 cards
-    const newCards = Array.from({ length: 5 }, (_, i) => 
+    const newCards = Array.from({ length: 5 }, (_, i) =>
       generateCard(`card-${Date.now()}-${i}`)
     );
-    
+
     // Display the cards one by one with a delay
     setCards(newCards.map(card => ({ ...card, isRevealed: false })));
-    
+
     // Reveal cards one by one with a delay
     newCards.forEach((card, index) => {
       setTimeout(() => {
-        setCards(currentCards => 
-          currentCards.map((c, i) => 
+        setCards(currentCards =>
+          currentCards.map((c, i) =>
             i === index ? { ...c, isRevealed: true } : c
           )
         );
-        
+
         // Check if we've revealed the last card
         if (index === newCards.length - 1) {
           setIsOpening(false);
           setTimeout(() => {
             const rarities = newCards.map(c => c.rarity);
             const hasRare = rarities.some(r => r === 'rare' || r === 'ultraRare' || r === 'secret');
-            
+
             toast({
               title: hasRare ? "Amazing pull!" : "Pack opened!",
-              description: hasRare 
-                ? "You got some rare cards! Congrats!" 
+              description: hasRare
+                ? "You got some rare cards! Congrats!"
                 : "Better luck next time for rare cards!",
               variant: hasRare ? "default" : "destructive",
             });
@@ -125,9 +125,9 @@ export default function PokemonPackOpenerPage() {
       </header>
 
       <div className="flex justify-center mb-8">
-        <Button 
-          size="lg" 
-          onClick={openPack} 
+        <Button
+          size="lg"
+          onClick={openPack}
           disabled={isOpening}
           className="bg-red-600 hover:bg-red-700 text-white"
         >
