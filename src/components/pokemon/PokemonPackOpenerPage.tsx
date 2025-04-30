@@ -113,7 +113,7 @@ export default function PokemonPackOpenerPage() {
             });
           }, 500);
         }
-      }, 800 * (index + 1));
+      }, 1000 * (index + 1));
     });
   };
 
@@ -147,16 +147,6 @@ export default function PokemonPackOpenerPage() {
         )}
       </div>
 
-      <div className="mt-10 p-4 bg-gray-50 rounded-lg">
-        <h2 className="text-xl font-semibold mb-2">Card Rarities:</h2>
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-2">
-          <div className="p-2 bg-gray-200 rounded text-center">Common (70%)</div>
-          <div className="p-2 bg-green-200 rounded text-center">Uncommon (20%)</div>
-          <div className="p-2 bg-blue-200 rounded text-center">Rare (7%)</div>
-          <div className="p-2 bg-purple-200 rounded text-center">Ultra Rare (2.5%)</div>
-          <div className="p-2 bg-yellow-200 rounded text-center">Secret Rare (0.5%)</div>
-        </div>
-      </div>
     </div>
   );
 }

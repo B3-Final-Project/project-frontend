@@ -1,29 +1,35 @@
 'use client';
 
-import { Card, CardContent, CardFooter } from "@/components/ui/card";
-import Image from 'next/image';
-
 import { motion } from 'framer-motion';
+import Image from "next/image";
+import { UserCardModal } from "@/components/profile/UserCardModal";
+import { useState } from "react";
 
 type PokemonCardProps = {
   card: {
     id: string;
     name: string;
-    rarity: string;
     image: string;
-    color: string;
     isRevealed: boolean;
+    age?: number;
+    location?: string;
+    description?: string;
   };
   delay: number;
 };
 
 export default function PokemonCard({ card, delay }: PokemonCardProps) {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const openModal = () => setIsModalOpen(true);
+  const closeModal = () => setIsModalOpen(false);
+
   // Animation variants for the card reveal
   const variants = {
     hidden: {
       rotateY: 180,
       scale: 0.8,
-      opacity: 0.8
+      opacity: 0.8,
     },
     visible: {
       rotateY: 0,
@@ -31,50 +37,61 @@ export default function PokemonCard({ card, delay }: PokemonCardProps) {
       opacity: 1,
       transition: {
         duration: 0.6,
-        delay: delay * 0.2
-      }
-    }
+        delay: delay * 0.2,
+      },
+    },
   };
 
   return (
-    <motion.div
-      className="perspective-1000 relative"
-      initial="hidden"
-      animate={card.isRevealed ? "visible" : "hidden"}
-      variants={variants}
-      style={{ transformStyle: "preserve-3d" }}
-    >
-      <Card className={`w-64 h-88 ${card.isRevealed ? card.color : 'bg-gray-700'} shadow-lg`}>
-        <CardContent className="p-4 flex flex-col items-center justify-center">
+      <>
+      <motion.div
+          className="w-[300px] h-[440px] perspective-1000 relative"
+          initial="hidden"
+          animate={card.isRevealed ? "visible" : "hidden"}
+          variants={variants}
+          style={{ transformStyle: "preserve-3d" }}
+      >
+        <div className="w-full h-full rounded-xl p-[8px] bg-gradient-to-b from-[#ED2272] to-[#00AEEF] absolute backface-hidden" onClick={openModal}>
           {card.isRevealed ? (
-            <>
-              <div className="h-48 w-full bg-white rounded-md flex items-center justify-center mb-4">
-                {/* We'd use actual images here, this is a placeholder */}
-                <Image width={150} height={100} src={"/img.png"} alt={card.image}/>
+              <div
+                  className="w-full h-full rounded-lg flex items-center justify-center"
+                  style={{
+                    backgroundImage: `url(${card.image})`,
+                    backgroundSize: "cover",
+                    backgroundPosition: "center",
+                  }}
+              >
+                <div className="w-full h-full flex flex-col justify-between">
+                  <>
+                    <div className="flex justify-between items-center text-background p-4 font-semibold">
+                      <p>{card.location || "Inconnu"}</p>
+                      <p>{card.age || "?"} ans</p>
+                    </div>
+
+                    <div className="text-background p-4 font-semibold">
+                      <p className="text-xl">{card.name}</p>
+                      <p className="text-sm truncate">{card.description || "Pas de description"}</p>
+                    </div>
+                  </>
+                </div>
               </div>
-              <h3 className="font-bold text-lg mb-1">{card.name}</h3>
-              <span className="px-2.5 py-0.5 rounded-full text-xs font-medium capitalize">
-                {card.rarity}
-              </span>
-            </>
           ) : (
-            <div className="h-48 w-full bg-blue-800 rounded-md flex items-center justify-center mb-4">
-              <div className="text-white font-bold text-2xl">?</div>
-            </div>
+              <div className="flex items-center justify-center h-full">
+                <Image src={"logo.svg"} alt="Pokémon Logo" width={100} height={100} className="w-1/2 h-1/2" />
+              </div>
           )}
-        </CardContent>
-        <CardFooter className={`p-2 text-center ${card.isRevealed ? '' : 'bg-blue-900 text-white'}`}>
-          {card.isRevealed ? (
-            <p className="w-full text-xs">
-              Card #{card.id.split('-')[2]}
-            </p>
-          ) : (
-            <p className="w-full text-xs">
-              Pokémon Card
-            </p>
-          )}
-        </CardFooter>
-      </Card>
-    </motion.div>
+        </div>
+
+
+      </motion.div>
+  <UserCardModal
+      name={card.name}
+      age={card.age}
+      location={card.location}
+      description={card.description}
+      isOpen={isModalOpen}
+      onClose={closeModal}
+  />
+      </>
   );
 }
