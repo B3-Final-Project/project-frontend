@@ -1,13 +1,13 @@
 "use client";
 
-import { DescriptionDialog } from "./dialogContent/DescriptionDialog";
-import { GenreDialog } from "./dialogContent/GenreDialog";
-import { OthersDialog } from "./dialogContent/OthersDialog";
-import { PicturesDialog } from "./dialogContent/PicturesDialog";
-import { PreferencesDialog } from "./dialogContent/PreferencesDialog";
 import {
   DialogContentChoices
 } from "@/components/profile/ProfileDialogContent";
+import { LifestyleDialog } from "./dialogContent/LifestyleDialog";
+import { LocationWorkDialog } from "./dialogContent/LocationWorkDialog";
+import { PersonalInfoDialog } from "./dialogContent/PersonalInfoDialog";
+import { PicturesDialog } from "./dialogContent/PicturesDialog";
+import { PreferencesDialog } from "./dialogContent/PreferencesDialog";
 
 interface DialogContentSelectorProps {
   selectedOption: string;
@@ -19,14 +19,14 @@ export function DialogContentSelector({
   switch (selectedOption) {
     case DialogContentChoices.PICTURES:
       return <PicturesDialog />;
-    case DialogContentChoices.DESCRIPTION:
-      return <DescriptionDialog />;
-    case DialogContentChoices.GENRE:
-      return <GenreDialog />;
     case DialogContentChoices.PREFERENCES:
       return <PreferencesDialog />;
-    case DialogContentChoices.OTHER:
-      return <OthersDialog />;
+    case DialogContentChoices.PERSONAL_INFO:
+      return <PersonalInfoDialog />;
+    case DialogContentChoices.LOCATION_WORK:
+      return <LocationWorkDialog />;
+    case DialogContentChoices.LIFESTYLE:
+      return <LifestyleDialog />;
     default:
       return null;
   }

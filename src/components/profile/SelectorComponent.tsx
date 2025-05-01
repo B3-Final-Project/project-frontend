@@ -25,7 +25,6 @@ export function SelectorComponent({ value, fieldName, options, label, onChange, 
     <Select
       value={value !== undefined ? value.toString() : ''}
       onValueChange={(val: string) => {
-        console.log('value changed', val);
         const numericValue = parseInt(val, 10);
         onChange(fieldName, numericValue);
       }}
@@ -47,5 +46,5 @@ export function SelectorComponent({ value, fieldName, options, label, onChange, 
     {errors && <p className="text-sm text-red-500">{errors}</p>}
   </div>
   )
-};
+}
 

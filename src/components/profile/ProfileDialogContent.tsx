@@ -2,16 +2,16 @@
 
 import { DialogContentSelector } from "@/components/profile/DialogContentSelector";
 import { ProfileOptions } from "@/components/profile/ProfileOptions";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { Dialog } from "@/components/ui/dialog";
 import { useState } from "react";
 import { Book, Camera, Circle, MoreHorizontal } from "lucide-react";
 
 export enum DialogContentChoices {
-  PICTURES = 'pictures',
-  DESCRIPTION = 'description',
-  GENRE = 'genre',
+  LIFESTYLE = 'lifestyle',
+  LOCATION_WORK = 'location_work',
+  PERSONAL_INFO = 'personal_info',
   PREFERENCES = 'preferences',
-  OTHER = 'other',
+  PICTURES = 'pictures',
 }
 
 export const editProfileData = [
@@ -22,29 +22,29 @@ export const editProfileData = [
     icon: Camera,
   },
   {
-    key: DialogContentChoices.DESCRIPTION,
-    title: "Description",
-    description: "Description",
-    icon: Book,
-  },
-  {
-    key: DialogContentChoices.GENRE,
-    title: "Genre",
-    description: "Description",
-    icon: Circle,
-  },
-  {
     key: DialogContentChoices.PREFERENCES,
     title: "Préférences",
     description: "Description",
     icon: Circle,
   },
   {
-    key: DialogContentChoices.OTHER,
-    title: "Autres",
+    key: DialogContentChoices.PERSONAL_INFO,
+    title: "Informations personnelles",
     description: "Description",
     icon: MoreHorizontal,
   },
+  {
+    key: DialogContentChoices.LOCATION_WORK,
+    title: "Ville / Travail",
+    description: "Description",
+    icon: Book,
+  },
+  {
+    key: DialogContentChoices.LIFESTYLE,
+    title: "Style de vie",
+    description: "Description",
+    icon: Circle,
+  }
 ];
 
 export function ProfileDialogContent() {
@@ -53,9 +53,7 @@ export function ProfileDialogContent() {
   return (
     <Dialog>
       <ProfileOptions data={editProfileData} setSelectedOption={setSelectedOption} />
-      <DialogContent className="sm:max-w-[425px]">
-        <DialogContentSelector  selectedOption={selectedOption} />
-      </DialogContent>
+      <DialogContentSelector  selectedOption={selectedOption} />
     </Dialog>
   );
 }

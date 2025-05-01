@@ -7,10 +7,10 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { OrientationEnum } from "@/lib/routes/profiles/enums/orientation.enum";
 import { PROFILE_STEPS } from "./StepComponent";
+import { SelectorComponent } from "@/components/profile/SelectorComponent";
 import { useParams } from "next/navigation";
 import { useProfileCreation } from "@/providers/ProfileCreationProvider";
 import { useState } from "react";
-import { SelectorComponent } from "@/components/profile/SelectorComponent";
 
 export function PersonalInfoComponent() {
   const { personalInfo, setPersonalInfo, goToNextStep, goToPreviousStep } = useProfileCreation();
