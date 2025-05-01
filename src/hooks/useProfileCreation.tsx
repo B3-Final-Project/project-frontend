@@ -19,8 +19,8 @@ import {
 export interface PersonalInfo {
   name: string;
   surname: string;
-  gender: GenderEnum;
-  orientation: OrientationEnum;
+  gender?: GenderEnum;
+  orientation?: OrientationEnum;
 }
 
 export interface LocationWorkInfo {
@@ -33,12 +33,12 @@ export interface PreferenceInfo {
   min_age: number;
   max_age: number;
   max_distance: number;
-  relationship_type: RelationshipTypeEnum;
+  relationship_type?: RelationshipTypeEnum;
 }
 
 export interface LifestyleInfo {
-  smoking: SmokingEnum;
-  drinking: DrinkingEnum;
+  smoking?: SmokingEnum;
+  drinking?: DrinkingEnum;
   religion?: ReligionEnum;
   politics?: PoliticsEnum;
   zodiac?: ZodiacEnum;
@@ -68,8 +68,6 @@ export const useProfileCreation = (): ProfileCreationApi => {
   const [personalInfo, setPersonalInfo] = useState<PersonalInfo>({
     name: "",
     surname: "",
-    gender: GenderEnum.UNKNOWN,
-    orientation: OrientationEnum.ASEXUAL,
   });
 
   const [locationWork, setLocationWork] = useState<LocationWorkInfo>({
@@ -82,13 +80,9 @@ export const useProfileCreation = (): ProfileCreationApi => {
     min_age: 18,
     max_age: 99,
     max_distance: 50,
-    relationship_type: RelationshipTypeEnum.UNSURE,
   });
 
-  const [lifestyleInfo, setLifestyleInfo] = useState<LifestyleInfo>({
-    smoking: SmokingEnum.UNKNOWN,
-    drinking: DrinkingEnum.UNKNOWN,
-  });
+  const [lifestyleInfo, setLifestyleInfo] = useState<LifestyleInfo>({});
 
   const saveProfile = useCallback(async () => {
     if (!userId) {

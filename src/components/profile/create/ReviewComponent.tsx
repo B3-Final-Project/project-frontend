@@ -7,6 +7,16 @@ import { useParams } from "next/navigation";
 import { Separator } from "@/components/ui/separator";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
+import {
+  formatDrinkingEnum,
+  formatGenderEnum,
+  formatOrientationEnum,
+  formatPoliticsEnum,
+  formatRelationshipTypeEnum,
+  formatReligionEnum,
+  formatSmokingEnum,
+  formatZodiacEnum
+} from "@/lib/utils/enum-utils";
 
 export function ReviewComponent() {
   const { personalInfo, preferenceInfo, locationWork, lifestyleInfo, goToPreviousStep, saveProfile, goToStep } = useProfileCreation();
@@ -43,12 +53,6 @@ export function ReviewComponent() {
     return locationWork.languages.join(', ');
   };
 
-  // Capitalize the first letter of a string
-  const capitalize = (str: string) => {
-    if (!str) return '';
-    return str.charAt(0).toUpperCase() + str.slice(1);
-  };
-
   return (
     <div className="space-y-6">
       <div>
@@ -74,9 +78,9 @@ export function ReviewComponent() {
               <p className="text-gray-500">Name:</p>
               <p>{personalInfo.name} {personalInfo.surname}</p>
               <p className="text-gray-500">Gender:</p>
-              <p>{capitalize(personalInfo.gender || '')}</p>
+              <p>{formatGenderEnum(personalInfo.gender || '')}</p>
               <p className="text-gray-500">Orientation:</p>
-              <p>{capitalize(personalInfo.orientation || '')}</p>
+              <p>{formatOrientationEnum(personalInfo.orientation || '')}</p>
             </div>
           </div>
 
@@ -104,7 +108,7 @@ export function ReviewComponent() {
 
           <div className="space-y-2">
             <div className="flex items-center justify-between">
-              <h3 className="text-lg font-medium">preferenceInfo</h3>
+              <h3 className="text-lg font-medium">Preferences</h3>
               <Button
                 variant="ghost"
                 size="sm"
@@ -120,13 +124,13 @@ export function ReviewComponent() {
               <p className="text-gray-500">Maximum Distance:</p>
               <p>{preferenceInfo.max_distance} km</p>
               <p className="text-gray-500">Looking For:</p>
-              <p>{capitalize(preferenceInfo.relationship_type?.replace('-', ' ') || '')}</p>
+              <p>{formatRelationshipTypeEnum(preferenceInfo.relationship_type || '')}</p>
             </div>
           </div>
 
           <div className="space-y-2">
             <div className="flex items-center justify-between">
-              <h3 className="text-lg font-medium">lifestyleInfo</h3>
+              <h3 className="text-lg font-medium">Lifestyle & Values</h3>
               <Button
                 variant="ghost"
                 size="sm"
@@ -138,25 +142,25 @@ export function ReviewComponent() {
             <Separator />
             <div className="grid grid-cols-2 gap-2 pt-2">
               <p className="text-gray-500">Smoking:</p>
-              <p>{capitalize(lifestyleInfo.smoking || '')}</p>
+              <p>{formatSmokingEnum(lifestyleInfo.smoking || '')}</p>
               <p className="text-gray-500">Drinking:</p>
-              <p>{capitalize(lifestyleInfo.drinking || '')}</p>
-              {lifestyleInfo.religion && (
+              <p>{formatDrinkingEnum(lifestyleInfo.drinking || '')}</p>
+              {typeof lifestyleInfo.religion === 'number' && (
                 <>
                   <p className="text-gray-500">Religion:</p>
-                  <p>{capitalize(lifestyleInfo.religion)}</p>
+                  <p>{formatReligionEnum(lifestyleInfo.religion)}</p>
                 </>
               )}
-              {lifestyleInfo.politics && (
+              {typeof lifestyleInfo.politics === 'number' && (
                 <>
                   <p className="text-gray-500">Political Views:</p>
-                  <p>{capitalize(lifestyleInfo.politics)}</p>
+                  <p>{formatPoliticsEnum(lifestyleInfo.politics)}</p>
                 </>
               )}
-              {lifestyleInfo.zodiac && (
+              {typeof lifestyleInfo.zodiac === 'number' && (
                 <>
                   <p className="text-gray-500">Zodiac Sign:</p>
-                  <p>{capitalize(lifestyleInfo.zodiac.replace('-', ' '))}</p>
+                  <p>{formatZodiacEnum(lifestyleInfo.zodiac)}</p>
                 </>
               )}
             </div>

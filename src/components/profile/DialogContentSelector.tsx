@@ -5,6 +5,9 @@ import { GenreDialog } from "./dialogContent/GenreDialog";
 import { OthersDialog } from "./dialogContent/OthersDialog";
 import { PicturesDialog } from "./dialogContent/PicturesDialog";
 import { PreferencesDialog } from "./dialogContent/PreferencesDialog";
+import {
+  DialogContentChoices
+} from "@/components/profile/ProfileDialogContent";
 
 interface DialogContentSelectorProps {
   selectedOption: string;
@@ -14,15 +17,15 @@ export function DialogContentSelector({
   selectedOption,
 }: DialogContentSelectorProps) {
   switch (selectedOption) {
-    case "pictures":
+    case DialogContentChoices.PICTURES:
       return <PicturesDialog />;
-    case "description":
+    case DialogContentChoices.DESCRIPTION:
       return <DescriptionDialog />;
-    case "genre":
+    case DialogContentChoices.GENRE:
       return <GenreDialog />;
-    case "preferences":
+    case DialogContentChoices.PREFERENCES:
       return <PreferencesDialog />;
-    case "others":
+    case DialogContentChoices.OTHER:
       return <OthersDialog />;
     default:
       return null;
