@@ -6,19 +6,20 @@ import { DrinkingEnum } from "@/lib/routes/profiles/enums/drinking.enum";
 import { GenderEnum } from "@/lib/routes/profiles/enums/gender.enum";
 import { OrientationEnum } from "@/lib/routes/profiles/enums/orientation.enum";
 import { PoliticsEnum } from "@/lib/routes/profiles/enums/politics.enum";
+import { RelationshipTypeEnum } from "@/lib/routes/profiles/enums";
 import { ReligionEnum } from "@/lib/routes/profiles/enums/religion.enum";
 import { SmokingEnum } from "@/lib/routes/profiles/enums/smoking.enum";
 import { ZodiacEnum } from "@/lib/routes/profiles/enums/zodiac.enum";
-import { useRouter } from "next/navigation";
-import { RelationshipTypeEnum } from "@/lib/routes/profiles/enums";
 import { useAuth } from "react-oidc-context";
 import {
   useCreateProfileMutation,
 } from "@/hooks/react-query/profiles";
+import { useRouter } from "next/navigation";
 
 export interface PersonalInfo {
   name: string;
   surname: string;
+  age: number;
   gender?: GenderEnum;
   orientation?: OrientationEnum;
 }
@@ -68,6 +69,7 @@ export const useProfileCreation = (): ProfileCreationApi => {
   const [personalInfo, setPersonalInfo] = useState<PersonalInfo>({
     name: "",
     surname: "",
+    age: 18,
   });
 
   const [locationWork, setLocationWork] = useState<LocationWorkInfo>({

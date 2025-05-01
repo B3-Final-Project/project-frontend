@@ -28,6 +28,12 @@ export function PersonalInfoComponent() {
     if (!personalInfo.surname?.trim()) newErrors.surname = 'Surname is required';
     if (typeof personalInfo.gender !== 'number') newErrors.gender = 'Gender is required';
     if (typeof personalInfo.orientation !== 'number') newErrors.orientation = 'Orientation is required';
+    
+    if (personalInfo.age !== undefined) {
+      if (personalInfo.age < 18) newErrors.age = 'You must be at least 18 years old';
+      if (personalInfo.age > 120) newErrors.age = 'Please enter a valid age';
+    }
+    
     setErrors(newErrors);
     return !Object.keys(newErrors).length;
   };
@@ -74,6 +80,19 @@ export function PersonalInfoComponent() {
                 placeholder="Your last name"
               />
               {errors.surname && <p className="text-sm text-red-500">{errors.surname}</p>}
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="age">Age</Label>
+              <Input
+                id="age"
+                type="number"
+                value={personalInfo.age || ''}
+                onChange={(e) => handleChange('age', Number(e.target.value))}
+                className={errors.age ? 'border-red-500' : ''}
+                placeholder="Your age"
+              />
+              {errors.age && <p className="text-sm text-red-500">{errors.age}</p>}
             </div>
           </div>
         </Card>
