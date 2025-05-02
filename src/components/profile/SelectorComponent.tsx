@@ -10,13 +10,13 @@ import { Label } from "@/components/ui/label";
 import { formatEnumByField } from "@/lib/utils/enum-utils";
 
 export function SelectorComponent({ value, fieldName, options, label, onChange, errors, placeholder }: {
-  value?: number,
-  fieldName: string,
-  options: number[],
-  label: string,
-  onChange: (fieldName: string , val: string | number) => void
-  errors?: string,
-  placeholder?: string
+  readonly value?: number,
+  readonly fieldName: string,
+  readonly options: number[],
+  readonly label: string,
+  readonly onChange: (fieldName: string , val: string | number) => void
+  readonly errors?: string,
+  readonly placeholder?: string
 })  {
 
   return (
@@ -33,7 +33,7 @@ export function SelectorComponent({ value, fieldName, options, label, onChange, 
         id={fieldName}
         className={errors ? 'border-red-500' : ''}
       >
-        <SelectValue placeholder={placeholder || label} />
+        <SelectValue placeholder={placeholder ?? label} />
       </SelectTrigger>
       <SelectContent>
         {options.map((option) => (

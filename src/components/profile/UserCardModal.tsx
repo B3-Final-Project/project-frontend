@@ -6,10 +6,10 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import { cn } from "@/lib/utils";
 
 interface UserCardModalProps {
-  name?: string;
-  age?: number;
-  location?: string;
-  description?: string;
+  readonly name?: string;
+  readonly age?: number;
+  readonly location?: string;
+  readonly description?: string;
 }
 
 export function UserCardModal({ name, age, location, description }: UserCardModalProps) {
@@ -58,7 +58,7 @@ export function UserCardModal({ name, age, location, description }: UserCardModa
                 }}
               >
                 <div className="flex justify-between items-center text-background p-4 font-semibold">
-                  <p>{location || "Location"}</p>
+                  <p>{location ?? "Location"}</p>
                   <p>Type</p>
                 </div>
                 <div className="text-background p-4 font-semibold">
@@ -72,7 +72,7 @@ export function UserCardModal({ name, age, location, description }: UserCardModa
             <div className="w-full h-full rounded-xl p-[8px] bg-gradient-to-b from-[#00AEEF] to-[#ED2272] absolute backface-hidden rotate-y-180">
               <div className="w-full h-full rounded-lg bg-black/80 flex flex-col justify-center p-6 text-white">
                 <h3 className="text-xl font-bold mb-4">Description</h3>
-                <p className="mb-3">{description || "Pas de description disponible."}</p>
+                <p className="mb-3">{description ?? "Pas de description disponible."}</p>
                 <div className="mt-4 border-t border-white/30 pt-4 w-full">
                   <p className="text-sm text-center">Cliquer pour revenir</p>
                 </div>

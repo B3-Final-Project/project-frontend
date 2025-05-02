@@ -85,7 +85,7 @@ export function LocationWorkComponent() {
             <Input
               id="work"
               placeholder="What do you do?"
-              value={locationWork.work || ''}
+              value={locationWork.work ?? ''}
               onChange={(e) => handleChange('work', e.target.value)}
               className={errors.work ? 'border-red-500' : ''}
             />
@@ -97,7 +97,7 @@ export function LocationWorkComponent() {
             <Input
               id="languages"
               placeholder="English, Spanish, French, etc."
-              value={locationWork.languages?.join(', ') || ''}
+              value={locationWork.languages?.join(', ') ?? ''}
               onChange={handleLanguageChange}
               className={errors.languages ? 'border-red-500' : ''}
             />

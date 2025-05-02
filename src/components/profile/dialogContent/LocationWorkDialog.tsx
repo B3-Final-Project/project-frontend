@@ -19,9 +19,9 @@ export function LocationWorkDialog() {
         languages: [],
       }}
       extractFormDataFromProfile={(profile) => ({
-        city: profile.city || "",
-        work: profile.work || "",
-        languages: profile.languages || [],
+        city: profile.city ?? "",
+        work: profile.work ?? "",
+        languages: profile.languages ?? [],
       })}
       buildUpdatePayload={(formData) => ({
         locationWork: formData,

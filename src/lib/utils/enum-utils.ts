@@ -166,7 +166,7 @@ export function formatEnumByField(value: number | string, fieldName: string): st
   }
 }
 
-function formatGenericEnum(value: string | number | unknown): string {
+function formatGenericEnum(value: string | number): string {
   // Handle undefined/null values
   if (value === undefined || value === null) return '';
 

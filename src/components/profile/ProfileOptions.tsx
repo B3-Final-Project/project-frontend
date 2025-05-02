@@ -3,8 +3,8 @@ import { Button } from "@/components/ui/button";
 import { DialogTrigger } from "@/components/ui/dialog";
 
 interface ProfileOptionsProps {
-  data: {key: string, icon: any, description: string, title: string}[],
-  setSelectedOption: (option: string) => void;
+  readonly data: {key: string, icon: never, description: string, title: string}[],
+  readonly setSelectedOption: (option: string) => void;
 }
 
 export function ProfileOptions({ data, setSelectedOption }: ProfileOptionsProps) {

@@ -17,11 +17,11 @@ import {
 } from "@/hooks/useProfileCreation";
 
 interface GenericProfileDialogProps<T> {
-  title: string;
-  initialFormData: T;
-  extractFormDataFromProfile: (profile: Profile, user: User) => T;
-  buildUpdatePayload: (formData: T) => any;
-  renderFormContent: (
+  readonly title: string;
+  readonly initialFormData: T;
+  readonly extractFormDataFromProfile: (profile: Profile, user: User) => T;
+  readonly buildUpdatePayload: (formData: T) => never;
+  readonly renderFormContent: (
     formData: T,
     handleInputChange: (fieldName: string, value: string | number) => void,
     setFormData: React.Dispatch<React.SetStateAction<T>>

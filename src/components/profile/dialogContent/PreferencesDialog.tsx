@@ -24,9 +24,9 @@ export function PreferencesDialog() {
         relationship_type: undefined,
       }}
       extractFormDataFromProfile={(profile) => ({
-        min_age: profile.min_age || 18,
-        max_age: profile.max_age || 99,
-        max_distance: profile.max_distance || 50,
+        min_age: profile.min_age ?? 18,
+        max_age: profile.max_age ?? 99,
+        max_distance: profile.max_distance ?? 50,
         relationship_type: profile.relationship_type,
       })}
       buildUpdatePayload={(formData) => ({

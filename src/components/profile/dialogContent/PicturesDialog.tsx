@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useProfileQuery, useUpdateProfileMutation } from "@/hooks/react-query/profiles";
+import { useProfileQuery } from "@/hooks/react-query/profiles";
 
 import { toast } from "@/hooks/use-toast";
 import Image from "next/image";
@@ -13,7 +13,6 @@ import {
 
 export function PicturesDialog() {
   const { data, isLoading } = useProfileQuery();
-  const updateProfile = useUpdateProfileMutation();
   const profile = data?.profile;
   const user = data?.user;
 
@@ -21,7 +20,7 @@ export function PicturesDialog() {
   const [uploadingIndex, setUploadingIndex] = useState<number | null>(null);
 
   useEffect(() => {
-    if (user && user.images) {
+    if (user?.images) {
       setImages(user.images);
     } else {
       setImages(Array(6).fill(null));
@@ -111,7 +110,7 @@ export function PicturesDialog() {
         <ul className="text-sm text-gray-500 list-disc list-inside">
           <li>Clear photos of your face perform better</li>
           <li>Add photos showing your interests and personality</li>
-          <li>Photos with friends can be great, but make sure it's clear which person is you</li>
+          <li>Photos with friends can be great, but make sure it&#39;s clear which person is you</li>
         </ul>
       </div>
       </div>
