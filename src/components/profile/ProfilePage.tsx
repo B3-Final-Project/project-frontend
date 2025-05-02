@@ -20,10 +20,6 @@ export default function ProfilePage() {
     return <div>Loading...</div>;
   }
 
-  if (isSuccess && data?.profile) {
-    return null
-  }
-
   return (
     <div className="h-full w-full flex flex-col justify-between">
       <ProfileHeader />
