@@ -37,7 +37,8 @@ export function ProfileAvatar() {
           name={query.data?.user.name}
           age={query.data?.user.age}
           location={query.data?.user.name}
-          description={query.data?.user.name}
+          // using the first interest as a placeholder
+          description={query.data?.profile.interests?.map((interest) => interest.description).toString() ?? "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna} aliqua."}
         />
       </div>
     </>

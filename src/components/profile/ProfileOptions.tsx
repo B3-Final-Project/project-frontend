@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { DialogTrigger } from "@/components/ui/dialog";
 
 interface ProfileOptionsProps {
-  readonly data: {key: string, icon: never, description: string, title: string}[],
+  readonly data: {key: string, icon: React.ComponentType, description: string, title: string}[],
   readonly setSelectedOption: (option: string) => void;
 }
 
