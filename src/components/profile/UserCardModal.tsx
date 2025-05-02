@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { motion } from 'framer-motion';
 
+
 interface UserCardModalProps {
   name: string;
   age?: number;
@@ -30,6 +31,7 @@ export function UserCardModal({
   const handleClickOutside = (e: MouseEvent) => {
     if (modalRef.current && !modalRef.current.contains(e.target as Node)) {
       onClose();
+      setIsFlipped(false)
     }
   };
 
@@ -74,7 +76,7 @@ export function UserCardModal({
 
   return (
       <motion.div
-          className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center"
+          className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center mt-0"
           initial="hidden"
           animate="visible"
           exit="hidden"
@@ -110,9 +112,9 @@ export function UserCardModal({
                       <p>Type</p>
                     </div>
 
-                    <div className="text-background p-4 font-semibold">
+                    <div className="text-background p-4 font-semibold flex  flex-col items-start">
                       <p>{name}</p>
-                      <p>{age}</p>
+                      <p>{age || 99} ans</p>
                     </div>
                   </div>
                 </div>

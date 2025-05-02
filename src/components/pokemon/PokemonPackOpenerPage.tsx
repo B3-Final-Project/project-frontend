@@ -4,149 +4,170 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import PokemonCard from './PokemonCard';
 import { useState } from 'react';
-import { useToast } from "@/hooks/use-toast";
 
-// Define card rarities and their chances
-const RARITIES = {
-  common: { chance: 0.7, color: 'bg-gray-200' },
-  uncommon: { chance: 0.2, color: 'bg-green-200' },
-  rare: { chance: 0.07, color: 'bg-blue-200' },
-  ultraRare: { chance: 0.025, color: 'bg-purple-200' },
-  secret: { chance: 0.005, color: 'bg-yellow-200' }
-};
+// Liste de Pokémon
+const POKEMON = [
+  {
+    name: 'Pikachu',
+    image: '/img.png',
+    age: 5,
+    location: 'Kanto',
+    description: 'An Electric-type Pokémon known for its cute appearance and powerful electric attacks.',
+  },
+  {
+    name: 'Charizard',
+    image: '/img.png',
+    age: 10,
+    location: 'Kanto',
+    description: 'A Fire/Flying-type Pokémon known for its fierce nature and powerful fire attacks.',
+  },
+  {
+    name: 'Bulbasaur',
+    image: '/img.png',
+    age: 3,
+    location: 'Kanto',
+    description: 'A Grass/Poison-type Pokémon known for its plant-like appearance and ability to use vines.',
+  },
+  {
+    name: 'Squirtle',
+    image: '/img.png',
+    age: 4,
+    location: 'Kanto',
+    description: 'A Water-type Pokémon known for its shell and ability to shoot water from its mouth.',
+  },
+  {
+    name: 'Eevee',
+    image: '/img.png',
+    age: 2,
+    location: 'Kanto',
+    description: 'A Normal-type Pokémon known for its adaptability and multiple evolution forms.',
+  },
+  {
+    name: 'Mewtwo',
+    image: '/img.png',
+    age: 20,
+    location: 'Kanto',
+    description: 'A Psychic-type Pokémon known for its incredible psychic powers and mysterious origins.',
+  },
+  {
+    name: 'Gengar',
+    image: '/img.png',
+    age: 15,
+    location: 'Kanto',
+    description: 'A Ghost/Poison-type Pokémon known for its mischievous nature and ability to haunt others.',
+  },
+  {
+    name: 'Lucario',
+    image: '/img.png',
+    age: 8,
+    location: 'Sinnoh',
+    description: 'A Fighting/Steel-type Pokémon known for its aura-sensing abilities and strong fighting skills.',
+  },
+  {
+    name: 'Greninja',
+    image: '/img.png',
+    age: 6,
+    location: 'Kalos',
+    description: 'A Water/Dark-type Pokémon known for its speed and stealthy ninja-like abilities.',
+  },
+  {
+    name: 'Gardevoir',
+    image: '/img.png',
+    age: 7,
+    location: 'Hoenn',
+    description: 'A Psychic/Fairy-type Pokémon known for its elegance and protective nature towards its trainer.',
+  }
+];
 
-// Card name pools for each rarity
-const POKEMON = {
-  common: ['Pikachu', 'Charmander', 'Bulbasaur', 'Squirtle', 'Caterpie', 'Weedle', 'Pidgey', 'Rattata', 'Spearow', 'Ekans'],
-  uncommon: ['Ivysaur', 'Charmeleon', 'Wartortle', 'Metapod', 'Kakuna', 'Pidgeotto', 'Raticate', 'Fearow', 'Arbok', 'Nidorina'],
-  rare: ['Venusaur', 'Charizard', 'Blastoise', 'Butterfree', 'Beedrill', 'Pidgeot', 'Raichu', 'Nidoqueen', 'Nidoking', 'Clefable'],
-  ultraRare: ['Mew', 'Mewtwo', 'Zapdos', 'Articuno', 'Moltres', 'Dragonite', 'Gyarados', 'Lapras', 'Snorlax', 'Alakazam'],
-  secret: ['Shiny Charizard', 'Shiny Mewtwo', 'Gold Star Pikachu', 'Ancient Mew', 'Shiny Gyarados', 'Rainbow Rare Pikachu', 'Gold Star Umbreon', 'Crystal Lugia', 'Shiny Rayquaza', 'Gold Star Espeon']
-};
-
-// Pokemon card type with all necessary properties
+// Type pour une carte Pokémon
 type PokemonCardType = {
   id: string;
   name: string;
-  rarity: string;
   image: string;
-  color: string;
+  age?: number;
+  location?: string;
+  description?: string;
   isRevealed: boolean;
 };
 
 export default function PokemonPackOpenerPage() {
   const [cards, setCards] = useState<PokemonCardType[]>([]);
   const [isOpening, setIsOpening] = useState(false);
-  const { toast } = useToast();
 
-  // Function to determine a card's rarity based on probability
-  const determineRarity = () => {
-    const rand = Math.random();
-    let cumulativeChance = 0;
-
-    for (const [rarity, data] of Object.entries(RARITIES)) {
-      cumulativeChance += data.chance;
-      if (rand <= cumulativeChance) return rarity;
-    }
-
-    return 'common'; // Fallback in case of rounding errors
-  };
-
-  // Function to generate a random card based on rarity
+  // Fonction pour générer une carte aléatoire
   const generateCard = (id: string): PokemonCardType => {
-    const rarity = determineRarity();
-    const pokemonPool = POKEMON[rarity as keyof typeof POKEMON];
-    const name = pokemonPool[Math.floor(Math.random() * pokemonPool.length)];
+    const randomPokemon = POKEMON[Math.floor(Math.random() * POKEMON.length)];
 
     return {
       id,
-      name,
-      rarity,
-      image: `/img.png`, // This would require actual Pokemon images
-      color: RARITIES[rarity as keyof typeof RARITIES].color,
+      name: randomPokemon.name,
+      image: randomPokemon.image || '/img.png',
+      age: randomPokemon.age,
+      location: randomPokemon.location,
+      description: randomPokemon.description,
       isRevealed: false
     };
   };
 
-  // Function to open a new pack of cards
+  // Fonction pour ouvrir un nouveau pack de cartes
   const openPack = () => {
     if (isOpening) return;
 
     setIsOpening(true);
     setCards([]);
 
-    toast({
-      title: "Opening pack...",
-      description: "Get ready to see your cards!",
-    });
-
-    // Generate a new set of 5 cards
+    // Générer un nouveau set de 5 cartes
     const newCards = Array.from({ length: 5 }, (_, i) =>
-      generateCard(`card-${Date.now()}-${i}`)
+        generateCard(`card-${Date.now()}-${i}`)
     );
 
-    // Display the cards one by one with a delay
+    // Afficher les cartes
     setCards(newCards.map(card => ({ ...card, isRevealed: false })));
 
-    // Reveal cards one by one with a delay
+    // Révéler les cartes une par une avec un délai
     newCards.forEach((card, index) => {
       setTimeout(() => {
         setCards(currentCards =>
-          currentCards.map((c, i) =>
-            i === index ? { ...c, isRevealed: true } : c
-          )
+            currentCards.map((c, i) =>
+                i === index ? { ...c, isRevealed: true } : c
+            )
         );
 
-        // Check if we've revealed the last card
+        // Vérifier si on a révélé la dernière carte
         if (index === newCards.length - 1) {
           setIsOpening(false);
-          setTimeout(() => {
-            const rarities = newCards.map(c => c.rarity);
-            const hasRare = rarities.some(r => r === 'rare' || r === 'ultraRare' || r === 'secret');
-
-            toast({
-              title: hasRare ? "Amazing pull!" : "Pack opened!",
-              description: hasRare
-                ? "You got some rare cards! Congrats!"
-                : "Better luck next time for rare cards!",
-              variant: hasRare ? "default" : "destructive",
-            });
-          }, 500);
         }
       }, 1000 * (index + 1));
     });
   };
 
   return (
-    <div className="container mx-auto py-10 space-y-6">
-      <header className="text-center">
-        <h1 className="text-3xl font-bold mb-2">Pokémon Card Pack Opener</h1>
-        <p className="text-muted-foreground">Click the button to open a virtual pack of Pokémon cards!</p>
-      </header>
+      <div className="container mx-auto py-10 space-y-6">
+        <header className="text-center">
+          <h1 className="text-3xl font-bold mb-2">Pokémon Card Pack Opener</h1>
+          <p className="text-muted-foreground">Click the button to open a virtual pack of Pokémon cards!</p>
+        </header>
 
-      <div className="flex justify-center mb-8">
-        <Button
-          size="lg"
-          onClick={openPack}
-          disabled={isOpening}
-          className="bg-red-600 hover:bg-red-700 text-white"
-        >
-          {isOpening ? "Opening Pack..." : "Open New Pack"}
-        </Button>
-      </div>
+        <div className="flex justify-center mb-8">
+          <Button
+              size="lg"
+              onClick={openPack}
+              disabled={isOpening}
+              className="bg-red-600 hover:bg-red-700 text-white"
+          >
+            {isOpening ? "Opening Pack..." : "Open New Pack"}
+          </Button>
+        </div>
 
-      <div className="flex justify-center flex-wrap gap-4">
         {cards.length > 0 ? (
-          cards.map((card, index) => (
-            <PokemonCard key={card.id} card={card} delay={index} />
-          ))
+            <PokemonCard card={cards} delay={0} />
         ) : (
-          <Card className="w-full max-w-md p-6 text-center bg-gray-50">
-            <p className="text-muted-foreground">No cards yet. Open a pack to reveal your Pokémon cards!</p>
-          </Card>
+            <div className="flex justify-center">
+              <Card className="w-full max-w-md p-6 text-center bg-gray-50">
+                <p className="text-muted-foreground">No cards yet. Open a pack to reveal your Pokémon cards!</p>
+              </Card>
+            </div>
         )}
       </div>
-
-    </div>
   );
 }
