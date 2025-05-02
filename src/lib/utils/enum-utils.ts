@@ -188,3 +188,10 @@ function formatGenericEnum(value: string | number | unknown): string {
     // Capitalize first letter of each word
     .replace(/\b\w/g, (char) => char.toUpperCase());
 }
+
+export function getEnumOptions<T extends object>(enumObj: T): number[] {
+  return Object.keys(enumObj)
+    .filter(key => !isNaN(Number(key)))
+    .map(key => Number(key));
+}
+

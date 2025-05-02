@@ -52,7 +52,7 @@ export const setAccessTokenHeaders = (token: string | null) => {
 
 export const createFetcher = <T = unknown, B = undefined>(
   path: string,
-  method: "GET" | "POST" | "PUT" | "DELETE" = "GET"
+  method: "GET" | "POST" | "PUT" | "DELETE" | "PATCH" = "GET"
 ) => {
   return async (body?: B, params?: Record<string, string>): Promise<T> => {
     if (path.includes(":") && (!params || Object.keys(params).length === 0)) {
