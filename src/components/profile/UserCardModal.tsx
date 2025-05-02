@@ -6,7 +6,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import { cn } from "@/lib/utils";
 
 interface UserCardModalProps {
-  name: string;
+  name?: string;
   age?: number;
   location?: string;
   description?: string;

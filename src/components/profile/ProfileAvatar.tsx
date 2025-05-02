@@ -1,19 +1,24 @@
+'use client'
 import { UserCardModal } from "@/components/profile/UserCardModal";
 import Image from 'next/image'
+import { useProfileQuery } from "@/hooks/react-query/profiles";
+import { useRouter } from "next/navigation";
 
-interface ProfileAvatarProps {
-  name: string;
-  age?: number;
-  location?: string;
-  description?: string;
-}
+export function ProfileAvatar() {
+  const query = useProfileQuery()
+  const router = useRouter()
 
-export function ProfileAvatar({
-  name,
-  age,
-  location,
-  description,
-}: ProfileAvatarProps) {
+  if (query.isSuccess && !query.data?.profile) {
+    router.push('/profile/create/welcome')
+  }
+
+  if (query.isLoading){
+    return <div>Loading...</div>
+  }
+
+  if (query.isError){
+    return <div>{JSON.stringify(query.error)}</div>
+  }
   return (
     <>
       <div className="w-[100px] h-[100px] border-4 border-background bg-red-500 rounded-full flex items-center justify-center -translate-y-1/2 overflow-hidden">
@@ -27,12 +32,12 @@ export function ProfileAvatar({
       </div>
 
       <div className={'flex justify-between gap-40'}>
-        <h3 className="text-2xl font-bold">{name}</h3>
+        <h3 className="text-2xl font-bold">{query.data?.user.name}</h3>
         <UserCardModal
-          name={name}
-          age={age}
-          location={location}
-          description={description}
+          name={query.data?.user.name}
+          age={query.data?.user.age}
+          location={query.data?.user.name}
+          description={query.data?.user.name}
         />
       </div>
     </>
