@@ -2,11 +2,6 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { ProfileRouter } from "@/lib/routes/profiles";
 import { UpdateProfileDto } from "@/lib/routes/profiles/dto/update-profile.dto";
 import { toast } from "@/hooks/use-toast";
-import {
-  LifestyleInfo,
-  LocationWorkInfo, PersonalInfo,
-  PreferenceInfo
-} from "@/hooks/useProfileCreation";
 
 // Fetch a single profile
 export function useProfileQuery() {
@@ -50,7 +45,7 @@ export function useUpdateProfileMutation() {
   });
 }
 
-export function useUpdatePartialProfileMutation<T extends PreferenceInfo | LifestyleInfo | LocationWorkInfo | PersonalInfo>() {
+export function useUpdatePartialProfileMutation<T extends Partial<UpdateProfileDto>>() {
   const queryClient = useQueryClient();
 
   return useMutation({

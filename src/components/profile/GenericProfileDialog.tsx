@@ -10,17 +10,13 @@ import {
 import { Button } from "@/components/ui/button";
 import { Profile } from "@/lib/routes/profiles/interfaces/profile.interface";
 import { User } from "@/lib/routes/profiles/interfaces/user.interface";
-import {
-  LifestyleInfo,
-  LocationWorkInfo, PersonalInfo,
-  PreferenceInfo
-} from "@/hooks/useProfileCreation";
+import { UpdateProfileDto } from "@/lib/routes/profiles/dto/update-profile.dto";
 
 interface GenericProfileDialogProps<T> {
   readonly title: string;
   readonly initialFormData: T;
   readonly extractFormDataFromProfile: (profile: Profile, user: User) => T;
-  readonly buildUpdatePayload: (formData: T) => never;
+  readonly buildUpdatePayload: (formData: T) => Partial<UpdateProfileDto>;
   readonly renderFormContent: (
     formData: T,
     handleInputChange: (fieldName: string, value: string | number) => void,
@@ -28,7 +24,7 @@ interface GenericProfileDialogProps<T> {
   ) => ReactNode;
 }
 
-export function GenericProfileDialog<T extends PreferenceInfo | LifestyleInfo | LocationWorkInfo | PersonalInfo>({
+export function GenericProfileDialog<T>({
   title,
   initialFormData,
   extractFormDataFromProfile,
@@ -36,7 +32,7 @@ export function GenericProfileDialog<T extends PreferenceInfo | LifestyleInfo | 
   renderFormContent,
 }: GenericProfileDialogProps<T>) {
   const { data, isLoading } = useProfileQuery();
-  const updateProfile = useUpdatePartialProfileMutation<T>();
+  const updateProfile = useUpdatePartialProfileMutation<Partial<UpdateProfileDto>>();
   const profile = data?.profile;
   const user = data?.user;
 
@@ -55,8 +51,9 @@ export function GenericProfileDialog<T extends PreferenceInfo | LifestyleInfo | 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!profile || !user) return;
+    const payload = buildUpdatePayload(formData)
 
-    updateProfile.mutate(buildUpdatePayload(formData));
+    updateProfile.mutate(payload)
   };
 
   if (isLoading) return <div>Loading...</div>;

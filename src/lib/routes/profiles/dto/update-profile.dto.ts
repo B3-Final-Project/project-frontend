@@ -6,7 +6,6 @@ import {
 } from "@/hooks/useProfileCreation";
 
 export interface UpdateProfileDto {
-  userId?: string;
   personalInfo: PersonalInfo;
   preferenceInfo: PreferenceInfo;
   locationWork: LocationWorkInfo;

@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { LocationWorkInfo } from "@/hooks/useProfileCreation";
 import { useState } from "react";
+import { UpdateProfileDto } from "@/lib/routes/profiles/dto/update-profile.dto";
 
 export function LocationWorkDialog() {
   const [newLanguage, setNewLanguage] = useState<string>("");
@@ -25,7 +26,7 @@ export function LocationWorkDialog() {
       })}
       buildUpdatePayload={(formData) => ({
         locationWork: formData,
-      })}
+      }as Partial<UpdateProfileDto>)}
       renderFormContent={(formData, handleInputChange, setFormData) => {
         const addLanguage = () => {
           if (newLanguage && !formData.languages.includes(newLanguage)) {
