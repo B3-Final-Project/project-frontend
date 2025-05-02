@@ -1,7 +1,7 @@
 'use client';
 import { Button } from "@/components/ui/button";
 import { useProfileCreation } from "@/hooks/useProfileCreation";
-import { PROFILE_STEPS } from "./StepComponent";
+import { PROFILE_STEPS } from "../StepComponent";
 
 export function StartComponent() {
   const { goToStep } = useProfileCreation();

@@ -3,7 +3,7 @@
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
-import { PROFILE_STEPS } from "./StepComponent";
+import { PROFILE_STEPS } from "../StepComponent";
 import { Slider } from "@/components/ui/slider";
 import { useParams } from "next/navigation";
 import { useProfileCreation } from "@/providers/ProfileCreationProvider";

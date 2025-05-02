@@ -6,7 +6,7 @@ import { GenderEnum } from "@/lib/routes/profiles/enums/gender.enum";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { OrientationEnum } from "@/lib/routes/profiles/enums/orientation.enum";
-import { PROFILE_STEPS } from "./StepComponent";
+import { PROFILE_STEPS } from "../StepComponent";
 import { SelectorComponent } from "@/components/profile/SelectorComponent";
 import { useParams } from "next/navigation";
 import { useProfileCreation } from "@/providers/ProfileCreationProvider";
@@ -28,12 +28,12 @@ export function PersonalInfoComponent() {
     if (!personalInfo.surname?.trim()) newErrors.surname = 'Surname is required';
     if (typeof personalInfo.gender !== 'number') newErrors.gender = 'Gender is required';
     if (typeof personalInfo.orientation !== 'number') newErrors.orientation = 'Orientation is required';
-    
+
     if (personalInfo.age !== undefined) {
       if (personalInfo.age < 18) newErrors.age = 'You must be at least 18 years old';
       if (personalInfo.age > 120) newErrors.age = 'Please enter a valid age';
     }
-    
+
     setErrors(newErrors);
     return !Object.keys(newErrors).length;
   };

@@ -1,7 +1,7 @@
 'use client';
 import { Button } from "@/components/ui/button";
 import { useProfileCreation } from "@/providers/ProfileCreationProvider";
-import { PROFILE_STEPS } from "./StepComponent";
+import { PROFILE_STEPS } from "../StepComponent";
 import { Card } from "@/components/ui/card";
 import { useParams } from "next/navigation";
 import { Separator } from "@/components/ui/separator";

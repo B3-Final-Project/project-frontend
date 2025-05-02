@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { DrinkingEnum } from "@/lib/routes/profiles/enums/drinking.enum";
 import { PoliticsEnum } from "@/lib/routes/profiles/enums/politics.enum";
-import { PROFILE_STEPS } from "./StepComponent";
+import { PROFILE_STEPS } from "../StepComponent";
 import { ReligionEnum } from "@/lib/routes/profiles/enums/religion.enum";
 import { SmokingEnum } from "@/lib/routes/profiles/enums/smoking.enum";
 import { ZodiacEnum } from "@/lib/routes/profiles/enums/zodiac.enum";
