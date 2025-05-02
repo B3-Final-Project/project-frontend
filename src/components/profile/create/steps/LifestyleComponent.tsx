@@ -13,6 +13,7 @@ import { useParams } from "next/navigation";
 import { useProfileCreation } from "@/providers/ProfileCreationProvider";
 import { useState } from "react";
 import { SelectorComponent } from "@/components/profile/SelectorComponent";
+import { getEnumOptions } from "@/lib/utils/enum-utils";
 
 export function LifestyleComponent() {
   const { lifestyleInfo, setLifestyleInfo, goToNextStep, goToPreviousStep } = useProfileCreation();
@@ -30,26 +31,11 @@ export function LifestyleComponent() {
     goToNextStep(step as string, PROFILE_STEPS);
   };
 
-  // Extract only numeric values from enums (not string keys)
-  const smokingOptions = Object.keys(SmokingEnum)
-    .filter(key => !isNaN(Number(key)))
-    .map(key => Number(key));
-
-  const drinkingOptions = Object.keys(DrinkingEnum)
-    .filter(key => !isNaN(Number(key)))
-    .map(key => Number(key));
-
-  const religionOptions = Object.keys(ReligionEnum)
-    .filter(key => !isNaN(Number(key)))
-    .map(key => Number(key));
-
-  const politicsOptions = Object.keys(PoliticsEnum)
-    .filter(key => !isNaN(Number(key)))
-    .map(key => Number(key));
-
-  const zodiacOptions = Object.keys(ZodiacEnum)
-    .filter(key => !isNaN(Number(key)))
-    .map(key => Number(key));
+  const smokingOptions = getEnumOptions(SmokingEnum)
+  const drinkingOptions = getEnumOptions(DrinkingEnum)
+  const religionOptions = getEnumOptions(ReligionEnum)
+  const politicsOptions = getEnumOptions(PoliticsEnum)
+  const zodiacOptions = getEnumOptions(ZodiacEnum)
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">

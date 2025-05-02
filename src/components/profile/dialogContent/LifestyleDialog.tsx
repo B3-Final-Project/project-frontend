@@ -2,7 +2,7 @@
 
 import { DrinkingEnum, PoliticsEnum, ReligionEnum, SmokingEnum, ZodiacEnum } from "@/lib/routes/profiles/enums";
 
-import { GenericProfileDialog } from "@/components/profile/GenericProfileDialog";
+import { GenericProfileDialog } from "@/components/profile/dialogContent/GenericProfileDialog";
 import { LifestyleInfo } from "@/hooks/useProfileCreation";
 import { SelectorComponent } from "@/components/profile/SelectorComponent";
 import { getEnumOptions } from "@/lib/utils/enum-utils";
@@ -10,13 +10,9 @@ import { getEnumOptions } from "@/lib/utils/enum-utils";
 
 // Define options outside component to prevent recreation on each render
 const smokingOptions = getEnumOptions(SmokingEnum)
-
 const drinkingOptions = getEnumOptions(DrinkingEnum)
-
 const religionOptions = getEnumOptions(ReligionEnum)
-
 const politicsOptions = getEnumOptions(PoliticsEnum)
-
 const zodiacOptions = getEnumOptions(ZodiacEnum)
 
 export function LifestyleDialog() {

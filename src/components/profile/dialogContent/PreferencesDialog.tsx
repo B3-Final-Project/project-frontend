@@ -2,7 +2,7 @@
 
 import * as SliderPrimitive from "@radix-ui/react-slider";
 
-import { GenericProfileDialog } from "@/components/profile/GenericProfileDialog";
+import { GenericProfileDialog } from "@/components/profile/dialogContent/GenericProfileDialog";
 import { Label } from "@/components/ui/label";
 import { PreferenceInfo } from "@/hooks/useProfileCreation";
 import { RelationshipTypeEnum } from "@/lib/routes/profiles/enums";

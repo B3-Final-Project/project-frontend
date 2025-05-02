@@ -93,7 +93,7 @@ export function LocationWorkComponent() {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="languages">Languages</Label>
+            <Label htmlFor="languages">Preferred Language</Label>
             <Input
               id="languages"
               placeholder="English, Spanish, French, etc."

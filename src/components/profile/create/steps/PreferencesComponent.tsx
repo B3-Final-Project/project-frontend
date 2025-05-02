@@ -10,6 +10,7 @@ import { useProfileCreation } from "@/providers/ProfileCreationProvider";
 import { useState } from "react";
 import { RelationshipTypeEnum } from "@/lib/routes/profiles/enums";
 import { SelectorComponent } from "@/components/profile/SelectorComponent";
+import { getEnumOptions } from "@/lib/utils/enum-utils";
 
 export function PreferencesComponent() {
   const { preferenceInfo, setPreferenceInfo, goToNextStep, goToPreviousStep } = useProfileCreation();
@@ -58,10 +59,7 @@ export function PreferencesComponent() {
   const minAge = preferenceInfo.min_age || 18;
   const maxAge = preferenceInfo.max_age || 99;
 
-  // Extract only numeric values from the RelationshipTypeEnum
-  const relationshipTypeOptions = Object.keys(RelationshipTypeEnum)
-    .filter(key => !isNaN(Number(key)))
-    .map(key => Number(key));
+  const relationshipTypeOptions = getEnumOptions(RelationshipTypeEnum)
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">

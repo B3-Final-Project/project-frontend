@@ -1,16 +1,12 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
-import { GenericProfileDialog } from "@/components/profile/GenericProfileDialog";
+import { GenericProfileDialog } from "@/components/profile/dialogContent/GenericProfileDialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { LocationWorkInfo } from "@/hooks/useProfileCreation";
-import { useState } from "react";
 import { UpdateProfileDto } from "@/lib/routes/profiles/dto/update-profile.dto";
 
 export function LocationWorkDialog() {
-  const [newLanguage, setNewLanguage] = useState<string>("");
-
   return (
     <GenericProfileDialog<LocationWorkInfo>
       title="Update Location & Work"
@@ -27,24 +23,7 @@ export function LocationWorkDialog() {
       buildUpdatePayload={(formData) => ({
         locationWork: formData,
       }as Partial<UpdateProfileDto>)}
-      renderFormContent={(formData, handleInputChange, setFormData) => {
-        const addLanguage = () => {
-          if (newLanguage && !formData.languages.includes(newLanguage)) {
-            setFormData({
-              ...formData,
-              languages: [...formData.languages, newLanguage]
-            });
-            setNewLanguage("");
-          }
-        };
-
-        const removeLanguage = (language: string) => {
-          setFormData({
-            ...formData,
-            languages: formData.languages.filter(lang => lang !== language)
-          });
-        };
-
+      renderFormContent={(formData, handleInputChange) => {
         return (
           <>
             <div className="space-y-2">
@@ -68,28 +47,13 @@ export function LocationWorkDialog() {
             </div>
 
             <div className="space-y-2">
-              <Label>Languages</Label>
+              <Label>Preferred Language</Label>
               <div className="flex gap-2">
                 <Input
-                  value={newLanguage}
-                  onChange={(e) => setNewLanguage(e.target.value)}
+                  value={formData.languages}
+                  onChange={(e) => handleInputChange("languages", e.target.value.split(",")[0])}
                   placeholder="Add a language"
                 />
-                <Button type="button" onClick={addLanguage}>Add</Button>
-              </div>
-              <div className="flex flex-wrap gap-2 mt-2">
-                {formData.languages.map((lang, index) => (
-                  <div key={index} className="bg-gray-100 rounded-md px-2 py-1 flex items-center">
-                    {lang}
-                    <button
-                      type="button"
-                      className="ml-1 text-red-500"
-                      onClick={() => removeLanguage(lang)}
-                    >
-                      ×
-                    </button>
-                  </div>
-                ))}
               </div>
             </div>
           </>

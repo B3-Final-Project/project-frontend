@@ -5,12 +5,12 @@ import { Card } from "@/components/ui/card";
 import { GenderEnum } from "@/lib/routes/profiles/enums/gender.enum";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { OrientationEnum } from "@/lib/routes/profiles/enums/orientation.enum";
 import { PROFILE_STEPS } from "../StepComponent";
 import { SelectorComponent } from "@/components/profile/SelectorComponent";
 import { useParams } from "next/navigation";
 import { useProfileCreation } from "@/providers/ProfileCreationProvider";
 import { useState } from "react";
+import { getEnumOptions } from "@/lib/utils/enum-utils";
 
 export function PersonalInfoComponent() {
   const { personalInfo, setPersonalInfo, goToNextStep, goToPreviousStep } = useProfileCreation();
@@ -43,14 +43,8 @@ export function PersonalInfoComponent() {
     if (validateForm()) goToNextStep(step as string, PROFILE_STEPS);
   };
 
-  // Extract only numeric values from enums (not string keys)
-  const genderOptions = Object.keys(GenderEnum)
-    .filter(key => !isNaN(Number(key)))
-    .map(key => Number(key));
-
-  const orientationOptions = Object.keys(OrientationEnum)
-    .filter(key => !isNaN(Number(key)))
-    .map(key => Number(key));
+  const genderOptions = getEnumOptions(GenderEnum)
+  const orientationOptions = getEnumOptions(GenderEnum)
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">

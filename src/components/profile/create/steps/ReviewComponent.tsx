@@ -32,10 +32,6 @@ export function ReviewComponent() {
     setIsSubmitting(true);
     try {
       await saveProfile();
-      toast({
-        title: "Profile created!",
-        description: "Your dating profile has been created successfully.",
-      });
     } catch (error: unknown) {
       toast({
         title: "Error",

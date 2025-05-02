@@ -2,7 +2,7 @@
 
 import { GenderEnum, OrientationEnum } from "@/lib/routes/profiles/enums";
 
-import { GenericProfileDialog } from "@/components/profile/GenericProfileDialog";
+import { GenericProfileDialog } from "@/components/profile/dialogContent/GenericProfileDialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { PersonalInfo } from "@/hooks/useProfileCreation";
