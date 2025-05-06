@@ -12,6 +12,7 @@ export default {
       width:{
         main: 'calc(100vw - 12rem)'
       },
+
       colors: {
         sidebar: {
           DEFAULT: "hsl(var(--sidebar-background))",
@@ -74,6 +75,18 @@ export default {
         lg: "var(--radius)",
         md: "calc(var(--radius) - 2px)",
         sm: "calc(var(--radius) - 4px)",
+        xxl: "2.5rem",
+
+      },
+      transitionProperty: {
+        width: "max-width, transform"
+      },
+
+      backgroundImage: {
+        gradient: "linear-gradient(-45deg, #f5f5f5, #fff, #f5f5f5)"
+      },
+      boxShadow: {
+        "inner-l": "inset 0.5rem 0 1rem #0002, 0 0 0.5rem #0003"
       },
     },
   },

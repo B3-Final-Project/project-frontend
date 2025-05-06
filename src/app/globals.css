@@ -105,3 +105,26 @@
     transform: rotateY(180deg);
   }
 }
+
+
+
+@keyframes confetti {
+  0% {
+    transform: translateY(0) rotateZ(0deg);
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  35% {
+    transform: translateY(-50px) rotateZ(90deg);
+  }
+  100% {
+    transform: translateY(100px) rotateZ(180deg);
+    opacity: 0;
+  }
+}
+
+.animate-confetti {
+  animation: confetti forwards;
+}
