@@ -2,12 +2,14 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { ProfileRouter } from "@/lib/routes/profiles";
 import { UpdateProfileDto } from "@/lib/routes/profiles/dto/update-profile.dto";
 import { toast } from "@/hooks/use-toast";
+import { useRouter } from "next/navigation";
 
 // Fetch a single profile
 export function useProfileQuery() {
   return useQuery({
     queryKey: ["profile"],
     queryFn: () => ProfileRouter.getProfile(),
+    retry: 0
   });
 }
 
@@ -72,6 +74,7 @@ export function useUpdatePartialProfileMutation<T extends Partial<UpdateProfileD
 
 export function useCreateProfileMutation() {
   const queryClient = useQueryClient();
+  const router = useRouter();
 
   return useMutation({
     mutationFn: async (data: UpdateProfileDto) => {
@@ -83,6 +86,7 @@ export function useCreateProfileMutation() {
         title: "Profile saved",
         description: "Your profile profiles have been saved successfully.",
       });
+      router.push("/profile");
     },
     onError: (error) => {
       console.error("Failed to update profile", error);

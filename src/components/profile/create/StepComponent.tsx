@@ -1,5 +1,5 @@
 'use client';
-import { useParams, useRouter } from "next/navigation";
+import { useParams } from "next/navigation";
 import { StartComponent } from "@/components/profile/create/steps/StartComponent";
 import { PersonalInfoComponent } from "@/components/profile/create/steps/PersonalInfoComponent";
 import { LocationWorkComponent } from "@/components/profile/create/steps/LocationWorkComponent";
@@ -7,7 +7,6 @@ import { PreferencesComponent } from "@/components/profile/create/steps/Preferen
 import { LifestyleComponent } from "@/components/profile/create/steps/LifestyleComponent";
 import { ReviewComponent } from "@/components/profile/create/steps/ReviewComponent";
 import Link from "next/link";
-import { useProfileQuery } from "@/hooks/react-query/profiles";
 
 export const PROFILE_STEPS = [
   'welcome',
@@ -19,18 +18,7 @@ export const PROFILE_STEPS = [
 ];
 
 export function StepComponent() {
-  const router = useRouter()
-  const query = useProfileQuery()
   const params = useParams<{ step: string }>();
-
-  if (query.isLoading) {
-    return <div>Loading...</div>;
-  }
-
-  if (query.isSuccess && !query.data?.profile) {
-    console.log("YEP")
-    router.replace('/profile')
-  }
 
   const currentStep = params?.step || 'welcome';
 
