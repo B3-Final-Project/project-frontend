@@ -2,15 +2,9 @@
 import { UserCardModal } from "@/components/profile/UserCardModal";
 import Image from 'next/image'
 import { useProfileQuery } from "@/hooks/react-query/profiles";
-import { useRouter } from "next/navigation";
 
 export function ProfileAvatar() {
   const query = useProfileQuery()
-  const router = useRouter()
-
-  if (query.isSuccess && !query.data?.profile || !query.data?.user) {
-    router.push('/profile/create/welcome')
-  }
 
   if (query.isLoading){
     return <div>Loading...</div>

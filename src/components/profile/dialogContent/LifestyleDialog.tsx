@@ -56,7 +56,7 @@ export function LifestyleDialog() {
             placeholder="Select drinking preference"
           />
 
-          <SelectorComponent
+           <SelectorComponent
             value={formData.religion}
             fieldName="religion"
             options={religionOptions}
@@ -65,7 +65,7 @@ export function LifestyleDialog() {
             placeholder="Select religion"
           />
 
-          <SelectorComponent
+         <SelectorComponent
             value={formData.politics}
             fieldName="politics"
             options={politicsOptions}
@@ -74,7 +74,7 @@ export function LifestyleDialog() {
             placeholder="Select political view"
           />
 
-          <SelectorComponent
+         <SelectorComponent
             value={formData.zodiac}
             fieldName="zodiac"
             options={zodiacOptions}

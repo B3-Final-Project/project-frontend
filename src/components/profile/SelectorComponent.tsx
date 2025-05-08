@@ -1,50 +1,57 @@
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue
-} from "@/components/ui/select";
+          Select,
+          SelectContent,
+          SelectItem,
+          SelectTrigger,
+          SelectValue
+        } from "@/components/ui/select";
+        import { Label } from "@/components/ui/label";
+        import { formatEnumByField } from "@/lib/utils/enum-utils";
 
-import { Label } from "@/components/ui/label";
-import { formatEnumByField } from "@/lib/utils/enum-utils";
+        export function SelectorComponent({ value, fieldName, options, label, onChange, errors, placeholder }: {
+          readonly value?: number | null;
+          readonly fieldName: string;
+          readonly options: (number | null)[];
+          readonly label: string;
+          readonly onChange: (fieldName: string, val: number | string) => void;
+          readonly errors?: string;
+          readonly placeholder?: string;
+        }) {
+          // helper to serialize <number|null> → string
+          const serialize = (v: number | null | undefined) =>
+            v != null ? String(v) : "";
 
-export function SelectorComponent({ value, fieldName, options, label, onChange, errors, placeholder }: {
-  readonly value?: number,
-  readonly fieldName: string,
-  readonly options: number[],
-  readonly label: string,
-  readonly onChange: (fieldName: string , val: string | number) => void
-  readonly errors?: string,
-  readonly placeholder?: string
-})  {
+          // helper to deserialize string → <number|string>
+          const deserialize = (s: string) =>
+            s === "" ? "" : (parseInt(s, 10) as number);
 
-  return (
-  <div className="space-y-2">
-    <Label htmlFor={fieldName}>{label}</Label>
-    <Select
-      value={value !== undefined ? value.toString() : ''}
-      onValueChange={(val: string) => {
-        const numericValue = parseInt(val, 10);
-        onChange(fieldName, numericValue);
-      }}
-    >
-      <SelectTrigger
-        id={fieldName}
-        className={errors ? 'border-red-500' : ''}
-      >
-        <SelectValue placeholder={placeholder ?? label} />
-      </SelectTrigger>
-      <SelectContent>
-        {options.map((option) => (
-          <SelectItem key={option} value={option.toString()}>
-            {formatEnumByField(option, fieldName)}
-          </SelectItem>
-        ))}
-      </SelectContent>
-    </Select>
-    {errors && <p className="text-sm text-red-500">{errors}</p>}
-  </div>
-  )
-}
-
+          return (
+            <div className="space-y-2">
+              <Label htmlFor={fieldName}>{label}</Label>
+              <Select
+                // if value is null or undefined, we pass empty string
+                value={serialize(value)}
+                onValueChange={(val: string) => {
+                  onChange(fieldName, deserialize(val));
+                }}
+              >
+                <SelectTrigger
+                  id={fieldName}
+                  className={errors ? "border-red-500" : ""}
+                >
+                  <SelectValue placeholder={placeholder ?? label} />
+                </SelectTrigger>
+                <SelectContent>
+                  {options.map((opt) => (
+                    <SelectItem key={String(opt)} value={serialize(opt)}>
+                      {opt != null
+                        ? formatEnumByField(opt, fieldName)
+                        : placeholder ?? "None"}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              {errors && <p className="text-sm text-red-500">{errors}</p>}
+            </div>
+          );
+        }

@@ -9,7 +9,9 @@ export function useProfileQuery() {
   return useQuery({
     queryKey: ["profile"],
     queryFn: () => ProfileRouter.getProfile(),
-    retry: 0
+    refetchOnWindowFocus: false,
+    refetchInterval: 10000,
+    refetchOnMount: false
   });
 }
 
