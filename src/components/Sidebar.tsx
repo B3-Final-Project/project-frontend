@@ -13,8 +13,8 @@ import { FiMessageSquare } from "react-icons/fi";
 import { IoSettingsOutline } from "react-icons/io5";
 import { FaRegUser } from "react-icons/fa";
 import Image from "next/image";
+import { SignInButton } from "@/components/auth/SignInButton";
 import { useAuth } from "react-oidc-context";
-import { Button } from "@/components/ui/button";
 
 
 export function SidebarComponent() {
@@ -22,27 +22,10 @@ export function SidebarComponent() {
   const items = [
     { title: "Home", url: '/', icon: Home},
     { title: "Messages", url: '/messages', icon: FiMessageSquare},
-    { title: "Open a Booster", url: '/booster'},
+    { canUse: true, title: "Open a Booster", url: '/booster'},
     { title: "Profile", url:'/profile', icon: FaRegUser},
     { title: "Settings", url: '/register', icon: IoSettingsOutline},
   ]
-
-  const signout = async () => {
-    const confirm = window.confirm("Are you sure you want to sign out?");
-    if (!confirm) {
-      return
-    }
-    const clientId = process.env.NEXT_PUBLIC_COGNITO_CLIENT_ID;
-    const logoutUri = process.env.NEXT_PUBLIC_COGNITO_CALLBACK_URL;
-    const cognitoDomain = process.env.NEXT_PUBLIC_COGNITO_USER_POOL;
-    window.location.href = `${cognitoDomain}/logout?client_id=${clientId}&logout_uri=${encodeURIComponent(logoutUri!)}`;
-    await auth.removeUser()
-  }
-
-
-  if (auth.error) {
-    return <div>Encountering error... {auth.error.message}</div>;
-  }
 
   return (
     <>
@@ -56,8 +39,9 @@ export function SidebarComponent() {
                   const IconComponent = item.icon as React.ElementType;
                   return (
                     <SidebarMenuItem key={item.url}>
+                      {auth.user &&
                       <SidebarMenuButton asChild>
-                        <Link href={item.url} className="flex items-center space-x-2">
+                          <Link href={item.url} className="flex items-center space-x-2">
                           {item.icon ? (
                             <IconComponent style={{width: '1.5rem', height: '1.5rem'}} size={40} />
                           ) : (
@@ -72,11 +56,13 @@ export function SidebarComponent() {
                           <span className="hidden lg:block">{item.title}</span>
                         </Link>
                       </SidebarMenuButton>
+                      }
                     </SidebarMenuItem>
                   );
                 })}
-                {!auth.user && <Button onClick={() => auth.signinRedirect()}>Log In</Button>}
-                {auth.user && <Button onClick={() => signout()}>Sign Out</Button>}
+                <SidebarMenuItem>
+                  <SignInButton/>
+                </SidebarMenuItem>
               </SidebarMenu>
             </SidebarGroup>
           </SidebarContent>
@@ -96,6 +82,7 @@ export function SidebarComponent() {
               {item.icon ? <IconComponent size={20} /> : <Image src="/logo.svg" width={20} height={20} alt="logo" />}
             </Link>})
           }
+          <SignInButton/>
         </div>
       </nav>
     </>

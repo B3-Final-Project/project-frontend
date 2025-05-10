@@ -52,7 +52,7 @@ export const setAccessTokenHeaders = (token: string | null) => {
 
 export const createFetcher = <T = unknown, B = undefined>(
   path: string,
-  method: "GET" | "POST" | "PUT" | "DELETE" = "GET"
+  method: "GET" | "POST" | "PUT" | "DELETE" | "PATCH" = "GET"
 ) => {
   return async (body?: B, params?: Record<string, string>): Promise<T> => {
     if (path.includes(":") && (!params || Object.keys(params).length === 0)) {
@@ -76,15 +76,3 @@ export const createFetcher = <T = unknown, B = undefined>(
     return response.data;
   };
 };
-
-/**
- * Formats a kebab-case string into a capitalized string with spaces
- * Example: "non-binary" → "Non Binary"
- */
-export function formatEnumValue(value: string): string {
-  if (!value) return '';
-  return value
-    .split('-')
-    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-    .join(' ');
-}

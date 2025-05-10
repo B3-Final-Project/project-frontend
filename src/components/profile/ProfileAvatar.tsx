@@ -1,27 +1,18 @@
-"use client";
+'use client'
+import { UserCardModal } from "@/components/profile/UserCardModal";
+import Image from 'next/image'
+import { useProfileQuery } from "@/hooks/react-query/profiles";
 
-import { Button } from "@/components/ui/button";
-import Image from "next/image";
-import { useState } from "react";
-import { UserCardModal } from "./UserCardModal";
+export function ProfileAvatar() {
+  const query = useProfileQuery()
 
-interface ProfileAvatarProps {
-  name: string;
-  age?: number;
-  location?: string;
-  description?: string;
-}
+  if (query.isLoading){
+    return <div>Loading...</div>
+  }
 
-export function ProfileAvatar({
-  name,
-  age,
-  location,
-  description,
-}: ProfileAvatarProps) {
-  const [isModalOpen, setIsModalOpen] = useState(false);
-
-  const openModal = () => setIsModalOpen(true);
-  const closeModal = () => setIsModalOpen(false);
+  if (query.isError){
+    return <div>{JSON.stringify(query.error)}</div>
+  }
 
   return (
     <>
@@ -35,21 +26,17 @@ export function ProfileAvatar({
         />
       </div>
 
-      <div className="flex justify-between items-center w-full max-w-[300px]">
-        <h3 className="text-2xl font-bold">{name}</h3>
-        <Button variant="outline" size="sm" onClick={openModal}>
-          Aperçu
-        </Button>
-      </div>
-
-      <UserCardModal
-        name={name}
-        age={age}
-        location={location}
-        description={description}
-        isOpen={isModalOpen}
-        onClose={closeModal}
-      />
+      {query.data?.profile &&
+      <div className={'flex justify-between gap-40'}>
+        <h3 className="text-2xl font-bold">{query.data?.user.name}</h3>
+        <UserCardModal
+          name={query.data?.user.name}
+          age={query.data?.user.age}
+          location={query.data?.user.location}
+          // using the first interest as a placeholder
+          description={query.data?.profile.interests?.map((interest) => interest.description).toString() ?? "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna} aliqua."}
+        />
+      </div>}
     </>
   );
 }

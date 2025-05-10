@@ -1,5 +1,6 @@
 export enum RESTServerRoute {
-  REST_PREFERENCES = 'preferences',
-  REST_PREFERENCES_ALL = 'preferences/all',
-  REST_PREFERENCE = 'preferences/:id',
+  REST_PROFILES = 'profiles',
+  REST_PROFILES_ALL = 'profiles/all',
+  REST_BOOSTER = 'booster',
+  REST_TEN_BOOSTERS = 'booster/10'
 }
