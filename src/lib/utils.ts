@@ -2,6 +2,7 @@ import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 import axios from "axios";
 import { User } from "oidc-client-ts";
+import { RESTServerRoute } from "@/lib/routes/server";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -76,3 +77,13 @@ export const createFetcher = <T = unknown, B = undefined>(
     return response.data;
   };
 };
+
+export const sendImage = async ({formData, index}: {formData: any, index: number}) => axiosInstance.post(RESTServerRoute.REST_PROFILES_IMAGES + `/${index}`, formData, {
+  headers: {
+    "Content-Type": "multipart/form-data",
+  },
+})
+
+export const removeImage = async ({index}:{index: number}) => {
+  return axiosInstance.delete(RESTServerRoute.REST_PROFILES_IMAGES + `/${index}`);
+}

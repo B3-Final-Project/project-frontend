@@ -14,6 +14,7 @@ export interface Profile {
   city?: string;
   work?: string;
   languages?: string[];
+  images?: string[];
   min_age?: number;
   max_age?: number;
   max_distance?: number;
