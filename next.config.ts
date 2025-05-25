@@ -5,8 +5,21 @@ const nextConfig: NextConfig = {
   output: "standalone",
   images: {
     remotePatterns: [
-      new URL("https://holomatch-images.s3.eu-west-3.amazonaws.com/**")
+      {
+        protocol: "https",
+        hostname: "holomatch-images.s3.eu-west-3.amazonaws.com",
+        port: "",
+        pathname: "/**",
+      }
     ]
+  },
+  webpack: (config) => {
+    // Configuration pour le hot reload dans Docker
+    config.watchOptions = {
+      poll: 1000, // Vérifie les changements toutes les secondes
+      aggregateTimeout: 300, // Délai avant de déclencher une reconstruction
+    };
+    return config;
   },
 };
 
