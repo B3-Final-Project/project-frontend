@@ -5,7 +5,12 @@ const nextConfig: NextConfig = {
   output: "standalone",
   images: {
     remotePatterns: [
-      new URL("https://holomatch-images.s3.eu-west-3.amazonaws.com/**")
+      {
+        protocol: "https",
+        hostname: "holomatch-images.s3.eu-west-3.amazonaws.com",
+        port: "",
+        pathname: "/**",
+      }
     ]
   },
 };
