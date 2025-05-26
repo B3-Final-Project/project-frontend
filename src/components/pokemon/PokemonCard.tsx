@@ -12,7 +12,6 @@ import 'swiper/css/effect-cards';
 import '../../styles/pokemon-pack-appear.css';
 import '../../styles/swiper.css';
 
-// import required modules
 import { EffectCards } from 'swiper/modules';
 
 type PokemonCardData = {
@@ -50,7 +49,7 @@ export default function PokemonCard({ card: cards }: PokemonCardProps) {
   }, [cards]);
 
   return (
-    <>
+    <div className="min-h-screen">
       <Swiper
         effect={'cards'}
         grabCursor={true}
@@ -102,6 +101,6 @@ export default function PokemonCard({ card: cards }: PokemonCardProps) {
           onClose={closeModal}
         />
       )}
-    </>
+    </div>
   );
 }

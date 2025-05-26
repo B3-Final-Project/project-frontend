@@ -1,6 +1,7 @@
 'use client';
 
 import { useRef, useState } from 'react';
+import { Background } from '../Background';
 import PokemonCard from './PokemonCard';
 
 const POKEMON = [
@@ -95,7 +96,6 @@ export default function PokemonPackOpenerPage() {
   const dragStartXRef = useRef(0);
   const isDraggingRef = useRef(false);
 
-  // Fonction pour générer une carte aléatoire
   const generateCard = (id: string): PokemonCardType => {
     const randomPokemon = POKEMON[Math.floor(Math.random() * POKEMON.length)];
 
@@ -110,34 +110,29 @@ export default function PokemonPackOpenerPage() {
     };
   };
 
-  // Fonction pour ouvrir un nouveau pack de cartes
   const openPack = () => {
     if (isOpening) return;
 
     setIsOpening(true);
     setCards([]);
 
-    // Générer un nouveau set de 5 cartes
     const newCards = Array.from({ length: 5 }, (_, i) =>
       generateCard(`card-${Date.now()}-${i}`)
     );
 
-    // Afficher toutes les cartes déjà révélées
     setTimeout(() => {
       setCards(newCards.map(card => ({ ...card, isRevealed: true })));
 
-      // Terminer l'animation après un court délai
       setTimeout(() => {
         setIsOpening(false);
         setDragProgress(0);
       }, 500);
-    }, 600); // Délai pour laisser l'animation d'ouverture se terminer
+    }, 600);
   };
 
   const handlePointerDown = (e: React.PointerEvent) => {
     if (isOpening) return;
 
-    // Capturer le pointeur
     e.currentTarget.setPointerCapture(e.pointerId);
 
     isDraggingRef.current = true;
@@ -156,15 +151,12 @@ export default function PokemonPackOpenerPage() {
     const currentX = e.clientX - rect.left;
     const distance = currentX - dragStartXRef.current;
 
-    // Calculer la progression (50% de la largeur du bouton suffit pour compléter)
     const progress = Math.max(0, Math.min(100, (distance / (rect.width * 0.5)) * 100));
 
     setDragProgress(progress);
-    console.log("Dragging progress:", progress, "Distance:", distance);
   };
 
   const handlePointerUp = (e: React.PointerEvent) => {
-    // Libérer le pointeur
     if (e.currentTarget.hasPointerCapture(e.pointerId)) {
       e.currentTarget.releasePointerCapture(e.pointerId);
     }
@@ -179,7 +171,6 @@ export default function PokemonPackOpenerPage() {
     }
   };
 
-  // Annuler le glissement si le pointeur sort
   const handlePointerCancel = (e: React.PointerEvent) => {
     if (e.currentTarget.hasPointerCapture(e.pointerId)) {
       e.currentTarget.releasePointerCapture(e.pointerId);
@@ -191,94 +182,93 @@ export default function PokemonPackOpenerPage() {
   };
 
   return (
-    <div className="container mx-auto py-10 space-y-6">
-      <header className="text-center">
-        <h1 className="text-3xl font-bold mb-2">Pokémon Card Pack Opener</h1>
-        <p className="text-muted-foreground">Maintenez et glissez pour ouvrir un pack de cartes Pokémon!</p>
-      </header>
+    <div className="relative min-h-screen w-full overflow-hidden">
+      <Background />
+      <div className="container mx-auto py-10 space-y-6">
+        <header className="text-center">
+          <h1 className="text-3xl font-bold mb-2">Pokémon Card Pack Opener</h1>
+          <p className="text-muted-foreground">Maintenez et glissez pour ouvrir un pack de cartes Pokémon!</p>
+        </header>
 
-      {cards.length === 0 && (
-        <>
-          <div className="flex justify-center mb-8">
-            <div className="pack-button-container">
-              {/* Pack illustratif */}
-              <div className={`pokemon-pack-3d ${isDragging ? 'dragging' : ''} ${isOpening ? 'opening' : ''}`}>
-                <div className="pack-front">
-                  <img src="/logo.svg" alt="Pokemon Pack" className="pack-image" />
-                  <div className="pack-shine"></div>
-                </div>
-              </div>
-
-              {/* Bouton d'ouverture avec style moderne */}
-              <button
-                ref={buttonRef}
-                className="open-pack-button"
-                onPointerDown={handlePointerDown}
-                onPointerMove={handlePointerMove}
-                onPointerUp={handlePointerUp}
-                onPointerCancel={handlePointerCancel}
-                disabled={isOpening}
-                type="button"
-              >
-                <div className="button-inner">
-                  {/* Jauge de progression */}
-                  <div className="progress-track">
-                    <div
-                      className="progress-fill"
-                      style={{ width: `${dragProgress}%` }}
-                    ></div>
-                  </div>
-
-                  {/* Icône et texte */}
-                  <span className="button-icon">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6">
-                      <path fillRule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25zm4.28 10.28a.75.75 0 000-1.06l-3-3a.75.75 0 10-1.06 1.06l1.72 1.72H8.25a.75.75 0 000 1.5h5.69l-1.72 1.72a.75.75 0 101.06 1.06l3-3z" clipRule="evenodd" />
-                    </svg>
-                  </span>
-                  <span className="button-text">Ouvrir le Pack</span>
-
-                  {/* Effet de particules */}
-                  <div className="particles-container">
-                    {dragProgress > 30 && Array.from({ length: 5 }).map((_, i) => (
-                      <span
-                        key={i}
-                        className="particle"
-                        style={{
-                          '--delay': `${i * 0.1}s`,
-                          '--size': `${Math.random() * 5 + 3}px`,
-                          '--x': `${Math.random() * 100}%`,
-                          '--duration': `${Math.random() * 0.5 + 0.5}s`
-                        } as React.CSSProperties}
-                      ></span>
-                    ))}
+        {cards.length === 0 && (
+          <>
+            <div className="flex justify-center mb-8">
+              <div className="pack-button-container">
+                <div className={`pokemon-pack-3d ${isDragging ? 'dragging' : ''} ${isOpening ? 'opening' : ''}`}>
+                  <div className="pack-front">
+                    <img src="/logo.svg" alt="Pokemon Pack" className="pack-image" />
+                    <div className="pack-shine"></div>
                   </div>
                 </div>
-              </button>
-            </div>
-          </div>
 
-          <div className="mb-4 text-center text-lg font-semibold">
-            {isDragging && (
-              <div className="text-blue-500">
-                {dragProgress > 70
-                  ? "Presque là! Continuez..."
-                  : dragProgress > 40
-                    ? "Continuez à tirer..."
-                    : "Tirez vers la droite pour ouvrir!"}
+                <button
+                  ref={buttonRef}
+                  className="open-pack-button"
+                  onPointerDown={handlePointerDown}
+                  onPointerMove={handlePointerMove}
+                  onPointerUp={handlePointerUp}
+                  onPointerCancel={handlePointerCancel}
+                  disabled={isOpening}
+                  type="button"
+                >
+                  <div className="button-inner">
+                    <div className="progress-track">
+                      <div
+                        className="progress-fill"
+                        style={{ width: `${dragProgress}%` }}
+                      ></div>
+                    </div>
+
+                    <span className="button-icon">
+                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6">
+                        <path fillRule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25zm4.28 10.28a.75.75 0 000-1.06l-3-3a.75.75 0 10-1.06 1.06l1.72 1.72H8.25a.75.75 0 000 1.5h5.69l-1.72 1.72a.75.75 0 101.06 1.06l3-3z" clipRule="evenodd" />
+                      </svg>
+                    </span>
+                    <span className="button-text">Ouvrir le Pack</span>
+
+                    {/* Effet de particules */}
+                    <div className="particles-container">
+                      {dragProgress > 30 && Array.from({ length: 5 }).map((_, i) => (
+                        <span
+                          key={i}
+                          className="particle"
+                          style={{
+                            '--delay': `${i * 0.1}s`,
+                            '--size': `${Math.random() * 5 + 3}px`,
+                            '--x': `${Math.random() * 100}%`,
+                            '--duration': `${Math.random() * 0.5 + 0.5}s`
+                          } as React.CSSProperties}
+                        ></span>
+                      ))}
+                    </div>
+                  </div>
+                </button>
               </div>
-            )}
-            <div className="text-gray-500 mt-2">
-              Progression: {Math.round(dragProgress)}%
             </div>
-          </div>
-        </>
-      )}
 
-      {cards.length > 0 ? (
-        <div className="card-reveal-container">
-          <PokemonCard card={cards} />
-        </div>
-      ) : null}
+            <div className="mb-4 text-center text-lg font-semibold">
+              {isDragging && (
+                <div className="text-blue-500">
+                  {dragProgress > 70
+                    ? "Presque là! Continuez..."
+                    : dragProgress > 40
+                      ? "Continuez à tirer..."
+                      : "Tirez vers la droite pour ouvrir!"}
+                </div>
+              )}
+              <div className="text-gray-500 mt-2">
+                Progression: {Math.round(dragProgress)}%
+              </div>
+            </div>
+          </>
+        )}
+
+        {cards.length > 0 ? (
+          <div className="card-reveal-container">
+            <PokemonCard card={cards} />
+          </div>
+        ) : null}
+      </div>
     </div>
   );
 }
