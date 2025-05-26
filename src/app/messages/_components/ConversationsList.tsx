@@ -36,8 +36,15 @@ export default function ConversationsList({ isExpanded, onToggle, selectedId, is
       {/* Overlay sombre pour mobile */}
       {isExpanded && isMobileView && (
         <div 
+          role="button"
+          tabIndex={0}
           className="fixed inset-0 bg-black/30 z-20" 
           onClick={onToggle}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              onToggle();
+            }
+          }}
         />
       )}
 
@@ -56,11 +63,7 @@ export default function ConversationsList({ isExpanded, onToggle, selectedId, is
           onClick={onToggle}
           className={`
             w-8 h-8 flex items-center justify-center rounded-full
-            transition-colors
-            ${isExpanded && isMobileView 
-              ? 'hover:bg-gray-100' 
-              : 'hover:bg-gray-100'
-            }
+            transition-colors hover:bg-gray-100
           `}
         >
           {isExpanded ? (
@@ -78,10 +81,10 @@ export default function ConversationsList({ isExpanded, onToggle, selectedId, is
       {/* Liste des conversations */}
       <div className="flex-1 overflow-y-auto bg-white relative z-30">
         {mockConversations.map((conversation) => (
-          <div
+          <button
             key={conversation.id}
             className={`
-              py-3 px-4 cursor-pointer
+              w-full text-left py-3 px-4
               ${isExpanded ? 'hover:bg-gray-50' : 'flex justify-center'}
               ${selectedId === conversation.id ? 'bg-blue-50/70' : ''}
               transition-colors duration-200
@@ -141,7 +144,7 @@ export default function ConversationsList({ isExpanded, onToggle, selectedId, is
                 </div>
               )}
             </div>
-          </div>
+          </button>
         ))}
       </div>
     </div>

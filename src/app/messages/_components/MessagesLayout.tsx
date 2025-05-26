@@ -75,9 +75,9 @@ export default function MessagesLayout({ initialSelectedConversation }: Messages
           </div>
           <div className="flex-1 overflow-y-auto">
             {mockConversations.map((conversation) => (
-              <div
+              <button
                 key={conversation.id}
-                className={`p-4 border-b border-gray-200 cursor-pointer hover:bg-gray-50 ${
+                className={`w-full text-left p-4 border-b border-gray-200 hover:bg-gray-50 ${
                   selectedConversation === conversation.id ? 'bg-blue-50' : ''
                 }`}
                 onClick={() => handleConversationClick(conversation.id)}
@@ -114,7 +114,7 @@ export default function MessagesLayout({ initialSelectedConversation }: Messages
                     </div>
                   </div>
                 </div>
-              </div>
+              </button>
             ))}
           </div>
         </div>
