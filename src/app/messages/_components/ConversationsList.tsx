@@ -2,18 +2,9 @@
 
 import { useRouter } from 'next/navigation';
 import { IoChevronForward, IoChevronBack, IoClose } from 'react-icons/io5';
-import { useEffect, useState } from 'react';
-
-interface Conversation {
-  id: number;
-  name: string;
-  lastMessage: string;
-  timestamp: string;
-  unread: number;
-  isTyping: boolean;
-  avatar: string;
-  lastMessageDate: Date;
-}
+import { useWindowWidth } from '../../hooks/useWindowWidth';
+import { mockConversations } from '../data/mockData';
+import type { Conversation } from '../types';
 
 interface ConversationsListProps {
   isExpanded: boolean;
@@ -24,74 +15,7 @@ interface ConversationsListProps {
 
 export default function ConversationsList({ isExpanded, onToggle, selectedId, isMobile }: ConversationsListProps) {
   const router = useRouter();
-  const [windowWidth, setWindowWidth] = useState(0);
-
-  useEffect(() => {
-    const handleResize = () => {
-      setWindowWidth(window.innerWidth);
-    };
-
-    // Initial width
-    handleResize();
-
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
-
-  const isMobileView = windowWidth < 768;
-
-  const conversations: Conversation[] = [
-    {
-      id: 1,
-      name: "Alice Martin",
-      lastMessage: "D'accord, on se voit demain !",
-      timestamp: "10:30",
-      unread: 2,
-      isTyping: true,
-      avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Alice",
-      lastMessageDate: new Date('2024-03-20T10:30:00'),
-    },
-    {
-      id: 2,
-      name: "Thomas Bernard",
-      lastMessage: "Le projet avance bien ?",
-      timestamp: "09:15",
-      unread: 0,
-      isTyping: false,
-      avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Thomas",
-      lastMessageDate: new Date('2024-03-20T09:15:00'),
-    },
-    {
-      id: 3,
-      name: "Marie Dubois",
-      lastMessage: "Super, merci !",
-      timestamp: "Hier",
-      unread: 1,
-      isTyping: false,
-      avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Marie",
-      lastMessageDate: new Date('2024-03-19T15:30:00'),
-    },
-    {
-      id: 4,
-      name: "Lucas Petit",
-      lastMessage: "On fait un point demain ?",
-      timestamp: "Hier",
-      unread: 3,
-      isTyping: false,
-      avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Lucas",
-      lastMessageDate: new Date('2024-03-19T14:20:00'),
-    },
-    {
-      id: 5,
-      name: "Emma Richard",
-      lastMessage: "Le document est prêt",
-      timestamp: "19/03",
-      unread: 0,
-      isTyping: false,
-      avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Emma",
-      lastMessageDate: new Date('2024-03-19T11:45:00'),
-    }
-  ].sort((a, b) => b.lastMessageDate.getTime() - a.lastMessageDate.getTime());
+  const { isMobile: isMobileView } = useWindowWidth();
 
   const handleConversationClick = (conversationId: number) => {
     router.push(`/messages/${conversationId}`);
@@ -153,7 +77,7 @@ export default function ConversationsList({ isExpanded, onToggle, selectedId, is
 
       {/* Liste des conversations */}
       <div className="flex-1 overflow-y-auto bg-white relative z-30">
-        {conversations.map((conversation) => (
+        {mockConversations.map((conversation) => (
           <div
             key={conversation.id}
             className={`
