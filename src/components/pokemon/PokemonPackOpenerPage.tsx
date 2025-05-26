@@ -184,7 +184,8 @@ export default function PokemonPackOpenerPage() {
   return (
     <div className="relative min-h-screen w-full overflow-hidden">
       <Background />
-      <div className="container mx-auto py-10 space-y-6">
+
+      <div className="container mx-auto py-10 space-y-6 relative z-10 flex flex-col w-full h-screen">
         <header className="text-center">
           <h1 className="text-3xl font-bold mb-2">Pokémon Card Pack Opener</h1>
           <p className="text-muted-foreground">Maintenez et glissez pour ouvrir un pack de cartes Pokémon!</p>

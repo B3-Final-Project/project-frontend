@@ -2,7 +2,7 @@
 
 import { motion } from 'framer-motion';
 import { useEffect, useRef, useState } from "react";
-
+import { MapPin, User, Info } from 'lucide-react';
 
 interface UserCardModalProps {
   name: string;
@@ -51,32 +51,38 @@ export function UserCardModal({
 
   const backdropVariants = {
     hidden: { opacity: 0 },
-    visible: { opacity: 1, transition: { duration: 0.3 } }
+    visible: { opacity: 1, transition: { duration: 0.4 } }
   };
 
   const cardVariants = {
-    hidden: { scale: 0, opacity: 0 },
+    hidden: { scale: 0, opacity: 0, rotateY: 0 },
     visible: {
       scale: 1,
       opacity: 1,
+      rotateY: 0,
       transition: {
         type: "spring",
-        stiffness: 300,
-        damping: 25,
-        duration: 0.5,
+        stiffness: 350,
+        damping: 30,
+        duration: 0.6,
         delay: 0.1
       }
     },
     exit: {
       scale: 0,
       opacity: 0,
-      transition: { duration: 0.3 }
+      transition: { duration: 0.4 }
     }
+  };
+
+  const flipVariants = {
+    front: { rotateY: 0 },
+    back: { rotateY: 180 }
   };
 
   return (
     <motion.div
-      className="absolute inset-0 bg-black/50 z-50 flex items-center justify-center mt-0"
+      className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center mt-0"
       initial="hidden"
       animate="visible"
       exit="hidden"
@@ -88,53 +94,75 @@ export function UserCardModal({
         animate="visible"
         exit="exit"
         variants={cardVariants}
+        className="relative"
       >
-        <button
-          className="w-[300px] h-[440px] md:w-[350px] md:h-[490px] lg:w-[400px] lg:h-[540px] perspective-1000 relative cursor-pointer"
+        <motion.div
+          className="w-[min(280px,85vw)] h-[min(420px,70vh)] md:w-[380px] md:h-[550px] perspective-1000 relative cursor-pointer"
           onClick={handleCardFlip}
+          whileHover={{ scale: 1.02 }}
+          whileTap={{ scale: 0.98 }}
         >
-          <div
-            className={`w-full h-full transition-transform duration-700 transform-style-3d ${isFlipped ? "rotate-y-180" : ""}`}
+          <motion.div
+            className="w-full h-full transform-style-3d relative"
+            animate={isFlipped ? 'back' : 'front'}
+            variants={flipVariants}
+            transition={{ duration: 0.6, type: 'spring', stiffness: 300, damping: 30 }}
           >
             {/* Front side of the card */}
-            <div className="w-full h-full rounded-xl p-[8px] bg-gradient-to-b from-[#ED2272] to-[#00AEEF] absolute backface-hidden">
+            <div className="w-full h-full rounded-xl p-[10px] bg-gradient-to-br from-[#FF6B6B] via-[#ED2272] to-[#6A5ACD] absolute backface-hidden shadow-2xl">
               <div
-                className="w-full h-full rounded-lg flex items-center justify-center"
+                className="w-full h-full rounded-lg flex items-center justify-center overflow-hidden"
                 style={{
                   backgroundImage: "url('/vintage.png')",
                   backgroundSize: "cover",
                   backgroundPosition: "center",
                 }}
               >
-                <div className="w-full h-full flex flex-col justify-between">
-                  <div className="flex justify-between items-center text-background p-4 font-semibold">
-                    <p>{location || "Location"}</p>
-                    <p>Type</p>
+                <div className="w-full h-full flex flex-col justify-between bg-gradient-to-t from-black/70 via-transparent">
+                  <div className="flex justify-between items-center p-3 sm:p-5 font-medium flex-wrap gap-2">
+                    <div className="flex items-center gap-1 sm:gap-2 bg-white/20 backdrop-blur-md px-2 sm:px-3 py-1 sm:py-1.5 rounded-full text-white shadow-lg text-xs sm:text-sm">
+                      <MapPin className="text-red-400 w-4 h-4 sm:w-5 sm:h-5" />
+                      <p>{location || "Location"}</p>
+                    </div>
+                    <div className="flex items-center gap-1 sm:gap-2 bg-white/20 backdrop-blur-md px-2 sm:px-3 py-1 sm:py-1.5 rounded-full text-white shadow-lg text-xs sm:text-sm">
+                      <User className="text-blue-300 w-4 h-4 sm:w-5 sm:h-5" />
+                      <p>{age || 99} ans</p>
+                    </div>
                   </div>
 
-                  <div className="text-background p-4 font-semibold flex  flex-col items-start">
-                    <p>{name}</p>
-                    <p>{age || 99} ans</p>
+                  <div className="p-3 sm:p-5 font-bold flex flex-col items-start bg-gradient-to-t from-black/80 via-black/40 to-transparent text-white">
+                    <h2 className="text-lg sm:text-xl md:text-2xl mb-1 drop-shadow-md">{name}</h2>
                   </div>
                 </div>
               </div>
             </div>
 
             {/* Back side of the card */}
-            <div className="w-full h-full rounded-xl p-[8px] bg-gradient-to-b from-[#00AEEF] to-[#ED2272] absolute backface-hidden rotate-y-180">
-              <div className="w-full h-full rounded-lg bg-black/80 flex flex-col justify-center p-6 text-white">
-                <h3 className="text-xl font-bold mb-4">Description</h3>
-                <p className="mb-3">
-                  {description ||
-                    "Lorem ipsum dolor sit amet consectetur adipisicing elit. Expedita at vero voluptatem, eum voluptate quia corrupti doloremque voluptatum quos obcaecati dicta eos distinctio ea earum eligendi odit reprehenderit! Iste, vitae!"}
-                </p>
-                <div className="mt-4 border-t border-white/30 pt-4 w-full">
-                  <p className="text-sm text-center">Cliquer pour revenir</p>
+            <div className="w-full h-full rounded-xl p-[10px] bg-gradient-to-br from-[#6A5ACD] via-[#00AEEF] to-[#4A90E2] absolute backface-hidden rotate-y-180 shadow-2xl">
+              <div className="w-full h-full rounded-lg bg-gradient-to-b from-black/90 to-black/70 backdrop-blur-md flex flex-col justify-center p-7 text-white">
+                <div className="flex items-center gap-1 sm:gap-2 mb-3 sm:mb-4">
+                  <Info className="text-purple-300 w-5 h-5 sm:w-6 sm:h-6" />
+                  <h3 className="text-xl sm:text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-500">Description</h3>
+                </div>
+                <div className="mb-3 text-gray-200 leading-relaxed overflow-auto max-h-[300px] custom-scrollbar">
+                  <p>
+                    {description ||
+                      "Lorem ipsum dolor sit amet consectetur adipisicing elit. Expedita at vero voluptatem, eum voluptate quia corrupti doloremque voluptatum quos obcaecati dicta eos distinctio ea earum eligendi odit reprehenderit! Iste, vitae!"}
+                  </p>
+                </div>
+                <div className="mt-4 border-t border-white/20 pt-4 w-full">
+                  <motion.p
+                    className="text-sm text-center text-blue-200"
+                    animate={{ y: [0, 5, 0] }}
+                    transition={{ repeat: Infinity, duration: 1.5 }}
+                  >
+                    Cliquer pour revenir
+                  </motion.p>
                 </div>
               </div>
             </div>
-          </div>
-        </button>
+          </motion.div>
+        </motion.div>
       </motion.div>
     </motion.div>
   );
