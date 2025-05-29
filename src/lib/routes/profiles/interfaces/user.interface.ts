@@ -10,7 +10,6 @@ export interface User {
   location: string;
   rarity: number;
   currency: number;
-  images: string[]
   created_at: Date;
   updated_at: Date;
 }
