@@ -106,7 +106,6 @@ export function PicturesDialog() {
   }
 
   const ImageSlot = ({ index }: { index: number }) => {
-    console.log(data)
     const imageUrl = currentImages[index];
     const isCurrentlyUploading = uploadingIndex === index;
     const isCurrentlyRemoving = removingIndex === index;
