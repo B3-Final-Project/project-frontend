@@ -106,6 +106,7 @@ export function PicturesDialog() {
   }
 
   const ImageSlot = ({ index }: { index: number }) => {
+    console.log(data)
     const imageUrl = currentImages[index];
     const isCurrentlyUploading = uploadingIndex === index;
     const isCurrentlyRemoving = removingIndex === index;
@@ -123,7 +124,7 @@ export function PicturesDialog() {
           disabled={isDisabled}
         />
 
-        {imageUrl !== "null" ? (
+        {imageUrl ? (
           <div className="relative h-full group">
             <Image
               src={imageUrl}
