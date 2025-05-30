@@ -20,11 +20,11 @@ import { Button } from "@/components/ui/button";
 export function SidebarComponent() {
   const auth = useAuth()
   const items = [
-    { title: "Home", url: '/', icon: Home},
-    { title: "Messages", url: '/messages', icon: FiMessageSquare},
-    { title: "Open a Booster", url: '/booster'},
-    { title: "Profile", url:'/profile', icon: FaRegUser},
-    { title: "Settings", url: '/register', icon: IoSettingsOutline},
+    { title: "Home", url: '/', icon: Home },
+    { title: "Messages", url: '/messages', icon: FiMessageSquare },
+    { title: "Open a Booster", url: '/booster' },
+    { title: "Profile", url: '/profile', icon: FaRegUser },
+    { title: "Settings", url: '/register', icon: IoSettingsOutline },
   ]
 
   const signout = async () => {
@@ -59,7 +59,7 @@ export function SidebarComponent() {
                       <SidebarMenuButton asChild>
                         <Link href={item.url} className="flex items-center space-x-2">
                           {item.icon ? (
-                            <IconComponent style={{width: '1.5rem', height: '1.5rem'}} size={40} />
+                            <IconComponent style={{ width: '1.5rem', height: '1.5rem' }} size={40} />
                           ) : (
                             <Image
                               src="/logo.svg"
@@ -94,7 +94,8 @@ export function SidebarComponent() {
               className="flex flex-col items-center justify-center p-3"
             >
               {item.icon ? <IconComponent size={20} /> : <Image src="/logo.svg" width={20} height={20} alt="logo" />}
-            </Link>})
+            </Link>
+          })
           }
         </div>
       </nav>
