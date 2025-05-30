@@ -4,7 +4,6 @@ import { AnimatePresence, motion, useMotionValue, useTransform } from 'framer-mo
 import { Heart, Info, MapPin, User, UserCheck, UserX, X } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 
-// Types
 export type ProfileCardType = {
   id: string;
   name: string;
@@ -46,16 +45,13 @@ export default function MatchSystem({ profiles, onMatch, onReject }: MatchSystem
   const [showMatchList, setShowMatchList] = useState(false);
   const [showNonMatchList, setShowNonMatchList] = useState(false);
 
-  // Motion values for card dragging
   const x = useMotionValue(0);
   const rotate = useTransform(x, [-200, 0, 200], [-15, 0, 15]);
   const matchOpacity = useTransform(x, [0, 100, 200], [0, 0.5, 1]);
   const rejectOpacity = useTransform(x, [-200, -100, 0], [1, 0.5, 0]);
 
-  // Refs
   const constraintsRef = useRef(null);
 
-  // Filtrer les profils déjà matchés ou rejetés
   useEffect(() => {
     const matchIds = matches.map(match => match.id);
     const nonMatchIds = nonMatches.map(nonMatch => nonMatch.id);
@@ -65,10 +61,10 @@ export default function MatchSystem({ profiles, onMatch, onReject }: MatchSystem
     setCurrentProfiles(filteredProfiles);
   }, [profiles, matches, nonMatches]);
 
-  // Get current profile
   const currentProfile = currentProfiles[currentIndex];
 
   // Handle card size based on device
+  // Because Tailwind doesn't support dynamic values
   function getCardSize() {
     if (typeof window !== 'undefined') {
       if (window.innerWidth >= 1024) {
@@ -89,7 +85,6 @@ export default function MatchSystem({ profiles, onMatch, onReject }: MatchSystem
     };
   }
 
-  // Handle window resize
   useEffect(() => {
     const handleResize = () => {
       setCardSize(getCardSize());
@@ -107,15 +102,12 @@ export default function MatchSystem({ profiles, onMatch, onReject }: MatchSystem
     const updatedMatches = [...matches, profile];
     setMatches(updatedMatches);
 
-    // Sauvegarder dans localStorage
     if (typeof window !== 'undefined') {
       localStorage.setItem('holomatch-matches', JSON.stringify(updatedMatches));
     }
 
-    // Call onMatch callback if provided
     if (onMatch) onMatch(profile);
 
-    // Hide animation after delay
     setTimeout(() => {
       setShowMatchAnimation(false);
       setMatchedProfile(null);
@@ -123,57 +115,47 @@ export default function MatchSystem({ profiles, onMatch, onReject }: MatchSystem
     }, 1500);
   };
 
-  // Handle card reject
   const handleReject = (profile: ProfileCardType) => {
     setShowRejectAnimation(true);
 
     const updatedNonMatches = [...nonMatches, profile];
     setNonMatches(updatedNonMatches);
 
-    // Sauvegarder dans localStorage
     if (typeof window !== 'undefined') {
       localStorage.setItem('holomatch-nonmatches', JSON.stringify(updatedNonMatches));
     }
 
-    // Call onReject callback if provided
     if (onReject) onReject(profile);
 
-    // Hide animation after delay
     setTimeout(() => {
       setShowRejectAnimation(false);
       moveToNextCard();
     }, 800);
   };
 
-  // Move to next card
   const moveToNextCard = () => {
     if (currentIndex < currentProfiles.length - 1) {
       setCurrentIndex(currentIndex + 1);
     }
   };
 
-  // Réinitialiser les matches et non-matches
   const resetMatches = () => {
     setMatches([]);
     setNonMatches([]);
     setCurrentIndex(0);
 
-    // Effacer les données du localStorage
     if (typeof window !== 'undefined') {
       localStorage.removeItem('holomatch-matches');
       localStorage.removeItem('holomatch-nonmatches');
     }
   };
 
-  // Handle card drag end
   const handleDragEnd = (event: any, info: any) => {
     const offset = info.offset.x;
 
     if (offset > 100 && currentProfile) {
-      // Swiped right - Match
       handleMatch(currentProfile);
     } else if (offset < -100 && currentProfile) {
-      // Swiped left - Reject
       handleReject(currentProfile);
     }
   };
@@ -186,7 +168,6 @@ export default function MatchSystem({ profiles, onMatch, onReject }: MatchSystem
           <p className="text-muted-foreground">Glissez à droite pour matcher, à gauche pour passer</p>
         </header>
 
-        {/* Match/Non-Match Counters */}
         <div className="flex justify-between w-full max-w-md mb-4">
           <motion.div
             className="flex items-center gap-2 bg-white/10 backdrop-blur-md p-2 rounded-full cursor-pointer"
