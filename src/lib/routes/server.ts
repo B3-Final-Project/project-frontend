@@ -1,4 +1,5 @@
 export enum RESTServerRoute {
+  REST_AUTH_SETTINGS = 'settings/auth',
   REST_PROFILES = 'profiles',
   REST_PROFILES_ALL = 'profiles/all',
   REST_BOOSTER = 'booster',
