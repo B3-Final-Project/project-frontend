@@ -8,17 +8,6 @@ import { SidebarComponent } from "@/components/Sidebar";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { Toaster } from "@/components/ui/toaster";
 
-// Import debug utility for development
-if (process.env.NODE_ENV === 'development') {
-  (async () => {
-    try {
-      await import("@/lib/debug-auth");
-    } catch (error) {
-      console.error("Failed to load debug utility:", error);
-    }
-  })();
-}
-
 export const metadata: Metadata = {
   title: "Holomatch",
 };
