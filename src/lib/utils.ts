@@ -1,55 +1,11 @@
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
-import axios from "axios";
-import { User } from "oidc-client-ts";
+import { authenticatedAxios } from "@/lib/auth-axios";
 import { RESTServerRoute } from "@/lib/routes/server";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
-
-const axiosInstance = axios.create({
-  baseURL: "http://localhost:8080/api",
-  timeout: 10000,
-  headers: {
-    "Content-Type": "application/json",
-  },
-});
-
-// Helper function to extract token from sessionStorage
-const getTokenFromSession = (): string | null => {
-  const oidcStorageKey = `oidc.user:${process.env.NEXT_PUBLIC_COGNITO_USER_POOL}:${process.env.NEXT_PUBLIC_COGNITO_CLIENT_ID}`;
-  const userJson = sessionStorage.getItem(oidcStorageKey);
-
-  if (userJson) {
-    const user: User = JSON.parse(userJson);
-    return user?.access_token ?? null;
-  }
-
-  return null;
-};
-
-axiosInstance.interceptors.request.use(
-  (config) => {
-    const token = getTokenFromSession();
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
-    } else {
-      delete config.headers.Authorization;
-    }
-    return config;
-  },
-  (error) => Promise.reject(new Error(error))
-);
-
-// This function is now redundant but can be kept for manual overrides if necessary.
-export const setAccessTokenHeaders = (token: string | null) => {
-  if (token) {
-    axiosInstance.defaults.headers.common["Authorization"] = `Bearer ${token}`;
-  } else {
-    delete axiosInstance.defaults.headers.common["Authorization"];
-  }
-};
 
 export const createFetcher = <T = unknown, B = undefined>(
   path: string,
@@ -73,17 +29,17 @@ export const createFetcher = <T = unknown, B = undefined>(
       ...(body && method !== "GET" ? { data: body } : {}),
     };
 
-    const response = await axiosInstance<T>(config);
+    const response = await authenticatedAxios<T>(config);
     return response.data;
   };
 };
 
-export const sendImage = async ({formData, index}: {formData: unknown, index: number}) => axiosInstance.put(RESTServerRoute.REST_PROFILES_IMAGES + `/${index}`, formData, {
+export const sendImage = async ({formData, index}: {formData: unknown, index: number}) => authenticatedAxios.put(RESTServerRoute.REST_PROFILES_IMAGES + `/${index}`, formData, {
   headers: {
     "Content-Type": "multipart/form-data",
   },
 })
 
 export const removeImage = async ({index}:{index: number}) => {
-  return axiosInstance.delete(RESTServerRoute.REST_PROFILES_IMAGES + `/${index}`);
+  return authenticatedAxios.delete(RESTServerRoute.REST_PROFILES_IMAGES + `/${index}`);
 }
