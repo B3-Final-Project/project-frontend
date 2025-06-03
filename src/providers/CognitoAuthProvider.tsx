@@ -10,6 +10,16 @@ interface CognitoAuthProviderProps {
   readonly children: ReactNode;
 }
 
+const baseOIDCConfig = {
+  response_type: "code",
+  scope: "email openid profile",
+  onSigninCallback: () => {
+    if (typeof window !== 'undefined') {
+      window.history.replaceState({}, document.title, "/");
+    }
+  }
+}
+
 export function CognitoAuthProvider({ children }: CognitoAuthProviderProps) {
   const { data: config, isLoading, isError, error } = useAuthSettingsQuery();
   const [showFallback, setShowFallback] = useState(true);
@@ -27,35 +37,23 @@ export function CognitoAuthProvider({ children }: CognitoAuthProviderProps) {
     // If still loading or no config, provide minimal config to prevent auth provider from initializing
     if (isLoading || !config) {
       return {
+        ...baseOIDCConfig,
         authority: "",
         client_id: "",
         redirect_uri: typeof window !== 'undefined' ? window.location.origin : "",
-        post_logout_redirect_uri: typeof window !== 'undefined' ? window.location.origin : "",
-        response_type: "code",
         scope: "email openid profile",
         // Disable automatic signin attempts during loading
         automaticSilentRenew: false,
         loadUserInfo: false,
-        onSigninCallback: () => {
-          if (typeof window !== 'undefined') {
-            window.history.replaceState({}, document.title, "/");
-          }
-        },
       };
     }
 
     return {
+      ...baseOIDCConfig,
       authority: config.userPool,
       client_id: config.userPoolClient,
       redirect_uri: config.callbackUrl,
       post_logout_redirect_uri: config.callbackUrl,
-      response_type: "code",
-      scope: "email openid profile",
-      onSigninCallback: () => {
-        if (typeof window !== 'undefined') {
-          window.history.replaceState({}, document.title, "/");
-        }
-      },
     };
   }, [config, isLoading]);
 
