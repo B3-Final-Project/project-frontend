@@ -3,7 +3,7 @@ import { User } from "oidc-client-ts";
 
 // Create axios instance for authenticated requests
 const authenticatedAxios = axios.create({
-  baseURL: process.env.BASE_URL ?? "http://localhost:8080/api",
+  baseURL: process.env.NEXT_PUBLIC_BASE_URL ?? "http://localhost:8080/api",
   timeout: 10000,
   headers: {
     "Content-Type": "application/json",
