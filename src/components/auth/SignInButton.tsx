@@ -56,5 +56,5 @@ export function SignInButton(){
     return <Button onClick={() => auth.signinRedirect()}>Log In</Button>;
   }
 
-  return null;
+  return <div>Unexpected state encountered. Please try again later.</div>;
 }
