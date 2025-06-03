@@ -1,6 +1,7 @@
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 import { authenticatedAxios } from "@/lib/auth-axios";
+import { RESTServerRoute } from "@/lib/routes/server";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -32,3 +33,13 @@ export const createFetcher = <T = unknown, B = undefined>(
     return response.data;
   };
 };
+
+export const sendImage = async ({formData, index}: {formData: unknown, index: number}) => authenticatedAxios.put(RESTServerRoute.REST_PROFILES_IMAGES + `/${index}`, formData, {
+  headers: {
+    "Content-Type": "multipart/form-data",
+  },
+})
+
+export const removeImage = async ({index}:{index: number}) => {
+  return authenticatedAxios.delete(RESTServerRoute.REST_PROFILES_IMAGES + `/${index}`);
+}
