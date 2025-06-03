@@ -7,8 +7,7 @@ const nextConfig: NextConfig = {
     remotePatterns: [
       {
         protocol: "https",
-        hostname: "holomatch-images.s3.eu-west-3.amazonaws.com",
-        port: "",
+        hostname: "tf--holomatch-images.s3.eu-west-3.amazonaws.com",
         pathname: "/**",
       }
     ]
