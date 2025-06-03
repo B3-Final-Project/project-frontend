@@ -50,7 +50,7 @@ export function CognitoAuthProvider({ children }: CognitoAuthProviderProps) {
 
     return {
       ...baseOIDCConfig,
-      authority: config.userPool,
+      authority: config.hostedDomain,
       client_id: config.userPoolClient,
       redirect_uri: config.callbackUrl,
       post_logout_redirect_uri: config.callbackUrl,
