@@ -4,7 +4,6 @@ import { useState, useEffect } from 'react';
 import { IoCheckmarkDone } from 'react-icons/io5';
 import { useRouter, usePathname } from 'next/navigation';
 import { IoChevronForward, IoChevronBack } from 'react-icons/io5';
-import { useWindowWidth } from '../../hooks/useWindowWidth';
 import { mockConversations, getMessagesForConversation } from '../data/mockData';
 import type { Conversation, Message } from '../types';
 
@@ -18,7 +17,6 @@ export default function MessagesLayout({ initialSelectedConversation }: Messages
   const router = useRouter();
   const pathname = usePathname();
   const isMessagesRoot = pathname === '/messages';
-  const { isMobile } = useWindowWidth();
 
   useEffect(() => {
     if (isMessagesRoot) {
@@ -30,7 +28,8 @@ export default function MessagesLayout({ initialSelectedConversation }: Messages
   const handleConversationClick = (conversationId: number) => {
     setSelectedConversation(conversationId);
     router.push(`/messages/${conversationId}`);
-    if (isMobile) {
+    // Sur mobile, on cache la liste des conversations après la sélection
+    if (window.innerWidth < 768) {
       setIsConversationsVisible(false);
     }
   };
@@ -57,7 +56,7 @@ export default function MessagesLayout({ initialSelectedConversation }: Messages
           ${isMessagesRoot ? 'w-full' : 'md:w-1/3'}
           bg-white border-r border-gray-200
           ${!isMessagesRoot && !isConversationsVisible ? '-translate-x-full w-0' : ''}
-          ${isMobile ? 'fixed inset-y-0 left-0 z-50 w-full' : 'relative'}
+          fixed md:relative inset-y-0 left-0 z-50 w-full md:translate-x-0
           transition-all duration-300 ease-in-out
         `}
       >
@@ -67,7 +66,7 @@ export default function MessagesLayout({ initialSelectedConversation }: Messages
             {!isMessagesRoot && (
               <button 
                 onClick={toggleConversations}
-                className="text-gray-600 hover:text-gray-900"
+                className="text-gray-600 hover:text-gray-900 md:hidden"
               >
                 <IoChevronBack className="text-xl" />
               </button>
@@ -122,16 +121,17 @@ export default function MessagesLayout({ initialSelectedConversation }: Messages
 
       {/* Section des messages - uniquement affichée quand une conversation est sélectionnée */}
       {!isMessagesRoot && (
-        <div className="flex-1 flex flex-col min-h-screen">
+        <div className={`
+          flex-1 flex flex-col min-h-screen
+          ${isConversationsVisible ? 'hidden md:flex' : 'flex'}
+        `}>
           <header className="p-4 border-b border-gray-200 bg-white flex items-center">
-            {isMobile && (
-              <button
-                onClick={toggleConversations}
-                className="mr-4 text-gray-600 hover:text-gray-900"
-              >
-                ☰
-              </button>
-            )}
+            <button
+              onClick={toggleConversations}
+              className="mr-4 text-gray-600 hover:text-gray-900 md:hidden"
+            >
+              ☰
+            </button>
             <h2 className="text-xl font-semibold">
               {selectedConversation
                 ? mockConversations.find((c) => c.id === selectedConversation)?.name
