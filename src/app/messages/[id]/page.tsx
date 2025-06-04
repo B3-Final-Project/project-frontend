@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { use } from 'react';
 import { IoCheckmarkDone, IoSend, IoImage } from 'react-icons/io5';
-import { getMessages, addMessage } from '../_components/messagesStore';
+import { getMessages, addMessage } from '@/components/messages/messagesStore';
 import { useRouter } from 'next/navigation';
 
 interface Message {

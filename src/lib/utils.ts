@@ -78,11 +78,14 @@ export const createFetcher = <T = unknown, B = undefined>(
   };
 };
 
-  headers: {
-    "Content-Type": "multipart/form-data",
-  },
-})
-
 export const removeImage = async ({index}:{index: number}) => {
   return axiosInstance.delete(RESTServerRoute.REST_PROFILES_IMAGES + `/${index}`);
+}
+
+export const sendImage = async ({formData, index}: {formData: FormData, index: number}) => {
+  return axiosInstance.post(RESTServerRoute.REST_PROFILES_IMAGES + `/${index}`, formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    },
+  });
 }

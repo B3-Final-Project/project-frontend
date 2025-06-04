@@ -122,6 +122,7 @@ export function useImageMutations() {
       const response = await sendImage({formData, index});
       return { ...response, index };
     },
+    onSuccess: () => {
       toast({
         title: "Image uploaded",
         description: "Your profile image has been uploaded successfully.",
