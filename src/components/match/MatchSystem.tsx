@@ -3,6 +3,7 @@
 import { AnimatePresence, motion, useMotionValue, useTransform } from 'framer-motion';
 import { Heart, Info, MapPin, User, UserCheck, UserX, X } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
+import { UserCardModal } from '../profile/UserCardModal';
 
 export type ProfileCardType = {
   id: string;
@@ -44,6 +45,8 @@ export default function MatchSystem({ profiles, onMatch, onReject }: MatchSystem
   const [matchedProfile, setMatchedProfile] = useState<ProfileCardType | null>(null);
   const [showMatchList, setShowMatchList] = useState(false);
   const [showNonMatchList, setShowNonMatchList] = useState(false);
+  const [selectedCard, setSelectedCard] = useState<ProfileCardType | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const x = useMotionValue(0);
   const rotate = useTransform(x, [-200, 0, 200], [-15, 0, 15]);
@@ -160,10 +163,20 @@ export default function MatchSystem({ profiles, onMatch, onReject }: MatchSystem
     }
   };
 
+  const openModal = (profile: ProfileCardType) => {
+    setSelectedCard(profile);
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setSelectedCard(null);
+  };
+
   return (
     <div className="relative min-h-screen w-full overflow-hidden">
 
-      <div className="container mx-auto py-10 space-y-6 relative z-10 flex flex-col items-center w-full h-screen">
+      <div className="container mx-auto  space-y-6 relative z-10 flex flex-col items-center w-full h-screen">
         <header className="text-center mb-6">
           <p className="text-muted-foreground">Glissez à droite pour matcher, à gauche pour passer</p>
         </header>
@@ -244,6 +257,15 @@ export default function MatchSystem({ profiles, onMatch, onReject }: MatchSystem
                         <Info className="text-purple-300 w-4 h-4 sm:w-5 sm:h-5" />
                         <p className="text-xs sm:text-sm truncate max-w-[200px] sm:max-w-[250px]">{currentProfile.description || "Pas de description"}</p>
                       </div>
+                      <button 
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          openModal(currentProfile);
+                        }}
+                        className="mt-2 px-3 py-1 bg-white/20 backdrop-blur-md rounded-full text-white text-xs hover:bg-white/30 transition-colors"
+                      >
+                        Voir plus de détails
+                      </button>
                     </div>
                   </div>
                 </div>
@@ -423,6 +445,15 @@ export default function MatchSystem({ profiles, onMatch, onReject }: MatchSystem
                                     <User className="text-blue-300 w-3 h-3" />
                                     <p className="text-white text-xs">{profile.age || "?"} ans</p>
                                   </div>
+                                  <button 
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      openModal(profile);
+                                    }}
+                                    className="mt-1 px-2 py-0.5 bg-white/20 backdrop-blur-md rounded-full text-white text-xs hover:bg-white/30 transition-colors"
+                                  >
+                                    Détails
+                                  </button>
                                 </div>
                               </div>
                             </div>
@@ -493,6 +524,15 @@ export default function MatchSystem({ profiles, onMatch, onReject }: MatchSystem
                                     <User className="text-gray-300 w-3 h-3" />
                                     <p className="text-white text-xs">{profile.age || "?"} ans</p>
                                   </div>
+                                  <button 
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      openModal(profile);
+                                    }}
+                                    className="mt-1 px-2 py-0.5 bg-white/20 backdrop-blur-md rounded-full text-white text-xs hover:bg-white/30 transition-colors"
+                                  >
+                                    Détails
+                                  </button>
                                 </div>
                               </div>
                             </div>
@@ -507,6 +547,17 @@ export default function MatchSystem({ profiles, onMatch, onReject }: MatchSystem
           )}
         </AnimatePresence>
       </div>
+
+      {selectedCard && (
+        <UserCardModal
+          name={selectedCard.name}
+          age={selectedCard.age}
+          location={selectedCard.location}
+          description={selectedCard.description}
+          isOpen={isModalOpen}
+          onClose={closeModal}
+        />
+      )}
     </div>
   );
 }

@@ -11,7 +11,6 @@ import { Swiper, SwiperSlide } from 'swiper/react';
 import 'swiper/css';
 import 'swiper/css/effect-cards';
 
-import '../../styles/pokemon-pack-appear.css';
 import '../../styles/swiper.css';
 
 import { EffectCards } from 'swiper/modules';
