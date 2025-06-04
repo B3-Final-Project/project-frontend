@@ -56,7 +56,9 @@ export default function ConversationItem({
                   {conversation.isTyping ? (
                     <div className="flex items-center text-blue-500">
                       <span className="animate-pulse">En train d'écrire</span>
-                      <span className="ml-1 animate-bounce">...</span>
+                      <span className="ml-1 animate-bounce delay-0">.</span>
+                      <span className="animate-bounce delay-150">.</span>
+                      <span className="animate-bounce delay-300">.</span>
                     </div>
                   ) : (
                     <p className="truncate">{conversation.lastMessage}</p>

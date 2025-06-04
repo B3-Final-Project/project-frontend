@@ -1,7 +1,5 @@
-import MessagePage from '@/components/messages/MessagePage';
+import MessagesList from '@/components/messages/MessagesList';
 
 export default function MessagesPage() {
-  return (
-    <MessagePage/>
-  );
+    return <MessagesList />;
 }
