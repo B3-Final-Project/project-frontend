@@ -73,13 +73,11 @@ export default function MatchSystem({ profiles, onMatch, onReject }: MatchSystem
   // Because Tailwind doesn't support dynamic values
   function getCardSize() {
     if (typeof window !== 'undefined') {
-      // Mobile first approach - start with mobile size as default
       let size = {
         height: 'min(420px, 70vh)',
         width: 'min(280px, 85vw)'
       };
 
-      // Then scale up for larger screens
       if (window.innerWidth >= 768) {
         size = {
           height: 'min(480px, 75vh)',
@@ -97,7 +95,6 @@ export default function MatchSystem({ profiles, onMatch, onReject }: MatchSystem
       return size;
     }
 
-    // Default fallback for SSR
     return {
       height: 'min(420px, 70vh)',
       width: 'min(280px, 85vw)'
@@ -113,7 +110,6 @@ export default function MatchSystem({ profiles, onMatch, onReject }: MatchSystem
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  // Handle card match
   const handleMatch = (profile: ProfileCardType) => {
     setMatchedProfile(profile);
     setShowMatchAnimation(true);
@@ -146,7 +142,7 @@ export default function MatchSystem({ profiles, onMatch, onReject }: MatchSystem
 
   const moveToNextCard = () => {
     setCurrentIndex((prevIndex) => prevIndex + 1);
-    x.set(0); // Reset card position
+    x.set(0);
   };
 
   const resetMatches = () => {
@@ -179,13 +175,13 @@ export default function MatchSystem({ profiles, onMatch, onReject }: MatchSystem
     <div className="relative min-h-screen w-full overflow-hidden">
       <div className="container mx-auto px-4 py-6 sm:py-10 relative z-10 flex flex-col items-center w-full h-screen">
         {/* Match Counters */}
-        <MatchCounters 
+        <MatchCounters
           matchesCount={matches.length}
           nonMatchesCount={nonMatches.length}
           setShowMatchList={setShowMatchList}
           setShowNonMatchList={setShowNonMatchList}
         />
-        
+
         {/* Reject Animation - Positioned between counters and card */}
         <div className="h-12 sm:h-16 relative w-full">
           <AnimatePresence>

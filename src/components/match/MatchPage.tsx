@@ -1,15 +1,27 @@
 import { Background } from '@/components/Background';
 import { motion } from 'framer-motion';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import MatchSystem, { ProfileCardType } from './MatchSystem';
 import PackOpener from './PackOpener';
 import { generateProfiles } from './ProfileGenerator';
+
+const MOBILE_BREAKPOINT = 768;
 
 const MatchPage = () => {
   const [packProfiles, setPackProfiles] = useState<ProfileCardType[]>([]);
   const [isPackOpened, setIsPackOpened] = useState(false);
   const [showMatchSystem, setShowMatchSystem] = useState(false);
   const [showCardAnimation, setShowCardAnimation] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkScreenSize = () => {
+      setIsMobile(window.innerWidth < MOBILE_BREAKPOINT);
+    };
+    checkScreenSize();
+    window.addEventListener('resize', checkScreenSize);
+    return () => window.removeEventListener('resize', checkScreenSize);
+  }, []);
 
   const handlePackOpened = () => {
     const newProfiles = generateProfiles(5);
@@ -55,7 +67,7 @@ const MatchPage = () => {
                     initial={{
                       opacity: 0,
                       scale: 0.5,
-                      top: "40%",
+                      top: isMobile ? "80%" : "65%",
                       y: "-50%",
                       rotateY: 180,
                       x: 0,
@@ -64,10 +76,10 @@ const MatchPage = () => {
                     animate={{
                       opacity: 1,
                       scale: 1,
-                      top: "40%",
+                      top: isMobile ? "80%" : "65%",
                       y: "-50%",
                       rotateY: 0,
-                      x: `${(index - 2) * 40}px`,
+                      x: isMobile ? `${(index - 2) * 15}px` : `${(index - 2) * 40}px`,
                       transition: {
                         delay: index * 0.2 + 0.5,
                         type: "spring",
