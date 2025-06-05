@@ -33,9 +33,9 @@ const MatchPage = () => {
     <div className="relative min-h-screen w-full overflow-hidden">
       <Background />
 
-      <div className="container mx-auto py-10 relative z-10">
+      <div className="container mx-auto relative z-10">
         <div className="flex flex-col items-center justify-center">
-          <h1 className="text-3xl font-bold mb-8">Trouvez votre match</h1>
+          {/* <h1 className="text-3xl font-bold mb-8">Trouvez votre match</h1> */}
 
           <div className="w-full max-w-4xl h-[60vh] flex items-center justify-center">
             {showMatchSystem ? (
