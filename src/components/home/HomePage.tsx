@@ -4,6 +4,7 @@ import Image from "next/image";
 import { Quantico } from "next/font/google";
 import { clsx } from "clsx";
 import { SignInButton } from "@/components/auth/SignInButton";
+import UserDashboard from "./UserDashboard";
 
 const quantico = Quantico({
   subsets: ['latin'],
@@ -23,13 +24,7 @@ export default function HomePage() {
         <SignInButton/>
       </main>
   );
-  } else {
-    return (
-      <main className="flex flex-col items-center justify-center h-screen">
-        <Image src={"/logo.png"} alt={"holomatch logo"} width={278} height={224}/>
-        <h1 className={clsx(quantico.className, 'text-4xl text-center mt-10')}>Welcome, {auth.user.profile.email}!</h1>
-        <p className="text-lg mt-4">You are logged in.</p>
-      </main>
-    );
-  }
+  } 
+  
+  return <UserDashboard/>
 }

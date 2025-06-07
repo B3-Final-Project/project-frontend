@@ -5,4 +5,5 @@ export enum RESTServerRoute {
   REST_BOOSTER = 'booster',
   REST_TEN_BOOSTERS = 'booster/10',
   REST_PROFILES_IMAGES = 'profiles/image',
+  REST_PROFILE_MATCHES = 'profile/matches'
 }

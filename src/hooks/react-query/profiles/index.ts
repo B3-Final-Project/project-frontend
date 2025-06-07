@@ -176,3 +176,12 @@ export function useImageMutations() {
   };
 }
 
+export function useProfileMatchesQuery() {
+  return useQuery({
+    queryKey: ["profile-matches"],
+    queryFn: () => ProfileRouter.getProfileMatches(),
+    refetchOnWindowFocus: false,
+    refetchInterval: 10000,
+    refetchOnMount: false
+  });
+}
