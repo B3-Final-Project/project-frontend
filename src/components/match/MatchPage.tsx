@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import { useEffect, useState } from 'react';
 import MatchSystem, { ProfileCardType } from './MatchSystem';
 import PackOpener from './PackOpener';
-import { generateProfiles } from './ProfileGenerator';
+import { fetchBoosters, mapBoosterToProfileCardType } from './ProfileGenerator';
 
 const MOBILE_BREAKPOINT = 768;
 
@@ -23,9 +23,16 @@ const MatchPage = () => {
     return () => window.removeEventListener('resize', checkScreenSize);
   }, []);
 
-  const handlePackOpened = () => {
-    const newProfiles = generateProfiles(5);
-    setPackProfiles(newProfiles);
+  const handlePackOpened = async () => {
+    try {
+      const fetchedBoosters = await fetchBoosters(5); // Récupère 5 profils
+      const newProfiles = fetchedBoosters.map(mapBoosterToProfileCardType);
+      setPackProfiles(newProfiles);
+    } catch (error) {
+      console.error("Failed to fetch pack profiles:", error);
+      // Tu pourrais afficher un message d'erreur à l'utilisateur ici
+      setPackProfiles([]); // Réinitialise ou gère l'erreur comme tu le souhaites
+    }
     setIsPackOpened(true);
     setShowCardAnimation(true);
 

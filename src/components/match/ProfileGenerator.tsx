@@ -1,115 +1,83 @@
-import { ProfileCardType } from './MatchSystem';
+import { BoosterRouter } from '@/lib/routes/booster';
+import { Booster } from '@/lib/routes/booster/interfaces/booster.interface';
+import { useQuery } from '@tanstack/react-query'; // Ou 'react-query' si tu utilises une version plus ancienne
+import React from 'react';
+import MatchSystem, { ProfileCardType } from './MatchSystem';
+import { FullScreenLoading } from '../ui/FullScreenLoading';
 
-// Données de profils d'exemple
-const SAMPLE_PROFILES: ProfileCardType[] = [
-  {
-    id: '1',
-    name: 'Pikachu',
-    image: '/img.png',
-    age: 5,
-    location: 'Kanto',
-    description: 'Un Pokémon de type Électrique connu pour son apparence mignonne et ses puissantes attaques électriques.',
-  },
-  {
-    id: '2',
-    name: 'Charizard',
-    image: '/img.png',
-    age: 10,
-    location: 'Kanto',
-    description: 'Un Pokémon de type Feu/Vol connu pour sa nature féroce et ses puissantes attaques de feu.',
-  },
-  {
-    id: '3',
-    name: 'Bulbasaur',
-    image: '/img.png',
-    age: 3,
-    location: 'Kanto',
-    description: 'Un Pokémon de type Plante/Poison connu pour son apparence de plante et sa capacité à utiliser des lianes.',
-  },
-  {
-    id: '4',
-    name: 'Squirtle',
-    image: '/img.png',
-    age: 4,
-    location: 'Kanto',
-    description: 'Un Pokémon de type Eau connu pour sa carapace et sa capacité à projeter de l\'eau depuis sa bouche.',
-  },
-  {
-    id: '5',
-    name: 'Eevee',
-    image: '/img.png',
-    age: 2,
-    location: 'Kanto',
-    description: 'Un Pokémon de type Normal connu pour son adaptabilité et ses multiples formes d\'évolution.',
-  },
-  {
-    id: '6',
-    name: 'Mewtwo',
-    image: '/img.png',
-    age: 20,
-    location: 'Kanto',
-    description: 'Un Pokémon de type Psy connu pour ses incroyables pouvoirs psychiques et ses origines mystérieuses.',
-  },
-  {
-    id: '7',
-    name: 'Gengar',
-    image: '/img.png',
-    age: 15,
-    location: 'Kanto',
-    description: 'Un Pokémon de type Spectre/Poison connu pour sa nature espiègle et sa capacité à hanter les autres.',
-  },
-  {
-    id: '8',
-    name: 'Lucario',
-    image: '/img.png',
-    age: 8,
-    location: 'Sinnoh',
-    description: 'Un Pokémon de type Combat/Acier connu pour sa capacité à détecter les auras et ses puissantes compétences de combat.',
-  },
-  {
-    id: '9',
-    name: 'Greninja',
-    image: '/img.png',
-    age: 6,
-    location: 'Kalos',
-    description: 'Un Pokémon de type Eau/Ténèbres connu pour sa vitesse et ses capacités furtives de ninja.',
-  },
-  {
-    id: '10',
-    name: 'Gardevoir',
-    image: '/img.png',
-    age: 7,
-    location: 'Hoenn',
-    description: 'Un Pokémon de type Psy/Fée connu pour son élégance et sa nature protectrice envers son dresseur.',
-  },
-];
 
-/**
- * Génère un profil aléatoire avec un ID unique
- */
-export const generateProfile = (id: string): ProfileCardType => {
-  const randomProfile = SAMPLE_PROFILES[Math.floor(Math.random() * SAMPLE_PROFILES.length)];
-  
+
+const BOOSTER_COUNT = 5;
+
+// Fonction pour récupérer les boosters depuis le backend
+export const fetchBoosters = (count: number): Promise<Booster[]> => {
+  // BoosterRouter.getBooster est une fonction qui attend (body, params)
+  // Pour une requête GET sans body, on passe undefined pour le body.
+  // Le 'count' est passé dans l'objet params pour remplacer :count dans le chemin de l'URL.
+  return BoosterRouter.getBooster(undefined, { count: count.toString() });
+};
+
+// Fonction pour mapper les données Booster vers ProfileCardType
+export const mapBoosterToProfileCardType = (booster: Booster): ProfileCardType => {
+  let mainImage = '/default-avatar.png'; // Image par défaut, assure-toi qu'elle existe dans /public
+  if (booster.avatarUrl) {
+    mainImage = booster.avatarUrl;
+  } else if (booster.images && booster.images.length > 0 && booster.images[0]) {
+    mainImage = booster.images[0]; // Prend la première image de la liste
+  }
+
   return {
-    id,
-    name: randomProfile.name,
-    image: randomProfile.image,
-    age: randomProfile.age,
-    location: randomProfile.location,
-    description: randomProfile.description,
+    id: booster.id.toString(), // L'ID du profil (Profile.id)
+    name: booster.userProfile?.name || 'Utilisateur Holomatch', // Nom de l'utilisateur (accès sécurisé)
+    image: mainImage,
+    age: booster.userProfile?.age, // Âge de l'utilisateur (accès sécurisé)
+    location: booster.city, // Ville du profil
+    description: booster.work || `Découvre ${booster.userProfile?.name || 'cette personne'} !`,
+    isRevealed: true, // Par défaut, ou selon ta logique
   };
 };
 
-/**
- * Génère un ensemble de profils aléatoires
- */
-export const generateProfiles = (count: number): ProfileCardType[] => {
-  return Array.from({ length: count }, (_, i) => 
-    generateProfile(`profile-${Date.now()}-${i}`)
-  );
+const ProfileGenerator: React.FC = () => {
+  const {
+    data: boosterData,
+    isLoading,
+    isError,
+    error,
+  } = useQuery<Booster[], Error>({
+    queryKey: ['boosters', BOOSTER_COUNT],
+    queryFn: () => fetchBoosters(BOOSTER_COUNT),
+    // enabled: !!getAuthToken(), // Optionnel: n'exécute la requête que si un token est disponible.
+    // Assure-toi que getAuthToken() est synchrone si tu l'utilises.
+  });
+
+  if (isLoading) {
+    return <FullScreenLoading />;
+  }
+
+  if (isError) {
+    return (
+      <div className="flex flex-col items-center justify-center h-screen text-red-500 p-4 text-center">
+        <p className="font-bold text-lg mb-2">Erreur lors du chargement des profils</p>
+        {/* Affiche le message d'erreur. L'erreur est déjà un objet Error grâce au typage de useQuery. */}
+        <p className="text-sm">{error?.message || 'Une erreur inconnue est survenue.'}</p>
+        <p className="text-xs mt-2">Vérifiez votre connexion internet, la configuration de l'API, et que vous êtes bien authentifié (token JWT valide).</p>
+      </div>
+    );
+  }
+
+  const profilesToDisplay: ProfileCardType[] = React.useMemo(() => {
+    return boosterData ? boosterData.map(mapBoosterToProfileCardType) : [];
+  }, [boosterData]);
+
+  if (profilesToDisplay.length === 0 && !isLoading) { // Vérifie aussi !isLoading pour éviter un flash de ce message
+    return (
+      <div className="flex items-center justify-center h-screen text-gray-500">
+        Aucun profil à afficher pour le moment.
+      </div>
+    );
+  }
+
+  return <MatchSystem profiles={profilesToDisplay} />;
 };
 
-export default {
-  generateProfile,
-  generateProfiles
-};
+export default ProfileGenerator;
