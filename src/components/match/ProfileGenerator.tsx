@@ -12,7 +12,6 @@ export interface ProfileCardType {
 
 import { useQuery } from '@tanstack/react-query';
 import React, { useEffect } from 'react';
-import { FullScreenLoading } from '../ui/FullScreenLoading';
 
 export const fetchBoosters = async (count: number): Promise<Booster[]> => {
   return BoosterRouter.getBooster(undefined, { count: count.toString() });
@@ -40,11 +39,10 @@ export const mapBoosterToProfileCardType = (booster: Booster): ProfileCardType =
 interface ProfileGeneratorProps {
   count: number;
   onProfilesLoaded: (boosters: Booster[]) => void;
-  onError: (error: Error) => void;
+  onError: (err: Error) => void;
 }
 
 const ProfileGenerator: React.FC<ProfileGeneratorProps> = ({ count, onProfilesLoaded, onError }) => {
-  console.log(`ProfileGenerator: Initializing to fetch ${count} boosters.`);
 
   const {
     data: boosterData,
@@ -58,24 +56,20 @@ const ProfileGenerator: React.FC<ProfileGeneratorProps> = ({ count, onProfilesLo
 
   useEffect(() => {
     if (boosterData) {
-      console.log('ProfileGenerator: Boosters loaded, calling onProfilesLoaded.');
       onProfilesLoaded(boosterData);
     }
   }, [boosterData, onProfilesLoaded]);
 
   useEffect(() => {
     if (isError && error) {
-      console.error('ProfileGenerator: Error fetching boosters, calling onError.', error);
       onError(error);
     }
   }, [isError, error, onError]);
 
-  if (isLoading) {
-    console.log('ProfileGenerator: Loading boosters...');
-    return <FullScreenLoading />;
-  }
-
-  console.log('ProfileGenerator: Loading finished or error occurred, returning null.');
+  // This component is responsible for fetching booster profiles and calling the appropriate
+  // callbacks (onProfilesLoaded or onError). It does not render any UI itself.
+  // The isLoading, isError, and error states from useQuery can be used by the parent component
+  // if it needs to display loading or error states.
   return null;
 };
 

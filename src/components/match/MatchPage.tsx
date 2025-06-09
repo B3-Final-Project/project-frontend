@@ -25,12 +25,10 @@ const MatchPage = () => {
   }, []);
 
   const handlePackOpened = () => {
-    console.log('MatchPage: Pack opened, requesting booster fetch.');
     setShouldFetchBoosters(true);
   };
 
   const handleProfilesLoadedFromGenerator = (boosters: Booster[]) => {
-    console.log('MatchPage: Profiles loaded from generator', boosters);
     const newProfiles = boosters.map(mapBoosterToProfileCardType);
     setPackProfiles(newProfiles);
     setIsPackOpened(true);
@@ -44,7 +42,6 @@ const MatchPage = () => {
   };
 
   const handleProfileLoadingError = (error: Error) => {
-    console.error("MatchPage: Failed to load profiles from generator:", error);
     setPackProfiles([]);
     setIsPackOpened(false);
     setShowCardAnimation(false);
@@ -71,8 +68,14 @@ const MatchPage = () => {
               <div className="w-full h-full">
                 <MatchSystem
                   profiles={packProfiles}
-                  onMatch={(profile) => console.log('Match avec:', profile.name)}
-                  onReject={(profile) => console.log('Profil rejeté:', profile.name)}
+                  onMatch={(profile) => {
+                    // TODO: Implement match logic (e.g., API call)
+                    // console.log('Match avec:', profile.name); // Kept for now if needed, but can be removed
+                  }}
+                  onReject={(profile) => {
+                    // TODO: Implement reject logic (e.g., API call)
+                    // console.log('Profil rejeté:', profile.name); // Kept for now if needed, but can be removed
+                  }}
                 />
               </div>
             ) : showCardAnimation ? (

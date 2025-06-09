@@ -29,7 +29,6 @@ type MatchSystemProps = {
 };
 
 export default function MatchSystem({ profiles, onMatch, onReject }: MatchSystemProps) {
-  const [currentProfiles, setCurrentProfiles] = useState<ProfileCardType[]>(profiles);
   const [matches, setMatches] = useState<ProfileCardType[]>(() => {
     if (typeof window !== 'undefined') {
     }
@@ -56,18 +55,25 @@ export default function MatchSystem({ profiles, onMatch, onReject }: MatchSystem
   const matchOpacity = useTransform(x, [0, 100, 200], [0, 0.5, 1]);
   const rejectOpacity = useTransform(x, [-200, -100, 0], [1, 0.5, 0]);
 
-  const constraintsRef = useRef(null);
+  const constraintsRef = useRef<HTMLDivElement>(null);
 
+  // useEffect that managed currentProfiles state is removed.
+
+  // Determine the actual current profile to display
+  let currentProfile: ProfileCardType | null = null;
+  if (currentIndex < profiles.length) {
+    currentProfile = profiles[currentIndex];
+  }
+  // This currentProfile might be one that's already in matches/nonMatches if moveToNextCard hasn't completed its async update of currentIndex yet
+  // The primary guard is `currentIndex < profiles.length` and `moveToNextCard`'s logic.
+
+  // Reset states when a new set of profiles is passed in
   useEffect(() => {
-    const matchIds = matches.map(match => match.id);
-    const nonMatchIds = nonMatches.map(nonMatch => nonMatch.id);
-    const filteredProfiles = profiles.filter(
-      profile => !matchIds.includes(profile.id) && !nonMatchIds.includes(profile.id)
-    );
-    setCurrentProfiles(filteredProfiles);
-  }, [profiles, matches, nonMatches]);
-
-  const currentProfile = currentProfiles[currentIndex];
+    setMatches([]);
+    setNonMatches([]);
+    setCurrentIndex(0);
+    x.set(0); // Reset card position
+  }, [profiles, x]); // Added x to dependency array as per good practice, though profiles is the main trigger
 
   // Handle card size based on device
   // Because Tailwind doesn't support dynamic values
@@ -141,8 +147,20 @@ export default function MatchSystem({ profiles, onMatch, onReject }: MatchSystem
   };
 
   const moveToNextCard = () => {
-    setCurrentIndex((prevIndex) => prevIndex + 1);
-    x.set(0);
+    setCurrentIndex((prevIndex) => {
+      let nextIdx = prevIndex + 1;
+      while (nextIdx < profiles.length) {
+        const profileToCheck = profiles[nextIdx];
+        const isInMatches = matches.some(m => m.id === profileToCheck.id);
+        const isInNonMatches = nonMatches.some(nm => nm.id === profileToCheck.id);
+        if (!isInMatches && !isInNonMatches) {
+          break; // Found a suitable profile
+        }
+        nextIdx++;
+      }
+      x.set(0); // Reset card position
+      return nextIdx;
+    });
   };
 
   const resetMatches = () => {
@@ -205,7 +223,7 @@ export default function MatchSystem({ profiles, onMatch, onReject }: MatchSystem
             width: cardSize.width,
           }}
         >
-          {currentIndex < currentProfiles.length ? (
+          {currentProfile && currentIndex < profiles.length ? (
             <ProfileCard
               profile={currentProfile}
               cardSize={cardSize}
@@ -223,7 +241,7 @@ export default function MatchSystem({ profiles, onMatch, onReject }: MatchSystem
         </div>
 
         {/* Control Buttons */}
-        {currentIndex < currentProfiles.length && (
+        {currentProfile && currentIndex < profiles.length && (
           <ControlButtons
             currentProfile={currentProfile}
             handleMatch={handleMatch}
