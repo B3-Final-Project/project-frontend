@@ -40,10 +40,10 @@ export function SidebarComponent() {
         <Sidebar className={'md:w-16 lg:w-48'}>
           <SidebarContent>
             <SidebarGroup>
-              <div className={'relative mx-auto h-[40px] w-full flex flex-col items-center gap-2'}>
+              <div className={'relative mx-auto h-[156px] w-full flex items-center '}>
                 <Image src="/logo.png" fill={true} alt="logo" />
-                <h2 className={clsx('hidden lg:block', quantico.className)}>HOLOMATCH</h2>
               </div>
+              <h2 className={clsx('hidden text-xl mx-auto lg:block', quantico.className)}>HOLOMATCH</h2>
               <SidebarMenu className={'h-full flex justify-center gap-6'}>
                 {items.map((item) => {
                   const IconComponent = item.icon as React.ElementType;

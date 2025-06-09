@@ -1,11 +1,11 @@
-import { useProfileMatchesQuery } from "@/hooks/react-query/profiles";
 import Image from "next/image";
+import { useMatchesQuery } from "@/hooks/react-query/matches";
 
 export default function MatchList() {
-  const query = useProfileMatchesQuery()
+  const query = useMatchesQuery()
 
   return (
-    <div className="flex flex-col items-center justify-center gap-4">
+    <div className="flex flex-col gap-4">
       <h2 className="text-2xl font-bold">Your Matches</h2>
       {query.isLoading ? (
         <p>Loading matches...</p>
@@ -13,7 +13,7 @@ export default function MatchList() {
         <p>Error loading matches: {query.error.message}</p>
       ) : (
         <ul className="list-disc">
-          {query.data!.matches.map((match) =>
+          {query.data?.matches.map((match) =>
             <li key={match.id} className="flex items-center gap-4">
               <Image
                 src={match.imageUrl}
