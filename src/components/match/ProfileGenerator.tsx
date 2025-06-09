@@ -1,83 +1,82 @@
 import { BoosterRouter } from '@/lib/routes/booster';
 import { Booster } from '@/lib/routes/booster/interfaces/booster.interface';
-import { useQuery } from '@tanstack/react-query'; // Ou 'react-query' si tu utilises une version plus ancienne
-import React from 'react';
-import MatchSystem, { ProfileCardType } from './MatchSystem';
+export interface ProfileCardType {
+  id: string;
+  name: string;
+  image: string;
+  age?: number;
+  location?: string;
+  description: string;
+  isRevealed: boolean;
+}
+
+import { useQuery } from '@tanstack/react-query';
+import React, { useEffect } from 'react';
 import { FullScreenLoading } from '../ui/FullScreenLoading';
 
-
-
-const BOOSTER_COUNT = 5;
-
-// Fonction pour récupérer les boosters depuis le backend
-export const fetchBoosters = (count: number): Promise<Booster[]> => {
-  // BoosterRouter.getBooster est une fonction qui attend (body, params)
-  // Pour une requête GET sans body, on passe undefined pour le body.
-  // Le 'count' est passé dans l'objet params pour remplacer :count dans le chemin de l'URL.
+export const fetchBoosters = async (count: number): Promise<Booster[]> => {
   return BoosterRouter.getBooster(undefined, { count: count.toString() });
 };
 
-// Fonction pour mapper les données Booster vers ProfileCardType
 export const mapBoosterToProfileCardType = (booster: Booster): ProfileCardType => {
-  let mainImage = '/default-avatar.png'; // Image par défaut, assure-toi qu'elle existe dans /public
+  let mainImage = '/vintage.png';
   if (booster.avatarUrl) {
     mainImage = booster.avatarUrl;
   } else if (booster.images && booster.images.length > 0 && booster.images[0]) {
-    mainImage = booster.images[0]; // Prend la première image de la liste
+    mainImage = booster.images[0];
   }
 
   return {
-    id: booster.id.toString(), // L'ID du profil (Profile.id)
-    name: booster.userProfile?.name || 'Utilisateur Holomatch', // Nom de l'utilisateur (accès sécurisé)
+    id: booster.id.toString(),
+    name: booster.userProfile?.name || 'Utilisateur Holomatch',
     image: mainImage,
-    age: booster.userProfile?.age, // Âge de l'utilisateur (accès sécurisé)
-    location: booster.city, // Ville du profil
+    age: booster.userProfile?.age,
+    location: booster.city,
     description: booster.work || `Découvre ${booster.userProfile?.name || 'cette personne'} !`,
-    isRevealed: true, // Par défaut, ou selon ta logique
+    isRevealed: true,
   };
 };
 
-const ProfileGenerator: React.FC = () => {
+interface ProfileGeneratorProps {
+  count: number;
+  onProfilesLoaded: (boosters: Booster[]) => void;
+  onError: (error: Error) => void;
+}
+
+const ProfileGenerator: React.FC<ProfileGeneratorProps> = ({ count, onProfilesLoaded, onError }) => {
+  console.log(`ProfileGenerator: Initializing to fetch ${count} boosters.`);
+
   const {
     data: boosterData,
     isLoading,
     isError,
     error,
   } = useQuery<Booster[], Error>({
-    queryKey: ['boosters', BOOSTER_COUNT],
-    queryFn: () => fetchBoosters(BOOSTER_COUNT),
-    // enabled: !!getAuthToken(), // Optionnel: n'exécute la requête que si un token est disponible.
-    // Assure-toi que getAuthToken() est synchrone si tu l'utilises.
+    queryKey: ['boosters', count],
+    queryFn: () => fetchBoosters(count),
   });
 
+  useEffect(() => {
+    if (boosterData) {
+      console.log('ProfileGenerator: Boosters loaded, calling onProfilesLoaded.');
+      onProfilesLoaded(boosterData);
+    }
+  }, [boosterData, onProfilesLoaded]);
+
+  useEffect(() => {
+    if (isError && error) {
+      console.error('ProfileGenerator: Error fetching boosters, calling onError.', error);
+      onError(error);
+    }
+  }, [isError, error, onError]);
+
   if (isLoading) {
+    console.log('ProfileGenerator: Loading boosters...');
     return <FullScreenLoading />;
   }
 
-  if (isError) {
-    return (
-      <div className="flex flex-col items-center justify-center h-screen text-red-500 p-4 text-center">
-        <p className="font-bold text-lg mb-2">Erreur lors du chargement des profils</p>
-        {/* Affiche le message d'erreur. L'erreur est déjà un objet Error grâce au typage de useQuery. */}
-        <p className="text-sm">{error?.message || 'Une erreur inconnue est survenue.'}</p>
-        <p className="text-xs mt-2">Vérifiez votre connexion internet, la configuration de l'API, et que vous êtes bien authentifié (token JWT valide).</p>
-      </div>
-    );
-  }
-
-  const profilesToDisplay: ProfileCardType[] = React.useMemo(() => {
-    return boosterData ? boosterData.map(mapBoosterToProfileCardType) : [];
-  }, [boosterData]);
-
-  if (profilesToDisplay.length === 0 && !isLoading) { // Vérifie aussi !isLoading pour éviter un flash de ce message
-    return (
-      <div className="flex items-center justify-center h-screen text-gray-500">
-        Aucun profil à afficher pour le moment.
-      </div>
-    );
-  }
-
-  return <MatchSystem profiles={profilesToDisplay} />;
+  console.log('ProfileGenerator: Loading finished or error occurred, returning null.');
+  return null;
 };
 
 export default ProfileGenerator;

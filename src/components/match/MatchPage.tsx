@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import { useEffect, useState } from 'react';
 import MatchSystem, { ProfileCardType } from './MatchSystem';
 import PackOpener from './PackOpener';
-import { fetchBoosters, mapBoosterToProfileCardType } from './ProfileGenerator';
+import ProfileGenerator, { Booster, mapBoosterToProfileCardType } from './ProfileGenerator'; // Import ProfileGenerator component and Booster type
 
 const MOBILE_BREAKPOINT = 768;
 
@@ -13,6 +13,7 @@ const MatchPage = () => {
   const [showMatchSystem, setShowMatchSystem] = useState(false);
   const [showCardAnimation, setShowCardAnimation] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+  const [shouldFetchBoosters, setShouldFetchBoosters] = useState(false);
 
   useEffect(() => {
     const checkScreenSize = () => {
@@ -23,23 +24,32 @@ const MatchPage = () => {
     return () => window.removeEventListener('resize', checkScreenSize);
   }, []);
 
-  const handlePackOpened = async () => {
-    try {
-      const fetchedBoosters = await fetchBoosters(5); // Récupère 5 profils
-      const newProfiles = fetchedBoosters.map(mapBoosterToProfileCardType);
-      setPackProfiles(newProfiles);
-    } catch (error) {
-      console.error("Failed to fetch pack profiles:", error);
-      // Tu pourrais afficher un message d'erreur à l'utilisateur ici
-      setPackProfiles([]); // Réinitialise ou gère l'erreur comme tu le souhaites
-    }
+  const handlePackOpened = () => {
+    console.log('MatchPage: Pack opened, requesting booster fetch.');
+    setShouldFetchBoosters(true);
+  };
+
+  const handleProfilesLoadedFromGenerator = (boosters: Booster[]) => {
+    console.log('MatchPage: Profiles loaded from generator', boosters);
+    const newProfiles = boosters.map(mapBoosterToProfileCardType);
+    setPackProfiles(newProfiles);
     setIsPackOpened(true);
     setShowCardAnimation(true);
+    setShouldFetchBoosters(false);
 
     setTimeout(() => {
       setShowMatchSystem(true);
       setShowCardAnimation(false);
     }, 3000);
+  };
+
+  const handleProfileLoadingError = (error: Error) => {
+    console.error("MatchPage: Failed to load profiles from generator:", error);
+    setPackProfiles([]);
+    setIsPackOpened(false);
+    setShowCardAnimation(false);
+    setShowMatchSystem(false);
+    setShouldFetchBoosters(false);
   };
 
   const handleReturnToPackOpening = () => {
@@ -129,6 +139,13 @@ const MatchPage = () => {
             ) : (
               <div className="flex items-center justify-center h-full">
                 <PackOpener onPackOpened={handlePackOpened} />
+                {shouldFetchBoosters && (
+                  <ProfileGenerator
+                    count={5}
+                    onProfilesLoaded={handleProfilesLoadedFromGenerator}
+                    onError={handleProfileLoadingError}
+                  />
+                )}
               </div>
             )}
           </div>
