@@ -70,12 +70,10 @@ const MatchPage = () => {
                 <MatchSystem
                   profiles={packProfiles}
                   onMatch={(profile) => {
-                    // TODO: Implement match logic (e.g., API call)
-                    // console.log('Match avec:', profile.name); // Kept for now if needed, but can be removed
+                    // console.log('Match avec:', profile.name);
                   }}
                   onReject={(profile) => {
-                    // TODO: Implement reject logic (e.g., API call)
-                    // console.log('Profil rejeté:', profile.name); // Kept for now if needed, but can be removed
+                    // console.log('Profil rejeté:', profile.name);
                   }}
                 />
               </div>

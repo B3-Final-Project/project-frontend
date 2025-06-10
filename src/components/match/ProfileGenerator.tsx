@@ -68,10 +68,7 @@ const ProfileGenerator: React.FC<ProfileGeneratorProps> = ({ count, onProfilesLo
     }
   }, [isError, error, onError]);
 
-  // This component is responsible for fetching booster profiles and calling the appropriate
-  // callbacks (onProfilesLoaded or onError). It does not render any UI itself.
-  // The isLoading, isError, and error states from useQuery can be used by the parent component
-  // if it needs to display loading or error states.
+
   return null;
 };
 

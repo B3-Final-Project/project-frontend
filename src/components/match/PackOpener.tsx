@@ -83,32 +83,8 @@ const PackOpener = ({ onPackOpened, profiles = [] }: PackOpenerProps) => {
     if (isOpening) return;
     setIsOpening(true);
 
-    // Générer des profils aléatoires si aucun n'est fourni
-    const availableProfiles = profiles.length > 0 ? profiles : [
-      {
-        id: 'default-1',
-        name: 'Alice Martin',
-        age: 28,
-        location: 'Paris',
-        description: 'Passionnée de voyages et de photographie. J\'aime découvrir de nouveaux horizons et capturer des moments uniques à travers mon objectif.'
-      },
-      {
-        id: 'default-2',
-        name: 'Thomas Dubois',
-        age: 32,
-        location: 'Lyon',
-        description: 'Amateur de cuisine et de randonnée. Je cherche quelqu\'un pour partager mes aventures culinaires et mes explorations en pleine nature.'
-      },
-      {
-        id: 'default-3',
-        name: 'Sophie Leroy',
-        age: 26,
-        location: 'Bordeaux',
-        description: 'Musicienne et artiste. La créativité est au cœur de ma vie, j\'aime les concerts, les expos et les discussions inspirantes.'
-      }
-    ];
+    const availableProfiles = profiles.length > 0 ? profiles : [];
 
-    // Sélectionner un profil aléatoire
     const randomIndex = Math.floor(Math.random() * availableProfiles.length);
     const selectedProfile = availableProfiles[randomIndex];
 
@@ -139,7 +115,6 @@ const PackOpener = ({ onPackOpened, profiles = [] }: PackOpenerProps) => {
           <div className="pack-button-container">
             <div className={`pokemon-pack-3d ${isDragging ? 'dragging' : ''} ${isOpening ? 'opening' : ''}`}>
               <div className="pack-front">
-                {/* Affichage des profils disponibles si fournis */}
                 {profiles && profiles.length > 0 && (
                   <div className="profiles-grid grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mt-8">
                     {profiles.map((profile) => (

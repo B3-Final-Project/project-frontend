@@ -82,7 +82,6 @@ export default function ProfileCard({
         </div>
       </div>
 
-      {/* Match indicator */}
       <motion.div
         className="absolute top-3 sm:top-5 right-3 sm:right-5 bg-gradient-to-r from-green-400 to-blue-500 p-2 sm:p-3 rounded-full shadow-lg"
         style={{ opacity: matchOpacity }}
@@ -90,7 +89,6 @@ export default function ProfileCard({
         <Heart className="w-6 h-6 sm:w-8 sm:h-8 text-white" fill="white" />
       </motion.div>
 
-      {/* Reject indicator */}
       <motion.div
         className="absolute top-3 sm:top-5 left-3 sm:left-5 bg-gradient-to-r from-red-500 to-pink-500 p-2 sm:p-3 rounded-full shadow-lg"
         style={{ opacity: rejectOpacity }}

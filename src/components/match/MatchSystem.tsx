@@ -57,23 +57,17 @@ export default function MatchSystem({ profiles, onMatch, onReject }: MatchSystem
 
   const constraintsRef = useRef<HTMLDivElement>(null);
 
-  // useEffect that managed currentProfiles state is removed.
-
-  // Determine the actual current profile to display
   let currentProfile: ProfileCardType | null = null;
   if (currentIndex < profiles.length) {
     currentProfile = profiles[currentIndex];
   }
-  // This currentProfile might be one that's already in matches/nonMatches if moveToNextCard hasn't completed its async update of currentIndex yet
-  // The primary guard is `currentIndex < profiles.length` and `moveToNextCard`'s logic.
 
-  // Reset states when a new set of profiles is passed in
   useEffect(() => {
     setMatches([]);
     setNonMatches([]);
     setCurrentIndex(0);
-    x.set(0); // Reset card position
-  }, [profiles, x]); // Added x to dependency array as per good practice, though profiles is the main trigger
+    x.set(0);
+  }, [profiles, x]);
 
   // Handle card size based on device
   // Because Tailwind doesn't support dynamic values
@@ -154,11 +148,11 @@ export default function MatchSystem({ profiles, onMatch, onReject }: MatchSystem
         const isInMatches = matches.some(m => m.id === profileToCheck.id);
         const isInNonMatches = nonMatches.some(nm => nm.id === profileToCheck.id);
         if (!isInMatches && !isInNonMatches) {
-          break; // Found a suitable profile
+          break;
         }
         nextIdx++;
       }
-      x.set(0); // Reset card position
+      x.set(0);
       return nextIdx;
     });
   };
@@ -192,7 +186,6 @@ export default function MatchSystem({ profiles, onMatch, onReject }: MatchSystem
   return (
     <div className="relative min-h-screen w-full overflow-hidden">
       <div className="container mx-auto px-4 py-6 sm:py-10 relative z-10 flex flex-col items-center w-full h-screen">
-        {/* Match Counters */}
         <MatchCounters
           matchesCount={matches.length}
           nonMatchesCount={nonMatches.length}
@@ -200,7 +193,6 @@ export default function MatchSystem({ profiles, onMatch, onReject }: MatchSystem
           setShowNonMatchList={setShowNonMatchList}
         />
 
-        {/* Reject Animation - Positioned between counters and card */}
         <div className="h-12 sm:h-16 relative w-full">
           <AnimatePresence>
             {showRejectAnimation && (
@@ -214,7 +206,6 @@ export default function MatchSystem({ profiles, onMatch, onReject }: MatchSystem
           </AnimatePresence>
         </div>
 
-        {/* Card Stack */}
         <div
           ref={constraintsRef}
           className="relative flex items-center justify-center"
@@ -240,7 +231,6 @@ export default function MatchSystem({ profiles, onMatch, onReject }: MatchSystem
           )}
         </div>
 
-        {/* Control Buttons */}
         {currentProfile && currentIndex < profiles.length && (
           <ControlButtons
             currentProfile={currentProfile}
@@ -249,7 +239,6 @@ export default function MatchSystem({ profiles, onMatch, onReject }: MatchSystem
           />
         )}
 
-        {/* Match Animation */}
         <AnimatePresence>
           {showMatchAnimation && (
             <MatchAnimation
@@ -260,7 +249,6 @@ export default function MatchSystem({ profiles, onMatch, onReject }: MatchSystem
           )}
         </AnimatePresence>
 
-        {/* Modals */}
         <AnimatePresence>
           {showMatchList && (
             <MatchListModal
