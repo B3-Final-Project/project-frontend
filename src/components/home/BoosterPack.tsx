@@ -1,7 +1,6 @@
 import { formatRelationshipTypeEnum } from "@/lib/utils/enum-utils";
 import { BoosterPackDto } from "@/lib/routes/booster/dto/booster.dto";
 import clsx from "clsx";
-import Image from "next/image";
 import { RelationshipTypeEnum } from "@/lib/routes/profiles/enums";
 
 interface BoosterPackProps {

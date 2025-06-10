@@ -55,7 +55,7 @@ export function useLikeMatchMutation() {
     mutationFn: async (matchId: string) => {
       return MatchRouter.likeMatch(undefined, { id: matchId });
     },
-    onSuccess: (data, matchId) => {
+    onSuccess: (data) => {
       // Invalidate and refetch match-related queries
       queryClient.invalidateQueries({ queryKey: ["matches"] });
 
