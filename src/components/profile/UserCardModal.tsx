@@ -1,8 +1,8 @@
 "use client";
 
 import { motion } from 'framer-motion';
+import { Info, MapPin, User } from 'lucide-react';
 import { useEffect, useRef, useState } from "react";
-import { MapPin, User, Info } from 'lucide-react';
 
 interface UserCardModalProps {
   name: string;
@@ -95,12 +95,12 @@ export function UserCardModal({
         exit="exit"
         variants={cardVariants}
         className="relative"
+        whileHover={{ y: -5 }}
+        whileTap={{ scale: 0.98 }}
       >
         <motion.div
           className="w-[min(280px,85vw)] h-[min(420px,70vh)] md:w-[380px] md:h-[550px] perspective-1000 relative cursor-pointer"
           onClick={handleCardFlip}
-          whileHover={{ scale: 1.02 }}
-          whileTap={{ scale: 0.98 }}
         >
           <motion.div
             className="w-full h-full transform-style-3d relative"
@@ -120,11 +120,11 @@ export function UserCardModal({
               >
                 <div className="w-full h-full flex flex-col justify-between bg-gradient-to-t from-black/70 via-transparent">
                   <div className="flex justify-between items-center p-3 sm:p-5 font-medium flex-wrap gap-2">
-                    <div className="flex items-center gap-1 sm:gap-2 bg-white/20 backdrop-blur-md px-2 sm:px-3 py-1 sm:py-1.5 rounded-full text-white shadow-lg text-xs sm:text-sm">
+                    <div className="flex items-center gap-1 sm:gap-2 bg-white/20 px-2 sm:px-3 py-1 sm:py-1.5 rounded-full text-white shadow-lg text-xs sm:text-sm">
                       <MapPin className="text-red-400 w-4 h-4 sm:w-5 sm:h-5" />
                       <p>{location || "Location"}</p>
                     </div>
-                    <div className="flex items-center gap-1 sm:gap-2 bg-white/20 backdrop-blur-md px-2 sm:px-3 py-1 sm:py-1.5 rounded-full text-white shadow-lg text-xs sm:text-sm">
+                    <div className="flex items-center gap-1 sm:gap-2 bg-white/20 px-2 sm:px-3 py-1 sm:py-1.5 rounded-full text-white shadow-lg text-xs sm:text-sm">
                       <User className="text-blue-300 w-4 h-4 sm:w-5 sm:h-5" />
                       <p>{age || 99} ans</p>
                     </div>
@@ -139,7 +139,7 @@ export function UserCardModal({
 
             {/* Back side of the card */}
             <div className="w-full h-full rounded-xl p-[10px] bg-gradient-to-br from-[#6A5ACD] via-[#00AEEF] to-[#4A90E2] absolute backface-hidden rotate-y-180 shadow-2xl">
-              <div className="w-full h-full rounded-lg bg-gradient-to-b from-black/90 to-black/70 backdrop-blur-md flex flex-col justify-center p-7 text-white">
+              <div className="w-full h-full rounded-lg bg-gradient-to-b from-black/90 to-black/70 flex flex-col justify-center p-7 text-white">
                 <div className="flex items-center gap-1 sm:gap-2 mb-3 sm:mb-4">
                   <Info className="text-purple-300 w-5 h-5 sm:w-6 sm:h-6" />
                   <h3 className="text-xl sm:text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-500">Description</h3>
@@ -153,8 +153,7 @@ export function UserCardModal({
                 <div className="mt-4 border-t border-white/20 pt-4 w-full">
                   <motion.p
                     className="text-sm text-center text-blue-200"
-                    animate={{ y: [0, 5, 0] }}
-                    transition={{ repeat: Infinity, duration: 1.5 }}
+
                   >
                     Cliquer pour revenir
                   </motion.p>
