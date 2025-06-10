@@ -25,6 +25,8 @@ export const mapBoosterToProfileCardType = (booster: Booster): ProfileCardType =
     mainImage = booster.images[0];
   }
 
+  console.log('booster', booster);
+
   return {
     id: booster.id.toString(),
     name: booster.userProfile?.name || 'Utilisateur Holomatch',

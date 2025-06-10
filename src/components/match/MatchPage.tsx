@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import { useEffect, useState } from 'react';
 import MatchSystem, { ProfileCardType } from './MatchSystem';
 import PackOpener from './PackOpener';
-import ProfileGenerator, { Booster, mapBoosterToProfileCardType } from './ProfileGenerator'; // Import ProfileGenerator component and Booster type
+import ProfileGenerator, { mapBoosterToProfileCardType } from './ProfileGenerator';
 
 const MOBILE_BREAKPOINT = 768;
 
@@ -28,12 +28,13 @@ const MatchPage = () => {
     setShouldFetchBoosters(true);
   };
 
-  const handleProfilesLoadedFromGenerator = (boosters: Booster[]) => {
+  const handleProfilesLoadedFromGenerator = (boosters: any[]) => {
     const newProfiles = boosters.map(mapBoosterToProfileCardType);
     setPackProfiles(newProfiles);
     setIsPackOpened(true);
     setShowCardAnimation(true);
     setShouldFetchBoosters(false);
+
 
     setTimeout(() => {
       setShowMatchSystem(true);
