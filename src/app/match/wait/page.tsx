@@ -58,7 +58,7 @@ export default function MatchWaitPage() {
     if (isLoading) {
         return (
             <div className="flex flex-col items-center justify-center min-h-screen w-full bg-gray-900 text-white p-4">
-                <p className="text-lg">Chargement de la page d'attente...</p>
+                <p className="text-lg">Chargement de la page d&#39;attente...</p>
             </div>
         );
     }
@@ -70,7 +70,7 @@ export default function MatchWaitPage() {
     return (
         <div className="flex flex-col items-center justify-center min-h-screen w-full bg-gray-900 text-white p-4">
             <h3 className="text-xl sm:text-2xl font-bold mb-4 text-center">Prochain pack disponible bientôt !</h3>
-            <p className="text-muted-foreground mb-8 text-center">Vous avez utilisé tous vos packs pour aujourd'hui.</p>
+            <p className="text-muted-foreground mb-8 text-center">Vous avez utilisé tous vos packs pour aujourd&#39;hui.</p>
             {displayCountdown > 0 ? (
                 <div className="text-4xl sm:text-6xl font-mono bg-white/10 p-4 sm:p-6 rounded-lg shadow-lg">
                     {formatTime(displayCountdown)}
@@ -82,7 +82,7 @@ export default function MatchWaitPage() {
                 onClick={() => router.push('/')}
                 className="mt-8 px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg"
             >
-                Retour à l'accueil
+                Retour à l&#39;accueil
             </button>
         </div>
     );

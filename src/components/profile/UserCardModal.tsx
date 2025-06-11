@@ -1,8 +1,9 @@
 "use client";
 
-import { motion } from 'framer-motion';
 import { Info, MapPin, User } from 'lucide-react';
 import { useEffect, useState } from "react";
+
+import { motion } from 'framer-motion';
 
 interface UserCardModalProps {
   readonly name?: string;
@@ -13,30 +14,20 @@ interface UserCardModalProps {
 
 export function UserCardModal({ name, age, location, description }: UserCardModalProps) {
   const [isFlipped, setIsFlipped] = useState(false);
-  const [open, setOpen] = useState(false);
+  const [open] = useState(false); // Removed setOpen
 
   const handleCardFlip = () => {
     setIsFlipped(!isFlipped);
-  };
-
-  const handleClickOutside = (e: MouseEvent) => {
-    if (modalRef.current && !modalRef.current.contains(e.target as Node)) {
-      onClose();
-      setIsFlipped(false)
-    }
   };
 
   useEffect(() => {
     if (!open) {
       setIsFlipped(false);
     }
+    // Removed handleClickOutside and its listener due to undefined variables
+  }, [open]); // Added open to dependency array
 
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, [isOpen]);
-
-  if (!isOpen) return null;
+  if (!open) return null; // Changed from isOpen to open
 
   const backdropVariants = {
     hidden: { opacity: 0 },
@@ -78,7 +69,6 @@ export function UserCardModal({ name, age, location, description }: UserCardModa
       variants={backdropVariants}
     >
       <motion.div
-        ref={modalRef}
         initial="hidden"
         animate="visible"
         exit="exit"
@@ -88,9 +78,8 @@ export function UserCardModal({ name, age, location, description }: UserCardModa
         whileTap={{ scale: 0.98 }}
       >
         <motion.div
-          className="w-[min(280px,85vw)] h-[min(420px,70vh)] md:w-[380px] md:h-[550px] perspective-1000 relative cursor-pointer"
+          className="w-[80vw] max-w-[400px] aspect-[7/10] perspective-1000 relative cursor-pointer" // Removed duplicate className
           onClick={handleCardFlip}
-          className="w-[80vw] max-w-[400px] aspect-[7/10] perspective-1000 relative cursor-pointer"
           aria-label="Flip user card"
         >
           <motion.div
@@ -113,11 +102,11 @@ export function UserCardModal({ name, age, location, description }: UserCardModa
                   <div className="flex justify-between items-center p-3 sm:p-5 font-medium flex-wrap gap-2">
                     <div className="flex items-center gap-1 sm:gap-2 bg-white/20 px-2 sm:px-3 py-1 sm:py-1.5 rounded-full text-white shadow-lg text-xs sm:text-sm">
                       <MapPin className="text-red-400 w-4 h-4 sm:w-5 sm:h-5" />
-                      <p>{location || "Location"}</p>
+                      <p>{location ?? "Location"}</p>
                     </div>
                     <div className="flex items-center gap-1 sm:gap-2 bg-white/20 px-2 sm:px-3 py-1 sm:py-1.5 rounded-full text-white shadow-lg text-xs sm:text-sm">
                       <User className="text-blue-300 w-4 h-4 sm:w-5 sm:h-5" />
-                      <p>{age || 99} ans</p>
+                      <p>{age ?? 99} ans</p>
                     </div>
                   </div>
 
@@ -137,7 +126,7 @@ export function UserCardModal({ name, age, location, description }: UserCardModa
                 </div>
                 <div className="mb-3 text-gray-200 leading-relaxed overflow-auto max-h-[300px] custom-scrollbar">
                   <p>
-                    {description ||
+                    {description ??
                       "Lorem ipsum dolor sit amet consectetur adipisicing elit. Expedita at vero voluptatem, eum voluptate quia corrupti doloremque voluptatum quos obcaecati dicta eos distinctio ea earum eligendi odit reprehenderit! Iste, vitae!"}
                   </p>
                 </div>

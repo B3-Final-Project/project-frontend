@@ -237,7 +237,7 @@ export default function MatchSystem({ profiles, onMatch, onReject }: MatchSystem
     router.replace('/match/wait');
     return (
       <div className="flex flex-col items-center justify-center min-h-screen w-full bg-gray-900 text-white p-4">
-        <p className="text-lg">Redirection vers la page d'attente...</p>
+        <p className="text-lg">Redirection vers la page d&#39;attente...</p>
       </div>
     );
   }
