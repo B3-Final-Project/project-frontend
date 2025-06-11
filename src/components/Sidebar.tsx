@@ -15,7 +15,13 @@ import { FaRegUser } from "react-icons/fa";
 import { FiMessageSquare } from "react-icons/fi";
 import { IoSettingsOutline } from "react-icons/io5";
 import { useAuth } from "react-oidc-context";
+import {Quantico} from "next/font/google";
+import { clsx } from "clsx";
 
+const quantico = Quantico({
+  subsets: ['latin'],
+  weight: ['400', '700'],
+});
 
 export function SidebarComponent() {
   const auth = useAuth()
@@ -34,6 +40,10 @@ export function SidebarComponent() {
         <Sidebar className={'md:w-16 lg:w-48'}>
           <SidebarContent>
             <SidebarGroup>
+              <div className={'relative mx-auto h-[156px] w-full flex items-center '}>
+                <Image src="/logo.png" fill={true} alt="logo" />
+              </div>
+              <h2 className={clsx('hidden text-xl mx-auto lg:block', quantico.className)}>HOLOMATCH</h2>
               <SidebarMenu className={'h-full flex justify-center gap-6'}>
                 {items.map((item) => {
                   const IconComponent = item.icon as React.ElementType;
@@ -60,9 +70,6 @@ export function SidebarComponent() {
                     </SidebarMenuItem>
                   );
                 })}
-                <SidebarMenuItem>
-                  <SignInButton />
-                </SidebarMenuItem>
               </SidebarMenu>
             </SidebarGroup>
           </SidebarContent>
