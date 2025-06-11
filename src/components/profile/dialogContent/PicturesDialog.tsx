@@ -123,7 +123,6 @@ export function PicturesDialog() {
           disabled={isDisabled}
         />
 
-        {imageUrl ? (
           <div className="relative h-full group">
             <Image
               src={imageUrl}
