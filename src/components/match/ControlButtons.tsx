@@ -1,5 +1,3 @@
-'use client';
-
 import { motion } from 'framer-motion';
 import { Heart, X } from 'lucide-react';
 import { ProfileCardType } from './MatchSystem';

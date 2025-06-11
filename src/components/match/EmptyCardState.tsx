@@ -1,5 +1,3 @@
-'use client';
-
 type EmptyCardStateProps = {
   onStartNewSession: () => void;
   remainingPacks: number;

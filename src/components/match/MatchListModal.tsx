@@ -1,6 +1,6 @@
 'use client';
 
-import { AnimatePresence, motion } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { Heart, X } from 'lucide-react';
 import { ProfileCardType } from './MatchSystem';
 import ProfileGrid from './ProfileGrid';
@@ -13,7 +13,7 @@ type MatchListModalProps = {
 };
 
 export default function MatchListModal({ showMatchList, setShowMatchList, matches, openModal }: MatchListModalProps) {
-  if (!showMatchList) return null;
+  if (!showMatchList) return <></>;
 
   return (
     <motion.div
