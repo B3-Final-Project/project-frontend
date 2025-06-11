@@ -1,7 +1,9 @@
-import { createFetcher } from "@/lib/utils";
+import {
+  Booster
+} from "@/lib/routes/booster/interfaces/booster.interface";
 import { RESTServerRoute } from "@/lib/routes/server";
+import { createFetcher } from "@/lib/utils";
 
 export class BoosterRouter {
-  public static getMatch = createFetcher(RESTServerRoute.REST_BOOSTER, "GET")
-  public static getMatches = createFetcher(RESTServerRoute.REST_TEN_BOOSTERS, "GET")
+  public static readonly getBooster = createFetcher<Booster[], undefined>(RESTServerRoute.REST_TEN_BOOSTERS, "GET");
 }
