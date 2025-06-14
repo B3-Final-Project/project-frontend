@@ -2,7 +2,7 @@
 
 import { motion, MotionValue } from 'framer-motion';
 import { Heart, Info, MapPin, User, X } from 'lucide-react';
-import { ProfileCardType } from './MatchSystem';
+import { ProfileCardType } from '@/components/match/ProfileGenerator';
 
 type ProfileCardProps = {
   profile: ProfileCardType;
@@ -11,7 +11,7 @@ type ProfileCardProps = {
   rotate: MotionValue<number>;
   matchOpacity: MotionValue<number>;
   rejectOpacity: MotionValue<number>;
-  constraintsRef: React.RefObject<HTMLDivElement>;
+  constraintsRef: React.RefObject<HTMLDivElement | null>;
   handleDragEnd: (event: any, info: any) => void;
   openModal: (profile: ProfileCardType) => void;
 };

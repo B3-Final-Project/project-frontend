@@ -2,18 +2,27 @@
 
 import { motion } from 'framer-motion';
 import { Info, MapPin, User } from 'lucide-react';
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 interface UserCardModalProps {
-  readonly name?: string;
-  readonly age?: number;
-  readonly location?: string;
-  readonly description?: string;
+  name: string;
+  age?: number;
+  location?: string;
+  description?: string;
+  isOpen: boolean;
+  onClose: () => void;
 }
 
-export function UserCardModal({ name, age, location, description }: UserCardModalProps) {
+export function UserCardModal({
+  name,
+  age,
+  location,
+  description,
+  isOpen,
+  onClose,
+}: UserCardModalProps) {
   const [isFlipped, setIsFlipped] = useState(false);
-  const [open, setOpen] = useState(false);
+  const modalRef = useRef<HTMLDivElement>(null);
 
   const handleCardFlip = () => {
     setIsFlipped(!isFlipped);
@@ -27,8 +36,10 @@ export function UserCardModal({ name, age, location, description }: UserCardModa
   };
 
   useEffect(() => {
-    if (!open) {
-      setIsFlipped(false);
+    if (isOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    } else {
+      document.removeEventListener("mousedown", handleClickOutside);
     }
 
     return () => {
@@ -90,8 +101,6 @@ export function UserCardModal({ name, age, location, description }: UserCardModa
         <motion.div
           className="w-[min(280px,85vw)] h-[min(420px,70vh)] md:w-[380px] md:h-[550px] perspective-1000 relative cursor-pointer"
           onClick={handleCardFlip}
-          className="w-[80vw] max-w-[400px] aspect-[7/10] perspective-1000 relative cursor-pointer"
-          aria-label="Flip user card"
         >
           <motion.div
             className="w-full h-full transform-style-3d relative"

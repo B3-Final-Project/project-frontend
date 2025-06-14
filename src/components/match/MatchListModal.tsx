@@ -44,7 +44,7 @@ export default function MatchListModal({ showMatchList, setShowMatchList, matche
 
           {matches.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-8 text-center">
-              <p className="text-gray-400 mb-2">Vous n'avez pas encore de matches</p>
+              <p className="text-gray-400 mb-2">Vous n&#39;avez pas encore de matches</p>
               <p className="text-gray-500 text-sm">Continuez à swiper pour trouver des matches!</p>
             </div>
           ) : (
