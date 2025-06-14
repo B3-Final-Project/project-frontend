@@ -17,21 +17,29 @@ import { IoSettingsOutline } from "react-icons/io5";
 import { useAuth } from "react-oidc-context";
 import {Quantico} from "next/font/google";
 import { clsx } from "clsx";
+import { Button } from "@/components/ui/button";
+import { signout } from "@/providers/CognitoAuthProvider";
 
 const quantico = Quantico({
   subsets: ['latin'],
   weight: ['400', '700'],
 });
 
+
 export function SidebarComponent() {
   const auth = useAuth()
   const items = [
     { title: "Home", url: '/', icon: Home },
     { title: "Messages", url: '/messages', icon: FiMessageSquare },
-    { canUse: true, title: "Open a Booster", url: '/booster' },
+    { canUse: true, title: "Open a Booster", url: '/match' },
     { title: "Profile", url: '/profile', icon: FaRegUser },
     { title: "Settings", url: '/register', icon: IoSettingsOutline },
   ]
+
+  const signOutAction = async () => {
+    await signout()
+    await auth.removeUser()
+  }
 
   return (
     <>
@@ -71,6 +79,7 @@ export function SidebarComponent() {
                   );
                 })}
               </SidebarMenu>
+              {auth.user && <Button onClick={() => signOutAction()}>Sign Out</Button>}
             </SidebarGroup>
           </SidebarContent>
         </Sidebar>

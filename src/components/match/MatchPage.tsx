@@ -2,29 +2,23 @@
 
 import { Background } from '@/components/Background';
 import { motion } from 'framer-motion';
-import { useEffect, useState } from 'react';
-import MatchSystem, { ProfileCardType } from './MatchSystem';
+import { useState } from 'react';
+import MatchSystem from './MatchSystem';
 import PackOpener from './PackOpener';
-import ProfileGenerator, { mapBoosterToProfileCardType } from './ProfileGenerator';
+import ProfileGenerator, {
+  mapBoosterToProfileCardType,
+  ProfileCardType
+} from "./ProfileGenerator";
 import { Booster } from "@/lib/routes/booster/interfaces/booster.interface";
+import { useIsMobile } from "@/hooks/use-mobile";
 
-const MOBILE_BREAKPOINT = 768;
 
 const MatchPage = () => {
   const [packProfiles, setPackProfiles] = useState<ProfileCardType[]>([]);
   const [showMatchSystem, setShowMatchSystem] = useState(false);
   const [showCardAnimation, setShowCardAnimation] = useState(false);
-  const [isMobile, setIsMobile] = useState(false);
+  const isMobile = useIsMobile()
   const [shouldFetchBoosters, setShouldFetchBoosters] = useState(false);
-
-  useEffect(() => {
-    const checkScreenSize = () => {
-      setIsMobile(window.innerWidth < MOBILE_BREAKPOINT);
-    };
-    checkScreenSize();
-    window.addEventListener('resize', checkScreenSize);
-    return () => window.removeEventListener('resize', checkScreenSize);
-  }, []);
 
   const handlePackOpened = () => {
     setShouldFetchBoosters(true);

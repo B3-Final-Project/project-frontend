@@ -13,8 +13,8 @@ export interface ProfileCardType {
 import { useQuery } from '@tanstack/react-query';
 import React, { useEffect } from 'react';
 
-export const fetchBoosters = async (count: number): Promise<Booster[]> => {
-  return BoosterRouter.getBooster(undefined, { count: count.toString() });
+export const fetchBoosters = async (count: number): Promise<any> => {
+  return BoosterRouter.getBoosters(undefined, { count: count.toString() });
 };
 
 export const mapBoosterToProfileCardType = (booster: Booster): ProfileCardType => {
