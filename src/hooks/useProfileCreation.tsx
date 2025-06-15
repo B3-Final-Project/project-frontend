@@ -1,6 +1,7 @@
 "use client";
 
 import { Dispatch, SetStateAction, useCallback, useState } from "react";
+import type { InterestItem, InterestsInfo } from "@/components/profile/shared/SharedInterestsForm";
 
 import { DrinkingEnum } from "@/lib/routes/profiles/enums/drinking.enum";
 import { GenderEnum } from "@/lib/routes/profiles/enums/gender.enum";
@@ -15,6 +16,7 @@ import {
   useCreateProfileMutation,
 } from "@/hooks/react-query/profiles";
 import { useRouter } from "next/navigation";
+export type { InterestItem, InterestsInfo };
 
 export interface PersonalInfo {
   name: string;
@@ -54,13 +56,15 @@ export interface ProfileCreationApi {
   setPreferenceInfo: Dispatch<SetStateAction<PreferenceInfo>>;
   lifestyleInfo: LifestyleInfo;
   setLifestyleInfo: Dispatch<SetStateAction<LifestyleInfo>>;
+  interestsInfo: InterestsInfo;
+  setInterestsInfo: Dispatch<SetStateAction<InterestsInfo>>;
   saveProfile: () => Promise<void>;
   goToStep: (step: string) => void;
   goToNextStep: (currentStep: string, steps: string[]) => void;
   goToPreviousStep: (currentStep: string, steps: string[]) => void;
 }
 
-export const useProfileCreation = (): ProfileCreationApi => {
+export const useProfileCreation = (basePath: string = "/profile"): ProfileCreationApi => {
   const router = useRouter();
   const { user } = useAuth();
   const userId = user?.profile?.sub;
@@ -86,6 +90,10 @@ export const useProfileCreation = (): ProfileCreationApi => {
 
   const [lifestyleInfo, setLifestyleInfo] = useState<LifestyleInfo>({});
 
+  const [interestsInfo, setInterestsInfo] = useState<InterestsInfo>({
+    interests: []
+  });
+
   const saveProfile = useCallback(async () => {
     if (!userId) {
       console.error("User ID not loaded yet");
@@ -97,6 +105,7 @@ export const useProfileCreation = (): ProfileCreationApi => {
       locationWork,
       lifestyleInfo,
       preferenceInfo,
+      interestsInfo,
     });
   }, [
     userId,
@@ -104,14 +113,15 @@ export const useProfileCreation = (): ProfileCreationApi => {
     locationWork,
     lifestyleInfo,
     preferenceInfo,
+    interestsInfo,
     preferenceMutation,
   ]);
 
   const goToStep = useCallback(
     (step: string) => {
-      router.push(`/profile/create/${step}`);
+      router.push(`${basePath}/create/${step}`);
     },
-    [router],
+    [router, basePath],
   );
 
   const goToNextStep = useCallback(
@@ -145,6 +155,8 @@ export const useProfileCreation = (): ProfileCreationApi => {
     setPreferenceInfo,
     lifestyleInfo,
     setLifestyleInfo,
+    interestsInfo,
+    setInterestsInfo,
     saveProfile,
     goToStep,
     goToNextStep,
