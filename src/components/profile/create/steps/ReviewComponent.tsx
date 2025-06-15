@@ -1,12 +1,5 @@
 'use client';
-import { Button } from "@/components/ui/button";
-import { useProfileCreation } from "@/providers/ProfileCreationProvider";
-import { PROFILE_STEPS } from "../StepComponent";
-import { Card } from "@/components/ui/card";
-import { useParams } from "next/navigation";
-import { Separator } from "@/components/ui/separator";
-import { useState } from "react";
-import { useToast } from "@/hooks/use-toast";
+
 import {
   formatDrinkingEnum,
   formatGenderEnum,
@@ -18,8 +11,17 @@ import {
   formatZodiacEnum
 } from "@/lib/utils/enum-utils";
 
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { PROFILE_STEPS } from "../StepComponent";
+import { Separator } from "@/components/ui/separator";
+import { useParams } from "next/navigation";
+import { useProfileCreation } from "@/providers/ProfileCreationProvider";
+import { useState } from "react";
+import { useToast } from "@/hooks/use-toast";
+
 export function ReviewComponent() {
-  const { personalInfo, preferenceInfo, locationWork, lifestyleInfo, goToPreviousStep, saveProfile, goToStep } = useProfileCreation();
+  const { personalInfo, preferenceInfo, locationWork, lifestyleInfo, interestsInfo, goToPreviousStep, saveProfile, goToStep } = useProfileCreation();
   const { step } = useParams<{ step: string }>();
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -161,6 +163,32 @@ export function ReviewComponent() {
               )}
             </div>
           </div>
+
+          <div className="space-y-2">
+            <div className="flex items-center justify-between">
+              <h3 className="text-lg font-medium">Interests & Prompts</h3>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => handleEditSection(5)}
+              >
+                Edit
+              </Button>
+            </div>
+            <Separator />
+            <div className="space-y-3 pt-2">
+              {interestsInfo.interests.length > 0 ? (
+                interestsInfo.interests.map((interest, index) => (
+                  <div key={interest.prompt || `review-interest-${index}`} className="border-l-4 border-blue-500 pl-3">
+                    <p className="text-sm font-medium text-gray-700">{interest.prompt}</p>
+                    <p className="text-gray-600">{interest.answer}</p>
+                  </div>
+                ))
+              ) : (
+                <p className="text-gray-500">No interests added yet</p>
+              )}
+            </div>
+          </div>
         </div>
       </Card>
 
@@ -168,7 +196,7 @@ export function ReviewComponent() {
         <Button
           type="button"
           variant="outline"
-          onClick={() => goToPreviousStep(step as string, PROFILE_STEPS)}
+          onClick={() => step && goToPreviousStep(step, PROFILE_STEPS)}
         >
           Back
         </Button>
