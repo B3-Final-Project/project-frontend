@@ -4,6 +4,7 @@ import {
   ZodiacEnum
 } from "@/lib/routes/profiles/enums";
 import { Interest } from "@/lib/routes/profiles/interfaces/interest.interface";
+import { RarityEnum } from "@/lib/routes/booster/dto/rarity.enum";
 
 export interface UserCardDto {
   id: number;
@@ -17,4 +18,5 @@ export interface UserCardDto {
   drinking?: DrinkingEnum;
   zodiac?: ZodiacEnum;
   interests?: Interest[];
+  rarity: RarityEnum;
 }
