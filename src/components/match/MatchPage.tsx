@@ -2,38 +2,31 @@
 
 import { Background } from '@/components/Background';
 import { motion } from 'framer-motion';
-import { useEffect, useState } from 'react';
-import MatchSystem, { ProfileCardType } from './MatchSystem';
+import { useState } from 'react';
+import MatchSystem from './MatchSystem';
 import PackOpener from './PackOpener';
-import ProfileGenerator, { mapBoosterToProfileCardType } from './ProfileGenerator';
+import ProfileGenerator, {
+  mapBoosterToProfileCardType,
+  ProfileCardType
+} from "./ProfileGenerator";
+import { Booster } from "@/lib/routes/booster/interfaces/booster.interface";
+import { useIsMobile } from "@/hooks/use-mobile";
 
-const MOBILE_BREAKPOINT = 768;
 
 const MatchPage = () => {
   const [packProfiles, setPackProfiles] = useState<ProfileCardType[]>([]);
-  const [isPackOpened, setIsPackOpened] = useState(false);
   const [showMatchSystem, setShowMatchSystem] = useState(false);
   const [showCardAnimation, setShowCardAnimation] = useState(false);
-  const [isMobile, setIsMobile] = useState(false);
+  const isMobile = useIsMobile()
   const [shouldFetchBoosters, setShouldFetchBoosters] = useState(false);
-
-  useEffect(() => {
-    const checkScreenSize = () => {
-      setIsMobile(window.innerWidth < MOBILE_BREAKPOINT);
-    };
-    checkScreenSize();
-    window.addEventListener('resize', checkScreenSize);
-    return () => window.removeEventListener('resize', checkScreenSize);
-  }, []);
 
   const handlePackOpened = () => {
     setShouldFetchBoosters(true);
   };
 
-  const handleProfilesLoadedFromGenerator = (boosters: any[]) => {
+  const handleProfilesLoadedFromGenerator = (boosters: Booster[]) => {
     const newProfiles = boosters.map(mapBoosterToProfileCardType);
     setPackProfiles(newProfiles);
-    setIsPackOpened(true);
     setShowCardAnimation(true);
     setShouldFetchBoosters(false);
 
@@ -44,19 +37,17 @@ const MatchPage = () => {
     }, 3000);
   };
 
-  const handleProfileLoadingError = (error: Error) => {
+  const handleProfileLoadingError = () => {
     setPackProfiles([]);
-    setIsPackOpened(false);
     setShowCardAnimation(false);
     setShowMatchSystem(false);
     setShouldFetchBoosters(false);
   };
 
-  const handleReturnToPackOpening = () => {
-    setPackProfiles([]);
-    setIsPackOpened(false);
-    setShowMatchSystem(false);
-  };
+  // const handleReturnToPackOpening = () => {
+  //   setPackProfiles([]);
+  //   setShowMatchSystem(false);
+  // };
 
   return (
     <div className="relative min-h-screen w-full overflow-hidden">
@@ -71,10 +62,10 @@ const MatchPage = () => {
               <div className="w-full h-full">
                 <MatchSystem
                   profiles={packProfiles}
-                  onMatch={(profile) => {
+                  onMatch={() => {
                     // console.log('Match avec:', profile.name);
                   }}
-                  onReject={(profile) => {
+                  onReject={() => {
                     // console.log('Profil rejeté:', profile.name);
                   }}
                 />

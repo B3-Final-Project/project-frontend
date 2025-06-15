@@ -24,7 +24,7 @@ export default function HomePage() {
         <SignInButton/>
       </main>
   );
-  } 
-  
+  }
+
   return <UserDashboard/>
 }

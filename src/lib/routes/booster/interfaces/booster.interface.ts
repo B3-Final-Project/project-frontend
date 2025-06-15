@@ -1,13 +1,9 @@
 import {
   DrinkingEnum,
-  OrientationEnum,
-  PoliticsEnum,
-  RelationshipTypeEnum,
-  ReligionEnum,
-  SmokingEnum,
-  ZodiacEnum
-} from "@/lib/routes/preferences/enums";
-import { Interest } from "@/lib/routes/preferences/interfaces/interface";
+  OrientationEnum, PoliticsEnum,
+  RelationshipTypeEnum, ReligionEnum, SmokingEnum, ZodiacEnum
+} from "@/lib/routes/profiles/enums";
+import { Interest } from "@/lib/routes/profiles/interfaces/interest.interface";
 
 export interface BoosterUserProfile {
   id: string;

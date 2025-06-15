@@ -4,30 +4,18 @@ import { AnimatePresence, useMotionValue, useTransform } from 'framer-motion';
 import { useRouter } from 'next/navigation';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import {
-  canOpenNewPack,
-  getRemainingPacksToday,
-  getTimeUntilNextPackAvailability,
-  recordPackOpened
+  checkPackAvailability
 } from '../../utils/packManager';
-import { UserCardModal } from '../profile/UserCardModal';
+import { UserCardModal } from '../UserCardModal';
 import ControlButtons from './ControlButtons';
-import EmptyCardState from './EmptyCardState';
+
+import { ProfileCardType } from "@/components/match/ProfileGenerator";
 import MatchAnimation from './MatchAnimation';
 import MatchCounters from './MatchCounters';
 import MatchListModal from './MatchListModal';
 import NonMatchListModal from './NonMatchListModal';
 import ProfileCard from './ProfileCard';
 import RejectAnimation from './RejectAnimation';
-
-export type ProfileCardType = {
-  id: string;
-  name: string;
-  image: string;
-  age?: number;
-  location?: string;
-  description?: string;
-  isRevealed?: boolean;
-};
 
 type MatchSystemProps = {
   profiles: ProfileCardType[];
@@ -36,15 +24,7 @@ type MatchSystemProps = {
 };
 
 const SESSION_STORAGE_PACK_PAID_KEY = 'holomatch_current_pack_paid_for_session';
-
-const formatTime = (ms: number): string => {
-  if (ms <= 0) return "00:00:00";
-  const totalSeconds = Math.max(0, Math.floor(ms / 1000));
-  const hours = Math.floor(totalSeconds / 3600);
-  const minutes = Math.floor((totalSeconds % 3600) / 60);
-  const seconds = totalSeconds % 60;
-  return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-};
+const MAX_PACKS_PER_WINDOW = 2;
 
 export default function MatchSystem({ profiles, onMatch, onReject }: MatchSystemProps) {
   const router = useRouter();
@@ -63,7 +43,7 @@ export default function MatchSystem({ profiles, onMatch, onReject }: MatchSystem
   const [isLoading, setIsLoading] = useState(true);
   const [packStatus, setPackStatus] = useState({
     canOpen: true,
-    remainingToday: 0,
+    remainingPacks: MAX_PACKS_PER_WINDOW,
   });
   const [countdown, setCountdown] = useState(0);
 
@@ -75,14 +55,13 @@ export default function MatchSystem({ profiles, onMatch, onReject }: MatchSystem
   const constraintsRef = useRef<HTMLDivElement>(null);
 
   const refreshPackStatusAndCountdown = useCallback(() => {
-    const canUserOpen = canOpenNewPack();
-    const remaining = getRemainingPacksToday();
-    const timeToNext = getTimeUntilNextPackAvailability();
+    const { canOpen, timeUntilNextOpenMs, packsOpenedInWindow } = checkPackAvailability();
+    const remainingInWindow = MAX_PACKS_PER_WINDOW - (packsOpenedInWindow || 0);
 
-    setPackStatus({ canOpen: canUserOpen, remainingToday: remaining });
+    setPackStatus({ canOpen: canOpen, remainingPacks: remainingInWindow });
 
-    if (!canUserOpen && timeToNext > 0) {
-      setCountdown(timeToNext);
+    if (!canOpen && timeUntilNextOpenMs && timeUntilNextOpenMs > 0) {
+      setCountdown(timeUntilNextOpenMs);
     } else {
       setCountdown(0);
     }
@@ -93,8 +72,8 @@ export default function MatchSystem({ profiles, onMatch, onReject }: MatchSystem
     const isPackPaidForSession = sessionStorage.getItem(SESSION_STORAGE_PACK_PAID_KEY) === 'true';
 
     if (!isPackPaidForSession) {
-      if (canOpenNewPack()) {
-        recordPackOpened();
+      const { canOpen: canCurrentlyOpen } = checkPackAvailability();
+      if (canCurrentlyOpen) {
         sessionStorage.setItem(SESSION_STORAGE_PACK_PAID_KEY, 'true');
       }
     }
@@ -102,7 +81,6 @@ export default function MatchSystem({ profiles, onMatch, onReject }: MatchSystem
     setIsLoading(false);
   }, [profiles, refreshPackStatusAndCountdown]);
 
-  // Effect for Countdown Timer
   useEffect(() => {
     let timerId: NodeJS.Timeout | undefined;
     if (!packStatus.canOpen && countdown > 0) {
@@ -125,9 +103,9 @@ export default function MatchSystem({ profiles, onMatch, onReject }: MatchSystem
   useEffect(() => {
     if (!isLoading && currentIndex >= profiles.length && profiles.length > 0) {
       sessionStorage.removeItem(SESSION_STORAGE_PACK_PAID_KEY);
-      refreshPackStatusAndCountdown();
+      router.push('/boosters');
     }
-  }, [currentIndex, profiles.length, isLoading, refreshPackStatusAndCountdown]);
+  }, [profiles, currentIndex, isLoading, router]);
 
   useEffect(() => {
     setMatches([]);
@@ -191,23 +169,6 @@ export default function MatchSystem({ profiles, onMatch, onReject }: MatchSystem
     });
   };
 
-  const handleStartNewSession = () => {
-    if (canOpenNewPack()) {
-      recordPackOpened();
-      sessionStorage.setItem(SESSION_STORAGE_PACK_PAID_KEY, 'true');
-
-      setMatches([]);
-      setNonMatches([]);
-      setCurrentIndex(0);
-
-      refreshPackStatusAndCountdown();
-      refreshPackStatusAndCountdown();
-    } else {
-      console.warn("handleStartNewSession: Tentative d'ouverture de pack, mais aucun disponible. Rafraîchissement du statut.");
-      refreshPackStatusAndCountdown();
-    }
-  };
-
   const handleDragEnd = (event: any, info: any) => {
     const offset = info.offset.x;
     if (offset > 100 && currentProfile) handleMatch(currentProfile);
@@ -229,15 +190,6 @@ export default function MatchSystem({ profiles, onMatch, onReject }: MatchSystem
     return (
       <div className="flex items-center justify-center min-h-screen w-full bg-gray-900 text-white">
         Chargement...
-      </div>
-    );
-  }
-
-  if (!packStatus.canOpen && countdown > 0) {
-    router.replace('/match/wait');
-    return (
-      <div className="flex flex-col items-center justify-center min-h-screen w-full bg-gray-900 text-white p-4">
-        <p className="text-lg">Redirection vers la page d'attente...</p>
       </div>
     );
   }
@@ -280,10 +232,10 @@ export default function MatchSystem({ profiles, onMatch, onReject }: MatchSystem
               openModal={openModal}
             />
           ) : (
-            <EmptyCardState
-              onStartNewSession={handleStartNewSession}
-              remainingPacks={packStatus.remainingToday}
-            />
+            <div className="flex flex-col items-center justify-center h-full">
+              <p className="text-white text-lg">Tous les profils ont été vus.</p>
+              <p className="text-white">Redirection vers la page des boosters...</p>
+            </div>
           )}
         </div>
         {currentProfile && (
