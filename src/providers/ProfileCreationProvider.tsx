@@ -1,11 +1,12 @@
 'use client';
-import React, { createContext, useContext, ReactNode } from 'react';
-import { useProfileCreation as useHookProfileCreation, ProfileCreationApi } from '@/hooks/useProfileCreation';
+
+import { ProfileCreationApi, useProfileCreation as useHookProfileCreation } from '@/hooks/useProfileCreation';
+import React, { ReactNode, createContext, useContext } from 'react';
 
 const ProfileCreationContext = createContext<ProfileCreationApi | null>(null);
 
-export function ProfileCreationProvider({ children }: { children: ReactNode }) {
-  const api = useHookProfileCreation();
+export function ProfileCreationProvider({ children, basePath = "/profile" }: Readonly<{ children: ReactNode; basePath?: string }>) {
+  const api = useHookProfileCreation(basePath);
   return (
     <ProfileCreationContext.Provider value={api}>
       {children}
