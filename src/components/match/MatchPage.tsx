@@ -3,10 +3,12 @@
 import { Background } from '@/components/Background';
 import { useIsMobile } from "@/hooks/use-mobile";
 import { Booster } from "@/lib/routes/booster/interfaces/booster.interface";
+import { checkPackAvailability, recordPackOpening } from '@/utils/packManager';
 import { getRarityGradient } from '@/utils/rarityHelper';
 import { motion } from 'framer-motion';
 import { Cigarette, Languages, MapPin, Moon, User, Wine } from 'lucide-react';
-import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
 import MatchSystem from './MatchSystem';
 import PackOpener from './PackOpener';
 import ProfileGenerator, {
@@ -16,15 +18,22 @@ import ProfileGenerator, {
 
 
 const MatchPage = () => {
+  const router = useRouter();
   const [packProfiles, setPackProfiles] = useState<ProfileCardType[]>([]);
   const [showMatchSystem, setShowMatchSystem] = useState(false);
   const [showCardAnimation, setShowCardAnimation] = useState(false);
-  const isMobile = useIsMobile()
+  const isMobile = useIsMobile();
   const [shouldFetchBoosters, setShouldFetchBoosters] = useState(false);
+  const [isVerified, setIsVerified] = useState(false);
 
-  const handlePackOpened = () => {
-    setShouldFetchBoosters(true);
-  };
+  useEffect(() => {
+    const { canOpen } = checkPackAvailability();
+    if (!canOpen) {
+      router.push('/boosters');
+    } else {
+      setIsVerified(true);
+    }
+  }, [router]);
 
   const handleProfilesLoadedFromGenerator = (boosters: Booster[]) => {
     const newProfiles = boosters.map(mapBoosterToProfileCardType);
@@ -171,8 +180,16 @@ const MatchPage = () => {
                       onError={handleProfileLoadingError}
                     />
                   </>
+                ) : isVerified ? (
+                  <div className="flex flex-col items-center justify-center w-full">
+                    <h2 className="text-2xl font-bold mb-8 text-white text-center">Ouvrir un pack</h2>
+                    <PackOpener onPackOpened={() => {
+                      recordPackOpening();
+                      setShouldFetchBoosters(true);
+                    }} />
+                  </div>
                 ) : (
-                  <PackOpener onPackOpened={handlePackOpened} />
+                  <div className="text-white mb-4">Chargement...</div>
                 )}
               </div>
             )}
