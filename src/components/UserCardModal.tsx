@@ -1,7 +1,8 @@
 "use client";
 
+import { getRarityGradient } from '@/utils/rarityHelper';
 import { motion } from 'framer-motion';
-import { Info, MapPin, User } from 'lucide-react';
+import { Cigarette, Info, Languages, MapPin, Moon, User, Wine } from 'lucide-react';
 import { useEffect, useRef, useState } from "react";
 
 interface UserCardModalProps {
@@ -11,6 +12,13 @@ interface UserCardModalProps {
   description?: string;
   isOpen: boolean;
   onClose: () => void;
+  rarity?: string;
+  image_url?: string;
+  interests?: string[];
+  languages?: string[];
+  zodiac?: string;
+  smoking?: string;
+  drinking?: string;
 }
 
 export function UserCardModal({
@@ -20,6 +28,13 @@ export function UserCardModal({
   description,
   isOpen,
   onClose,
+  rarity,
+  image_url,
+  interests,
+  languages,
+  zodiac,
+  smoking,
+  drinking,
 }: UserCardModalProps) {
   const [isFlipped, setIsFlipped] = useState(false);
   const modalRef = useRef<HTMLDivElement>(null);
@@ -99,7 +114,7 @@ export function UserCardModal({
         whileTap={{ scale: 0.98 }}
       >
         <motion.div
-          className="w-[min(280px,85vw)] h-[min(420px,70vh)] md:w-[380px] md:h-[550px] perspective-1000 relative cursor-pointer"
+          className="w-[280px] h-[420px] sm:w-[320px] sm:h-[480px] md:w-[380px] md:h-[550px] perspective-1000 relative cursor-pointer"
           onClick={handleCardFlip}
         >
           <motion.div
@@ -109,54 +124,91 @@ export function UserCardModal({
             transition={{ duration: 0.6, type: 'spring', stiffness: 300, damping: 30 }}
           >
             {/* Front side of the card */}
-            <div className="w-full h-full rounded-xl p-[10px] bg-gradient-to-br from-[#FF6B6B] via-[#ED2272] to-[#6A5ACD] absolute backface-hidden shadow-2xl">
+            <div
+              className="w-full h-full rounded-xl p-[10px] absolute backface-hidden shadow-2xl overflow-hidden"
+              style={{ background: getRarityGradient(rarity) }}
+            >
               <div
-                className="w-full h-full rounded-lg flex items-center justify-center overflow-hidden"
+                className="w-full h-full rounded-lg overflow-hidden"
                 style={{
-                  backgroundImage: "url('/vintage.png')",
+                  backgroundImage: `url(${image_url || '/vintage.png'})`,
                   backgroundSize: "cover",
                   backgroundPosition: "center",
                 }}
               >
-                <div className="w-full h-full flex flex-col justify-between bg-gradient-to-t from-black/70 via-transparent">
-                  <div className="flex justify-between items-center p-3 sm:p-5 font-medium flex-wrap gap-2">
-                    <div className="flex items-center gap-1 sm:gap-2 bg-white/20 px-2 sm:px-3 py-1 sm:py-1.5 rounded-full text-white shadow-lg text-xs sm:text-sm">
-                      <MapPin className="text-red-400 w-4 h-4 sm:w-5 sm:h-5" />
-                      <p>{location || "Location"}</p>
-                    </div>
-                    <div className="flex items-center gap-1 sm:gap-2 bg-white/20 px-2 sm:px-3 py-1 sm:py-1.5 rounded-full text-white shadow-lg text-xs sm:text-sm">
-                      <User className="text-blue-300 w-4 h-4 sm:w-5 sm:h-5" />
-                      <p>{age || 99} ans</p>
-                    </div>
+                <div className="w-full h-full flex flex-col justify-between bg-gradient-to-t from-black/70 via-transparent to-transparent p-3">
+                  <div className="flex justify-between items-start">
+                    {age && (
+                      <div className="flex items-center gap-1 text-sm bg-white/10 text-white px-2 py-1 rounded-full">
+                        <User size={16} className="text-blue-300" />
+                        {age} ans
+                      </div>
+                    )}
+                    {location && (
+                      <div className="flex items-center gap-1 text-sm bg-white/10 text-white px-2 py-1 rounded-full">
+                        <MapPin size={16} className="text-red-400" />
+                        {location}
+                      </div>
+                    )}
                   </div>
-
-                  <div className="p-3 sm:p-5 font-bold flex flex-col items-start bg-gradient-to-t from-black/80 via-black/40 to-transparent text-white">
-                    <h2 className="text-lg sm:text-xl md:text-2xl mb-1 drop-shadow-md">{name}</h2>
+                  <div className="text-white">
+                    <h2 className="text-xl font-bold drop-shadow-md mb-1">{name}</h2>
+                    <div className="flex flex-wrap gap-2 pt-1">
+                      {languages && languages.length > 0 && (
+                        <div className="flex items-center gap-1 text-sm bg-white/10 text-white px-2 py-1 rounded-full">
+                          <Languages size={16} className="text-yellow-300" />
+                          {languages.slice(0, 2).join(', ')}
+                        </div>
+                      )}
+                      {zodiac && (
+                        <div className="flex items-center gap-1 text-sm bg-white/10 text-white px-2 py-1 rounded-full">
+                          <Moon size={16} className="text-cyan-300" />
+                          {zodiac}
+                        </div>
+                      )}
+                      {smoking && (
+                        <div className="flex items-center gap-1 text-sm bg-white/10 text-white px-2 py-1 rounded-full">
+                          <Cigarette size={16} className="text-red-300" />
+                          {smoking}
+                        </div>
+                      )}
+                      {drinking && (
+                        <div className="flex items-center gap-1 text-sm bg-white/10 text-white px-2 py-1 rounded-full">
+                          <Wine size={16} className="text-purple-300" />
+                          {drinking}
+                        </div>
+                      )}
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
 
             {/* Back side of the card */}
-            <div className="w-full h-full rounded-xl p-[10px] bg-gradient-to-br from-[#6A5ACD] via-[#00AEEF] to-[#4A90E2] absolute backface-hidden rotate-y-180 shadow-2xl">
+            <div
+              className="w-full h-full rounded-xl p-[10px] absolute backface-hidden rotate-y-180 shadow-2xl overflow-hidden"
+              style={{ background: getRarityGradient(rarity) }}
+            >
               <div className="w-full h-full rounded-lg bg-gradient-to-b from-black/90 to-black/70 flex flex-col justify-center p-7 text-white">
                 <div className="flex items-center gap-1 sm:gap-2 mb-3 sm:mb-4">
                   <Info className="text-purple-300 w-5 h-5 sm:w-6 sm:h-6" />
-                  <h3 className="text-xl sm:text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-500">Description</h3>
+                  <h3 className="text-xl sm:text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-500">Interests</h3>
                 </div>
                 <div className="mb-3 text-gray-200 leading-relaxed overflow-auto max-h-[300px] custom-scrollbar">
-                  <p>
-                    {description ||
-                      "Lorem ipsum dolor sit amet consectetur adipisicing elit. Expedita at vero voluptatem, eum voluptate quia corrupti doloremque voluptatum quos obcaecati dicta eos distinctio ea earum eligendi odit reprehenderit! Iste, vitae!"}
-                  </p>
+                  {interests && interests.length > 0 && (
+                    <div className="flex flex-wrap gap-1 mt-1">
+                      {interests.slice(0, 3).map((interest, index) => (
+                        <span key={index} className="bg-white/20  px-2 py-0.5 rounded-full">
+                          {interest}
+                        </span>
+                      ))}
+                    </div>
+                  )}
                 </div>
                 <div className="mt-4 border-t border-white/20 pt-4 w-full">
-                  <motion.p
-                    className="text-sm text-center text-blue-200"
-
-                  >
+                  <p className="text-sm text-center text-blue-200">
                     Cliquer pour revenir
-                  </motion.p>
+                  </p>
                 </div>
               </div>
             </div>

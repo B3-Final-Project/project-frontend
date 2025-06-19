@@ -1,8 +1,9 @@
 'use client';
 
-import { motion, MotionValue } from 'framer-motion';
-import { Heart, Info, MapPin, User, X } from 'lucide-react';
 import { ProfileCardType } from '@/components/match/ProfileGenerator';
+import { getRarityGradient } from '@/utils/rarityHelper';
+import { motion, MotionValue } from 'framer-motion';
+import { Heart, MapPin, User, X } from 'lucide-react';
 
 type ProfileCardProps = {
   profile: ProfileCardType;
@@ -41,11 +42,14 @@ export default function ProfileCard({
       className="absolute cursor-grab active:cursor-grabbing"
       whileTap={{ scale: 1.05 }}
     >
-      <div className="w-full h-full rounded-xl p-[10px] bg-gradient-to-br from-[#FF6B6B] via-[#ED2272] to-[#6A5ACD] absolute shadow-2xl">
+      <div
+        className="w-full h-full rounded-xl p-[10px] absolute shadow-2xl overflow-hidden"
+        style={{ background: getRarityGradient(profile.rarity) }}
+      >
         <div
-          className="w-full h-full rounded-lg flex items-center justify-center overflow-hidden"
+          className="w-full h-full rounded-lg overflow-hidden"
           style={{
-            backgroundImage: `url(${profile.image})`,
+            backgroundImage: `url(${profile.image_url})`,
             backgroundSize: "cover",
             backgroundPosition: "center",
           }}
@@ -61,13 +65,8 @@ export default function ProfileCard({
                 <p>{profile.age || "?"} ans</p>
               </div>
             </div>
-
             <div className="p-3 sm:p-5 font-bold flex flex-col items-start bg-gradient-to-t from-black/80 via-black/40 to-transparent text-white">
               <h2 className="text-lg sm:text-xl md:text-2xl mb-1 drop-shadow-md">{profile.name}</h2>
-              <div className="flex items-center gap-1 sm:gap-2">
-                <Info className="text-purple-300 w-4 h-4 sm:w-5 sm:h-5" />
-                <p className="text-xs sm:text-sm truncate max-w-[200px] sm:max-w-[250px]">{profile.description || "Pas de description"}</p>
-              </div>
               <button
                 onClick={(e) => {
                   e.stopPropagation();

@@ -1,7 +1,11 @@
 'use client';
 
 import { Background } from '@/components/Background';
+import { useIsMobile } from "@/hooks/use-mobile";
+import { Booster } from "@/lib/routes/booster/interfaces/booster.interface";
+import { getRarityGradient } from '@/utils/rarityHelper';
 import { motion } from 'framer-motion';
+import { Cigarette, Languages, MapPin, Moon, User, Wine } from 'lucide-react';
 import { useState } from 'react';
 import MatchSystem from './MatchSystem';
 import PackOpener from './PackOpener';
@@ -9,8 +13,6 @@ import ProfileGenerator, {
   mapBoosterToProfileCardType,
   ProfileCardType
 } from "./ProfileGenerator";
-import { Booster } from "@/lib/routes/booster/interfaces/booster.interface";
-import { useIsMobile } from "@/hooks/use-mobile";
 
 
 const MatchPage = () => {
@@ -30,6 +32,7 @@ const MatchPage = () => {
     setShowCardAnimation(true);
     setShouldFetchBoosters(false);
 
+    console.log(newProfiles);
 
     setTimeout(() => {
       setShowMatchSystem(true);
@@ -44,18 +47,12 @@ const MatchPage = () => {
     setShouldFetchBoosters(false);
   };
 
-  // const handleReturnToPackOpening = () => {
-  //   setPackProfiles([]);
-  //   setShowMatchSystem(false);
-  // };
-
   return (
     <div className="relative min-h-screen w-full overflow-hidden">
       <Background />
 
       <div className="container mx-auto relative z-10">
         <div className="flex flex-col items-center justify-center">
-          {/* <h1 className="text-3xl font-bold mb-8">Trouvez votre match</h1> */}
 
           <div className="w-full max-w-4xl h-[60vh] flex items-center justify-center">
             {showMatchSystem ? (
@@ -101,29 +98,61 @@ const MatchPage = () => {
                     }}
                     style={{ zIndex: packProfiles.length - index }}
                   >
-                    <div className="w-full h-[420px] sm:h-[480px] md:h-[520px] rounded-xl p-[10px] bg-gradient-to-br from-[#FF6B6B] via-[#ED2272] to-[#6A5ACD] shadow-2xl">
+                    <div
+                      className="relative w-full h-[420px] sm:h-[480px] md:h-[520px] rounded-xl p-[10px] shadow-2xl overflow-hidden"
+                      style={{ background: getRarityGradient(profile.rarity) }}
+                    >
                       <div
-                        className="w-full h-full rounded-lg flex items-center justify-center overflow-hidden"
+                        className="w-full h-full rounded-lg overflow-hidden"
                         style={{
-                          backgroundImage: `url(${profile.image})`,
+                          backgroundImage: `url(${profile.image_url || '/vintage.png'})`,
                           backgroundSize: "cover",
                           backgroundPosition: "center",
                         }}
                       >
-                        <div className="w-full h-full flex flex-col justify-between bg-gradient-to-t from-black/70 via-transparent">
-                          <div className="flex justify-between items-center p-3 sm:p-5 font-medium flex-wrap gap-2">
-                            <div className="flex items-center gap-1 sm:gap-2 bg-white/20 backdrop-blur-md px-2 sm:px-3 py-1 sm:py-1.5 rounded-full text-white shadow-lg text-xs sm:text-sm">
-                              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-red-400 w-4 h-4 sm:w-5 sm:h-5"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"></path><circle cx="12" cy="10" r="3"></circle></svg>
-                              <p>{profile.location || "Inconnu"}</p>
-                            </div>
-                            <div className="flex items-center gap-1 sm:gap-2 bg-white/20 backdrop-blur-md px-2 sm:px-3 py-1 sm:py-1.5 rounded-full text-white shadow-lg text-xs sm:text-sm">
-                              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-blue-300 w-4 h-4 sm:w-5 sm:h-5"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
-                              <p>{profile.age || "?"} ans</p>
-                            </div>
+                        <div className="w-full h-full flex flex-col justify-between bg-gradient-to-t from-black/70 via-transparent to-transparent p-3">
+                          <div className="flex justify-between items-start">
+                            {profile.age && (
+                              <div className="flex items-center gap-1 text-sm bg-white/10 text-white px-2 py-1 rounded-full">
+                                <User size={16} className="text-blue-300" />
+                                {profile.age} ans
+                              </div>
+                            )}
+                            {profile.location && (
+                              <div className="flex items-center gap-1 text-sm bg-white/10 text-white px-2 py-1 rounded-full">
+                                <MapPin size={16} className="text-red-400" />
+                                {profile.location}
+                              </div>
+                            )}
                           </div>
-                          <div className="p-3 sm:p-5">
-                            <h3 className="text-xl sm:text-2xl font-bold text-white mb-1">{profile.name}</h3>
-                            <p className="text-sm text-gray-200 line-clamp-3">{profile.description}</p>
+                          <div className="text-white">
+                            <h2 className="text-xl font-bold drop-shadow-md mb-1">{profile.name}</h2>
+                            <div className="flex flex-wrap gap-2 pt-1">
+                              {profile.languages && profile.languages.length > 0 && (
+                                <div className="flex items-center gap-1 text-sm bg-white/10 text-white px-2 py-1 rounded-full">
+                                  <Languages size={16} className="text-yellow-300" />
+                                  {profile.languages.slice(0, 2).join(', ')}
+                                </div>
+                              )}
+                              {profile.zodiac && (
+                                <div className="flex items-center gap-1 text-sm bg-white/10 text-white px-2 py-1 rounded-full">
+                                  <Moon size={16} className="text-cyan-300" />
+                                  {profile.zodiac}
+                                </div>
+                              )}
+                              {profile.smoking && (
+                                <div className="flex items-center gap-1 text-sm bg-white/10 text-white px-2 py-1 rounded-full">
+                                  <Cigarette size={16} className="text-red-300" />
+                                  {profile.smoking}
+                                </div>
+                              )}
+                              {profile.drinking && (
+                                <div className="flex items-center gap-1 text-sm bg-white/10 text-white px-2 py-1 rounded-full">
+                                  <Wine size={16} className="text-purple-300" />
+                                  {profile.drinking}
+                                </div>
+                              )}
+                            </div>
                           </div>
                         </div>
                       </div>
@@ -133,13 +162,17 @@ const MatchPage = () => {
               </div>
             ) : (
               <div className="flex items-center justify-center h-full">
-                <PackOpener onPackOpened={handlePackOpened} />
-                {shouldFetchBoosters && (
-                  <ProfileGenerator
-                    count={5}
-                    onProfilesLoaded={handleProfilesLoadedFromGenerator}
-                    onError={handleProfileLoadingError}
-                  />
+                {shouldFetchBoosters ? (
+                  <>
+                    <div className="text-white mb-4">Chargement des profils...</div>
+                    <ProfileGenerator
+                      count={5}
+                      onProfilesLoaded={handleProfilesLoadedFromGenerator}
+                      onError={handleProfileLoadingError}
+                    />
+                  </>
+                ) : (
+                  <PackOpener onPackOpened={handlePackOpened} />
                 )}
               </div>
             )}

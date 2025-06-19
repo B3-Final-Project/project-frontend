@@ -233,8 +233,8 @@ export default function MatchSystem({ profiles, onMatch, onReject }: MatchSystem
             />
           ) : (
             <div className="flex flex-col items-center justify-center h-full">
-              <p className="text-white text-lg">Tous les profils ont été vus.</p>
-              <p className="text-white">Redirection vers la page des boosters...</p>
+              <p className="text-gray-500 text-lg">Tous les profils ont été vus.</p>
+              <p className="text-gray-500">Redirection vers la page des boosters...</p>
             </div>
           )}
         </div>
@@ -283,6 +283,13 @@ export default function MatchSystem({ profiles, onMatch, onReject }: MatchSystem
           description={selectedCard.description}
           isOpen={isModalOpen}
           onClose={closeModal}
+          image_url={selectedCard.image_url}
+          rarity={selectedCard.rarity}
+          interests={selectedCard.interests?.map(interest => interest.name)} // Map to array of names
+          languages={selectedCard.languages}
+          zodiac={selectedCard.zodiac}
+          smoking={selectedCard.smoking}
+          drinking={selectedCard.drinking}
         />
       )}
     </div>

@@ -1,24 +1,33 @@
 "use client";
 
+import { FullScreenLoading } from '@/components/FullScreenLoading';
 import MatchPage from '@/components/match/MatchPage';
-import { recordPackOpening } from '@/utils/packManager';
-import { useEffect, useRef } from 'react';
+import { checkPackAvailability, recordPackOpening } from '@/utils/packManager';
+import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
 import '../../../styles/pokemon-pack-opener.css';
 import '../../../styles/zip-animation.css';
 
 const BoosterOuverturePage = () => {
-    const effectRan = useRef(false);
+    const router = useRouter();
+    const [isVerified, setIsVerified] = useState(false);
 
     useEffect(() => {
-        if (effectRan.current === false) {
+        const { canOpen } = checkPackAvailability();
+        if (!canOpen) {
+            router.push('/boosters');
+        } else {
             recordPackOpening();
             console.log('Pack opening recorded.');
-            effectRan.current = true;
+            setIsVerified(true);
         }
-    }, []);
+    }, [router]);
+
+    if (!isVerified) {
+        return <FullScreenLoading />;
+    }
 
     return <MatchPage />;
-
 };
 
 export default BoosterOuverturePage;
