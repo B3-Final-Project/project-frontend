@@ -10,14 +10,14 @@ import { useProfileCreation } from "@/providers/ProfileCreationProvider";
 import { useState } from "react";
 
 export function InterestsComponent() {
-  const { interestsInfo, setInterestsInfo, goToNextStep, goToPreviousStep } = useProfileCreation();
+  const { interestInfo, setInterestInfo, goToNextStep, goToPreviousStep } = useProfileCreation();
   const { step } = useParams<{ step: string }>();
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    const validation = validateInterestsForm(interestsInfo);
+    const validation = validateInterestsForm(interestInfo);
     setErrors(validation.errors);
 
     if (validation.isValid && step) {
@@ -31,14 +31,14 @@ export function InterestsComponent() {
         <div className="flex justify-between items-center mb-4">
           <h3 className="text-lg font-medium">Share Your Interests</h3>
           <p className="text-sm text-gray-500">
-            {interestsInfo.interests.length}/2 prompts
+            {interestInfo.interests.length}/2 prompts
           </p>
         </div>
 
         <div className="mb-6">
-          <SharedInterestsForm 
-            formData={interestsInfo} 
-            setFormData={setInterestsInfo}
+          <SharedInterestsForm
+            formData={interestInfo}
+            setFormData={setInterestInfo}
             showTitle={false}
           />
         </div>

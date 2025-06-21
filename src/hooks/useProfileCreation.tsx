@@ -1,8 +1,6 @@
 "use client";
 
 import { Dispatch, SetStateAction, useCallback, useState } from "react";
-import type { InterestItem, InterestsInfo } from "@/components/profile/shared/SharedInterestsForm";
-
 import { DrinkingEnum } from "@/lib/routes/profiles/enums/drinking.enum";
 import { GenderEnum } from "@/lib/routes/profiles/enums/gender.enum";
 import { OrientationEnum } from "@/lib/routes/profiles/enums/orientation.enum";
@@ -16,7 +14,15 @@ import {
   useCreateProfileMutation,
 } from "@/hooks/react-query/profiles";
 import { useRouter } from "next/navigation";
-export type { InterestItem, InterestsInfo };
+
+export interface InterestItem {
+  prompt: string;
+  answer: string;
+}
+
+export interface InterestInfo {
+  interests: InterestItem[];
+}
 
 export interface PersonalInfo {
   name: string;
@@ -56,8 +62,8 @@ export interface ProfileCreationApi {
   setPreferenceInfo: Dispatch<SetStateAction<PreferenceInfo>>;
   lifestyleInfo: LifestyleInfo;
   setLifestyleInfo: Dispatch<SetStateAction<LifestyleInfo>>;
-  interestsInfo: InterestsInfo;
-  setInterestsInfo: Dispatch<SetStateAction<InterestsInfo>>;
+  interestInfo: InterestInfo;
+  setInterestInfo: Dispatch<SetStateAction<InterestInfo>>;
   saveProfile: () => Promise<void>;
   goToStep: (step: string) => void;
   goToNextStep: (currentStep: string, steps: string[]) => void;
@@ -90,7 +96,7 @@ export const useProfileCreation = (basePath: string = "/profile"): ProfileCreati
 
   const [lifestyleInfo, setLifestyleInfo] = useState<LifestyleInfo>({});
 
-  const [interestsInfo, setInterestsInfo] = useState<InterestsInfo>({
+  const [interestInfo, setInterestInfo] = useState<InterestInfo>({
     interests: []
   });
 
@@ -105,7 +111,7 @@ export const useProfileCreation = (basePath: string = "/profile"): ProfileCreati
       locationWork,
       lifestyleInfo,
       preferenceInfo,
-      interestsInfo,
+      interestInfo,
     });
   }, [
     userId,
@@ -113,7 +119,7 @@ export const useProfileCreation = (basePath: string = "/profile"): ProfileCreati
     locationWork,
     lifestyleInfo,
     preferenceInfo,
-    interestsInfo,
+    interestInfo,
     preferenceMutation,
   ]);
 
@@ -155,8 +161,8 @@ export const useProfileCreation = (basePath: string = "/profile"): ProfileCreati
     setPreferenceInfo,
     lifestyleInfo,
     setLifestyleInfo,
-    interestsInfo,
-    setInterestsInfo,
+    interestInfo,
+    setInterestInfo: setInterestInfo,
     saveProfile,
     goToStep,
     goToNextStep,

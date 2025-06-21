@@ -1,22 +1,15 @@
 "use client";
 
-import { useState } from "react";
-import { z } from "zod";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { INTEREST_PROMPTS } from "@/components/profile/shared/interest-prompts";
+import { InterestInfo } from "@/hooks/useProfileCreation";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { INTEREST_PROMPTS } from "@/components/profile/shared/interest-prompts";
-
-export interface InterestItem {
-  prompt: string;
-  answer: string;
-}
-
-export interface InterestsInfo {
-  interests: InterestItem[];
-}
+import { useState } from "react";
+import { z } from "zod";
 
 // Zod schemas for validation
 export const InterestItemSchema = z.object({
@@ -38,8 +31,8 @@ export const InterestsInfoSchema = z.object({
 
 // Props interface for the shared component
 interface SharedInterestsFormProps {
-  readonly formData: InterestsInfo;
-  readonly setFormData: (data: InterestsInfo) => void;
+  readonly formData: InterestInfo;
+  readonly setFormData: (data: InterestInfo) => void;
   readonly showTitle?: boolean;
   readonly titleText?: string;
   readonly descriptionText?: string;
@@ -210,7 +203,7 @@ export function SharedInterestsForm({
 }
 
 // Validation function that can be used by both components
-export function validateInterestsForm(interestsInfo: InterestsInfo): { isValid: boolean; errors: Record<string, string> } {
+export function validateInterestsForm(interestsInfo: InterestInfo): { isValid: boolean; errors: Record<string, string> } {
   try {
     InterestsInfoSchema.parse(interestsInfo);
     return { isValid: true, errors: {} };

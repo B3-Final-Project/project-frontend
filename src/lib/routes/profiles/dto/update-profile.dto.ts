@@ -1,5 +1,5 @@
 import {
-  InterestsInfo,
+  InterestInfo,
   LifestyleInfo,
   LocationWorkInfo,
   PersonalInfo,
@@ -11,5 +11,5 @@ export interface UpdateProfileDto {
   preferenceInfo: PreferenceInfo;
   locationWork: LocationWorkInfo;
   lifestyleInfo: LifestyleInfo;
-  interestsInfo: InterestsInfo;
+  interestInfo: InterestInfo;
 }

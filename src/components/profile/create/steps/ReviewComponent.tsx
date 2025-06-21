@@ -21,7 +21,7 @@ import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 
 export function ReviewComponent() {
-  const { personalInfo, preferenceInfo, locationWork, lifestyleInfo, interestsInfo, goToPreviousStep, saveProfile, goToStep } = useProfileCreation();
+  const { personalInfo, preferenceInfo, locationWork, lifestyleInfo, interestInfo, goToPreviousStep, saveProfile, goToStep } = useProfileCreation();
   const { step } = useParams<{ step: string }>();
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -177,8 +177,8 @@ export function ReviewComponent() {
             </div>
             <Separator />
             <div className="space-y-3 pt-2">
-              {interestsInfo.interests.length > 0 ? (
-                interestsInfo.interests.map((interest, index) => (
+              {interestInfo.interests.length > 0 ? (
+                interestInfo.interests.map((interest, index) => (
                   <div key={interest.prompt || `review-interest-${index}`} className="border-l-4 border-blue-500 pl-3">
                     <p className="text-sm font-medium text-gray-700">{interest.prompt}</p>
                     <p className="text-gray-600">{interest.answer}</p>
