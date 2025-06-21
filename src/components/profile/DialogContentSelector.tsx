@@ -8,9 +8,10 @@ import { LocationWorkDialog } from "./dialogContent/LocationWorkDialog";
 import { PersonalInfoDialog } from "./dialogContent/PersonalInfoDialog";
 import { PicturesDialog } from "./dialogContent/PicturesDialog";
 import { PreferencesDialog } from "./dialogContent/PreferencesDialog";
+import { InterestsDialog } from "./dialogContent/InterestsDialog";
 
 interface DialogContentSelectorProps {
-  selectedOption: string;
+  readonly selectedOption: string;
 }
 
 export function DialogContentSelector({
@@ -27,6 +28,8 @@ export function DialogContentSelector({
       return <LocationWorkDialog />;
     case DialogContentChoices.LIFESTYLE:
       return <LifestyleDialog />;
+    case DialogContentChoices.INTERESTS:
+      return <InterestsDialog />;
     default:
       return null;
   }
