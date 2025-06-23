@@ -4,10 +4,12 @@ import { useProfileQuery } from "@/hooks/react-query/profiles";
 import Image from 'next/image';
 import { useState } from 'react';
 import { FullScreenLoading } from "../FullScreenLoading";
+import { useRouter } from "next/navigation";
+import { InterestItem } from "@/hooks/useProfileCreation";
 
 export function ProfileAvatar() {
   const [isUserCardModalOpen, setUserCardModalOpen] = useState(false);
-
+const router = useRouter();
   const query = useProfileQuery();
 
   const handleOpenUserCardModal = () => setUserCardModalOpen(true);
@@ -18,6 +20,7 @@ export function ProfileAvatar() {
   }
 
   if (query.isError) {
+    router.push('/profile/create/welcome');
     return <div>{JSON.stringify(query.error)}</div>
   }
 
@@ -45,7 +48,7 @@ export function ProfileAvatar() {
           name={query.data.user.name}
           age={query.data.user.age}
           location={query.data.user.location}
-          description={query.data.profile.interests?.map((interest: { description: string }) => interest.description).join(', ') ?? "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."}
+          description={query.data.profile.interests?.map((interest: InterestItem) => interest.prompt).join(', ')}
         />
       )}
     </>

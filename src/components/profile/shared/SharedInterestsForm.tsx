@@ -85,7 +85,6 @@ export function SharedInterestsForm({
   const removeInterest = (index: number) => {
     const updated = formData.interests.filter((_, i) => i !== index);
     setFormData({ interests: updated });
-    // Re-validate all to shift errors correctly
     try {
       InterestsInfoSchema.parse({ interests: updated });
       setErrors({});

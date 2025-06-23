@@ -102,7 +102,6 @@ export function LocationWorkComponent() {
               className={errors.languages ? 'border-red-500' : ''}
             />
             {errors.languages && <p className="text-sm text-red-500">{errors.languages}</p>}
-            <p className="text-xs text-gray-500">Separate multiple languages with commas</p>
           </div>
         </div>
       </Card>
