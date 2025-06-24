@@ -126,7 +126,6 @@ export function clearPackOpenTimestamps(): void {
   try {
     if (typeof window !== 'undefined' && window.sessionStorage) {
       sessionStorage.removeItem(PACK_OPEN_TIMESTAMPS_KEY);
-      console.log('Pack open timestamps cleared from sessionStorage.');
     }
   } catch (error) {
     console.error("Error clearing pack open timestamps from sessionStorage:", error);

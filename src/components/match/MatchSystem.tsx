@@ -10,6 +10,7 @@ import { UserCardModal } from '../UserCardModal';
 import ControlButtons from './ControlButtons';
 
 import { ProfileCardType } from "@/components/match/ProfileGenerator";
+import { useMatchActions } from '@/hooks/react-query/matches';
 import MatchAnimation from './MatchAnimation';
 import MatchCounters from './MatchCounters';
 import MatchListModal from './MatchListModal';
@@ -53,6 +54,8 @@ export default function MatchSystem({ profiles, onMatch, onReject }: MatchSystem
   const rejectOpacity = useTransform(x, [-200, -100, 0], [1, 0.5, 0]);
 
   const constraintsRef = useRef<HTMLDivElement>(null);
+  const { likeMatch, passMatch } = useMatchActions();
+
 
   const refreshPackStatusAndCountdown = useCallback(() => {
     const { canOpen, timeUntilNextOpenMs, packsOpenedInWindow } = checkPackAvailability();
@@ -130,7 +133,10 @@ export default function MatchSystem({ profiles, onMatch, onReject }: MatchSystem
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
+
   const handleMatch = (profile: ProfileCardType) => {
+    likeMatch(profile.id);
+
     setMatchedProfile(profile);
     setShowMatchAnimation(true);
     const updatedMatches = [...matches, profile];
@@ -144,6 +150,8 @@ export default function MatchSystem({ profiles, onMatch, onReject }: MatchSystem
   };
 
   const handleReject = (profile: ProfileCardType) => {
+    passMatch(profile.id);
+
     setShowRejectAnimation(true);
     const updatedNonMatches = [...nonMatches, profile];
     setNonMatches(updatedNonMatches);
@@ -233,8 +241,8 @@ export default function MatchSystem({ profiles, onMatch, onReject }: MatchSystem
             />
           ) : (
             <div className="flex flex-col items-center justify-center h-full">
-              <p className="text-white text-lg">Tous les profils ont été vus.</p>
-              <p className="text-white">Redirection vers la page des boosters...</p>
+              <p className="text-gray-500 text-lg">Tous les profils ont été vus.</p>
+              <p className="text-gray-500">Redirection vers la page des boosters...</p>
             </div>
           )}
         </div>
@@ -283,6 +291,13 @@ export default function MatchSystem({ profiles, onMatch, onReject }: MatchSystem
           description={selectedCard.description}
           isOpen={isModalOpen}
           onClose={closeModal}
+          image_url={selectedCard.image_url}
+          rarity={selectedCard.rarity}
+          interests={selectedCard.interests?.map(interest => interest.name)} // Map to array of names
+          languages={selectedCard.languages}
+          zodiac={selectedCard.zodiac}
+          smoking={selectedCard.smoking}
+          drinking={selectedCard.drinking}
         />
       )}
     </div>

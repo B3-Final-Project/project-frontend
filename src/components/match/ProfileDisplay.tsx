@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion';
-import { ProfileCardType } from "@/components/match/ProfileGenerator";
+import Image from 'next/image';
+import { ProfileCardType } from './ProfileGenerator';
 
 interface ProfileDisplayProps {
   profiles: ProfileCardType[];
@@ -19,6 +20,7 @@ const ProfileDisplay = ({ profiles, onFinish }: ProfileDisplayProps) => {
           Vos profils sont prêts !
         </motion.h2>
 
+
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 w-full max-w-4xl">
           {profiles.map((profile, index) => (
             <motion.div
@@ -30,8 +32,8 @@ const ProfileDisplay = ({ profiles, onFinish }: ProfileDisplayProps) => {
             >
               <div className="flex flex-col items-center">
                 <div className="w-24 h-24 rounded-full bg-gradient-to-br from-pink-500 to-purple-600 mb-3 overflow-hidden">
-                  <img
-                    src={profile.image || '/img.png'}
+                  <Image
+                    src={profile.image_url || '/img.png'}
                     alt={profile.name}
                     className="w-full h-full object-cover"
                   />
@@ -43,6 +45,7 @@ const ProfileDisplay = ({ profiles, onFinish }: ProfileDisplayProps) => {
             </motion.div>
           ))}
         </div>
+
 
         <motion.button
           className="mt-6 px-6 py-3 bg-gradient-to-r from-pink-500 to-purple-600 rounded-full text-white font-semibold shadow-lg"
