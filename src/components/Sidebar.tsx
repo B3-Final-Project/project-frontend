@@ -9,10 +9,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from '@/components/ui/sidebar';
-import { signout } from "@/providers/CognitoAuthProvider";
-import { clsx } from "clsx";
 import { Home } from 'lucide-react';
-import { Quantico } from "next/font/google";
 import Image from "next/image";
 import Link from 'next/link';
 import { FaRegUser } from "react-icons/fa";
@@ -38,7 +35,6 @@ export function SidebarComponent() {
   ]
 
   const signOutAction = async () => {
-    await signout()
     await auth.removeUser()
   }
 

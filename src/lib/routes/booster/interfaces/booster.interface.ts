@@ -1,16 +1,7 @@
-// Utilisation de number plutôt que des énumérations spécifiques car l'API les retourne comme des nombres
-// Ces types sont utilisés uniquement pour le typage, ils seront de toute façon convertis en chaînes dans le mapper
-
 import { Interest } from "@/lib/routes/profiles/interfaces/interest.interface";
+import { RarityEnum } from "@/lib/routes/booster/dto/rarity.enum";
 
-export interface BoosterUserProfile {
-  id: string;
-  name?: string;
-  surname?: string;
-  age?: number;
-}
-
-export interface Booster {
+export interface UserCard {
   id: number;
   name?: string;
   surname?: string;
@@ -31,9 +22,8 @@ export interface Booster {
   images?: (string | null)[];
   avatarUrl?: string;
   interests?: Interest[];
-  userProfile?: BoosterUserProfile; // Rendu optionnel car l'API peut ne pas l'inclure
   created_at?: Date; // Rendu optionnel car peut être absent
   updated_at?: Date; // Rendu optionnel car peut être absent
-  rarity?: string | number; // Peut être un nombre ou une chaîne selon l'API
+  rarity?: RarityEnum
 }
 

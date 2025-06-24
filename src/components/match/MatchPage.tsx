@@ -1,21 +1,20 @@
 'use client';
 
-import { Background } from '@/components/Background';
-import { useIsMobile } from "@/hooks/use-mobile";
-import { Booster } from "@/lib/routes/booster/interfaces/booster.interface";
-import { checkPackAvailability, recordPackOpening } from '@/utils/packManager';
-import { getRarityGradient } from '@/utils/rarityHelper';
-import { motion } from 'framer-motion';
 import { Cigarette, Languages, MapPin, Moon, User, Wine } from 'lucide-react';
-import { useRouter } from 'next/navigation';
+import { checkPackAvailability, recordPackOpening } from '@/utils/packManager';
 import { useEffect, useState } from 'react';
+
+import { Background } from '@/components/Background';
 import MatchSystem from './MatchSystem';
 import PackOpener from './PackOpener';
-import ProfileGenerator, {
-  mapBoosterToProfileCardType,
+import {
   ProfileCardType
-} from "./ProfileGenerator";
-
+} from "@/lib/routes/profiles/dto/profile-card-type.dto";
+import ProfileGenerator from "@/components/match/ProfileGenerator";
+import { getRarityGradient } from '@/utils/rarityHelper';
+import { motion } from 'framer-motion';
+import { useIsMobile } from "@/hooks/use-mobile";
+import { useRouter } from 'next/navigation';
 
 const MatchPage = () => {
   const router = useRouter();
@@ -35,9 +34,8 @@ const MatchPage = () => {
     }
   }, [router]);
 
-  const handleProfilesLoadedFromGenerator = (boosters: Booster[]) => {
-    const newProfiles = boosters.map(mapBoosterToProfileCardType);
-    setPackProfiles(newProfiles);
+  const handleProfilesLoadedFromGenerator = (profiles: ProfileCardType[]) => {
+    setPackProfiles(profiles);
     setShowCardAnimation(true);
     setShouldFetchBoosters(false);
 

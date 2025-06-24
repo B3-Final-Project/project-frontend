@@ -3,7 +3,7 @@
 import { getRarityGradient } from '@/utils/rarityHelper';
 import { motion } from 'framer-motion';
 import { Cigarette, Info, Languages, MapPin, Moon, User, Wine } from 'lucide-react';
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Interest } from "@/lib/routes/profiles/interfaces/interest.interface";
 
 interface UserCardModalProps {
@@ -12,7 +12,7 @@ interface UserCardModalProps {
   location?: string;
   description?: string;
   isOpen: boolean;
-  onClose: () => void;
+  onCloseAction: () => void;
   rarity?: string;
   image_url?: string;
   interests?: Interest[];
@@ -27,7 +27,7 @@ export function UserCardModal({
   age,
   location,
   isOpen,
-  onClose,
+  onCloseAction,
   rarity,
   image_url,
   interests,
@@ -43,12 +43,13 @@ export function UserCardModal({
     setIsFlipped(!isFlipped);
   };
 
-  const handleClickOutside = (e: MouseEvent) => {
+
+  const handleClickOutside = useCallback((e: Event)=> {
     if (modalRef.current && !modalRef.current.contains(e.target as Node)) {
-      onClose();
+      onCloseAction();
       setIsFlipped(false)
     }
-  };
+  }, [onCloseAction])
 
   useEffect(() => {
     if (isOpen) {
@@ -60,7 +61,7 @@ export function UserCardModal({
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, [isOpen]);
+  }, [handleClickOutside, isOpen]);
 
   if (!isOpen) return null;
 

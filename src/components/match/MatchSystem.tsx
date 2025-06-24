@@ -3,13 +3,9 @@
 import { AnimatePresence, useMotionValue, useTransform } from 'framer-motion';
 import { useRouter } from 'next/navigation';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import {
-  checkPackAvailability
-} from '../../utils/packManager';
+import { checkPackAvailability } from "@/utils/packManager";
 import { UserCardModal } from '../UserCardModal';
 import ControlButtons from './ControlButtons';
-
-import { ProfileCardType } from "@/components/match/ProfileGenerator";
 import { useMatchActions } from '@/hooks/react-query/matches';
 import MatchAnimation from './MatchAnimation';
 import MatchCounters from './MatchCounters';
@@ -17,6 +13,9 @@ import MatchListModal from './MatchListModal';
 import NonMatchListModal from './NonMatchListModal';
 import ProfileCard from './ProfileCard';
 import RejectAnimation from './RejectAnimation';
+import {
+  ProfileCardType
+} from "@/lib/routes/profiles/dto/profile-card-type.dto";
 
 type MatchSystemProps = {
   profiles: ProfileCardType[];
@@ -175,7 +174,7 @@ export default function MatchSystem({ profiles }: MatchSystemProps) {
     });
   };
 
-  const handleDragEnd = (event: any, info: any) => {
+  const handleDragEnd = (event: Event, info: {offset: {x: number}}) => {
     const offset = info.offset.x;
     if (offset > 100 && currentProfile) handleMatch(currentProfile);
     else if (offset < -100 && currentProfile) handleReject(currentProfile);
@@ -286,12 +285,11 @@ export default function MatchSystem({ profiles }: MatchSystemProps) {
           name={selectedCard.name}
           age={selectedCard.age}
           location={selectedCard.location}
-          description={selectedCard.description}
           isOpen={isModalOpen}
-          onClose={closeModal}
+          onCloseAction={closeModal}
           image_url={selectedCard.image_url}
           rarity={selectedCard.rarity}
-          interests={selectedCard.interests?.map(interest => interest.name)} // Map to array of names
+          interests={selectedCard.interests}
           languages={selectedCard.languages}
           zodiac={selectedCard.zodiac}
           smoking={selectedCard.smoking}
