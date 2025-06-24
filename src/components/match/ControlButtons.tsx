@@ -1,6 +1,8 @@
 import { motion } from 'framer-motion';
 import { Heart, X } from 'lucide-react';
-import { ProfileCardType } from './ProfileGenerator';
+import {
+  ProfileCardType
+} from "@/lib/routes/profiles/dto/profile-card-type.dto";
 
 type ControlButtonsProps = {
   currentProfile: ProfileCardType | undefined;

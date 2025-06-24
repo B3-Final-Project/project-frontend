@@ -3,7 +3,8 @@
 import { getRarityGradient } from '@/utils/rarityHelper';
 import { motion } from 'framer-motion';
 import { Cigarette, Info, Languages, MapPin, Moon, User, Wine } from 'lucide-react';
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { Interest } from "@/lib/routes/profiles/interfaces/interest.interface";
 
 interface UserCardModalProps {
   name: string;
@@ -11,10 +12,10 @@ interface UserCardModalProps {
   location?: string;
   description?: string;
   isOpen: boolean;
-  onClose: () => void;
+  onCloseAction: () => void;
   rarity?: string;
   image_url?: string;
-  interests?: string[];
+  interests?: Interest[];
   languages?: string[];
   zodiac?: string;
   smoking?: string;
@@ -25,9 +26,8 @@ export function UserCardModal({
   name,
   age,
   location,
-  description,
   isOpen,
-  onClose,
+  onCloseAction,
   rarity,
   image_url,
   interests,
@@ -43,12 +43,13 @@ export function UserCardModal({
     setIsFlipped(!isFlipped);
   };
 
-  const handleClickOutside = (e: MouseEvent) => {
+
+  const handleClickOutside = useCallback((e: Event)=> {
     if (modalRef.current && !modalRef.current.contains(e.target as Node)) {
-      onClose();
+      onCloseAction();
       setIsFlipped(false)
     }
-  };
+  }, [onCloseAction])
 
   useEffect(() => {
     if (isOpen) {
@@ -60,7 +61,7 @@ export function UserCardModal({
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, [isOpen]);
+  }, [handleClickOutside, isOpen]);
 
   if (!isOpen) return null;
 
@@ -197,9 +198,13 @@ export function UserCardModal({
                 <div className="mb-3 text-gray-200 leading-relaxed overflow-auto max-h-[300px] custom-scrollbar">
                   {interests && interests.length > 0 && (
                     <div className="flex flex-wrap gap-1 mt-1">
-                      {interests.slice(0, 3).map((interest, index) => (
-                        <span key={index} className="bg-white/20  px-2 py-0.5 rounded-full">
-                          {interest}
+                      {interests.map((interest, index) => (
+                        <span
+                          key={index}
+                          className="bg-white/10 text-white px-2 py-1 rounded-full text-sm"
+                        >
+                          {interest.prompt}:
+                          <span className="font-semibold"> {interest.answer}</span>
                         </span>
                       ))}
                     </div>

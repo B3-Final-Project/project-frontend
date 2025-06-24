@@ -8,6 +8,7 @@ import {
   SmokingEnum,
   ZodiacEnum
 } from "@/lib/routes/profiles/enums";
+import { RarityEnum } from "@/lib/routes/booster/dto/rarity.enum";
 
 export function formatGenderEnum(value: number | string): string {
   if (typeof value === 'string') {
@@ -163,6 +164,21 @@ export function formatEnumByField(value: number | string, fieldName: string): st
     default:
       // If no specific formatter exists, convert to string and format generic
       return formatGenericEnum(value);
+  }
+}
+
+export function formatRarityEnum(value: number | string): string {
+  if (typeof value === 'string') {
+    value = Number(value);
+  }
+
+  switch(value) {
+    case RarityEnum.COMMON: return 'Common';
+    case RarityEnum.UNCOMMON: return 'Uncommon';
+    case RarityEnum.RARE: return 'Rare';
+    case RarityEnum.EPIC: return 'Epic';
+    case RarityEnum.LEGENDARY: return 'Legendary';
+    default: return 'Common'; // Default to Common if no match
   }
 }
 

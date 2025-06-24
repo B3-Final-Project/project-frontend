@@ -1,6 +1,8 @@
 import { motion } from 'framer-motion';
 import Image from 'next/image';
-import { ProfileCardType } from './ProfileGenerator';
+import {
+  ProfileCardType
+} from "@/lib/routes/profiles/dto/profile-card-type.dto";
 
 interface ProfileDisplayProps {
   profiles: ProfileCardType[];

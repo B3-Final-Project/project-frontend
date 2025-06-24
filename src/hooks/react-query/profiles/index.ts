@@ -11,6 +11,7 @@ export function useProfileQuery() {
     queryKey: ["profile"],
     queryFn: () => ProfileRouter.getProfile(),
     refetchOnWindowFocus: false,
+    retry: false,
     refetchInterval: 10000,
     refetchOnMount: false
   });

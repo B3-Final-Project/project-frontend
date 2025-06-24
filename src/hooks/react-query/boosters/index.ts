@@ -1,7 +1,6 @@
 import { BoosterRouter } from "@/lib/routes/booster";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
-
 export function useGetAvailablePacksQuery() {
   return useQuery({
     queryKey: ["booster"],

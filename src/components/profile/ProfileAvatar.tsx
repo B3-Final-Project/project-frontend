@@ -1,48 +1,14 @@
 'use client'
 import { UserCardModal } from "@/components/UserCardModal";
 import { useProfileQuery } from "@/hooks/react-query/profiles";
-import { DrinkingEnum, SmokingEnum, ZodiacEnum } from "@/lib/routes/profiles/enums"; // Assuming enums are barrel exported from here
 import Image from 'next/image';
 import { useState } from 'react';
 import { FullScreenLoading } from "../FullScreenLoading";
-
-const getSmokingLabel = (value?: SmokingEnum): string => {
-  switch (value) {
-    case SmokingEnum.NEVER: return 'Non fumeur';
-    case SmokingEnum.OCCASIONALLY: return 'Occasionnellement';
-    case SmokingEnum.REGULARLY: return 'Régulièrement';
-    case SmokingEnum.TRYING_TO_QUIT: return 'Essaie d\'arrêter';
-    default: return '';
-  }
-};
-
-const getDrinkingLabel = (value?: DrinkingEnum): string => {
-  switch (value) {
-    case DrinkingEnum.NEVER: return 'Non buveur';
-    case DrinkingEnum.SOCIALLY: return 'Socialement';
-    case DrinkingEnum.REGULARLY: return 'Régulièrement';
-    default: return '';
-  }
-};
-
-const getZodiacLabel = (value?: ZodiacEnum): string => {
-  switch (value) {
-    case ZodiacEnum.ARIES: return 'Bélier';
-    case ZodiacEnum.TAURUS: return 'Taureau';
-    case ZodiacEnum.GEMINI: return 'Gémeaux';
-    case ZodiacEnum.CANCER: return 'Cancer';
-    case ZodiacEnum.LEO: return 'Lion';
-    case ZodiacEnum.VIRGO: return 'Vierge';
-    case ZodiacEnum.LIBRA: return 'Balance';
-    case ZodiacEnum.SCORPIO: return 'Scorpion';
-    case ZodiacEnum.SAGITTARIUS: return 'Sagittaire';
-    case ZodiacEnum.CAPRICORN: return 'Capricorne';
-    case ZodiacEnum.AQUARIUS: return 'Verseau';
-    case ZodiacEnum.PISCES: return 'Poissons';
-    case ZodiacEnum.DONT_BELIEVE: return 'N\'y croit pas';
-    default: return '';
-  }
-};
+import {
+  formatDrinkingEnum,
+  formatSmokingEnum,
+  formatZodiacEnum
+} from "@/lib/utils/enum-utils";
 
 export function ProfileAvatar() {
   const [isUserCardModalOpen, setUserCardModalOpen] = useState(false);
@@ -80,17 +46,16 @@ export function ProfileAvatar() {
       {query.data?.user && query.data?.profile && (
         <UserCardModal
           isOpen={isUserCardModalOpen}
-          onClose={handleCloseUserCardModal}
+          onCloseAction={handleCloseUserCardModal}
           name={query.data.user.name}
           age={query.data.user.age}
           location={query.data.user.location}
-          description={query.data.profile.interests?.map(interest => interest.description).join(', ') || "Découvrez mes centres d'intérêt !"}
           image_url={(query.data.profile.images && query.data.profile.images.length > 0 && query.data.profile.images[0]) || '/vintage.png'}
-          interests={query.data.profile.interests?.map(interest => interest.description)}
+          interests={query.data.profile.interests}
           languages={query.data.profile.languages}
-          zodiac={getZodiacLabel(query.data.profile.zodiac)}
-          smoking={getSmokingLabel(query.data.profile.smoking)}
-          drinking={getDrinkingLabel(query.data.profile.drinking)}
+          zodiac={formatZodiacEnum(query.data.profile.zodiac ?? '')}
+          smoking={formatSmokingEnum(query.data.profile.smoking ?? '')}
+          drinking={formatDrinkingEnum(query.data.profile.drinking ?? '')}
         />
       )}
     </>
