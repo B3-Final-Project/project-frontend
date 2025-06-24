@@ -1,39 +1,69 @@
 import { BoosterRouter } from '@/lib/routes/booster';
 import { Booster } from '@/lib/routes/booster/interfaces/booster.interface';
-export interface ProfileCardType {
-  id: string;
-  name: string;
-  image: string;
-  age?: number;
-  location?: string;
-  description: string;
-  isRevealed: boolean;
-}
-
+import { formatDrinkingEnum, formatSmokingEnum, formatZodiacEnum } from '@/lib/utils/enum-utils';
 import { useQuery } from '@tanstack/react-query';
 import React, { useEffect } from 'react';
 
-export const fetchBoosters = async (count: number): Promise<Booster[]> => {
-  return BoosterRouter.getBooster(undefined, { count: count.toString() });
+export interface ProfileCardType {
+  id: string;
+  name: string;
+  surname?: string;
+  image_url: string;
+  images?: string[];
+  age?: number;
+  location?: string;
+  description: string;
+  work?: string;
+  languages?: string[];
+  smoking?: string;
+  drinking?: string;
+  zodiac?: string;
+  interests?: Array<{ id: number; name: string; icon: string }>;
+  rarity?: string;
+  isRevealed: boolean;
+}
+
+export const fetchBoosters = async (count: number): Promise<any> => {
+  return BoosterRouter.getBoosters(undefined, { count: count.toString() });
 };
 
 export const mapBoosterToProfileCardType = (booster: Booster): ProfileCardType => {
   let mainImage = '/vintage.png';
-  if (booster.avatarUrl) {
-    mainImage = booster.avatarUrl;
-  } else if (booster.images && booster.images.length > 0 && booster.images[0]) {
+  if (booster.images && booster.images.length > 0 && booster.images[0]) {
     mainImage = booster.images[0];
+  } else if (booster.avatarUrl) {
+    mainImage = booster.avatarUrl;
   }
 
-  console.log('booster', booster);
+  const validImages = booster.images?.filter(img => img) as string[] || [];
+
 
   return {
     id: booster.id.toString(),
-    name: booster.userProfile?.name || 'Utilisateur Holomatch',
-    image: mainImage,
-    age: booster.userProfile?.age,
-    location: booster.city,
-    description: booster.work || `Découvre ${booster.userProfile?.name || 'cette personne'} !`,
+    name: booster.name || 'Utilisateur Holomatch',
+    surname: booster.surname,
+    image_url: mainImage,
+    images: validImages,
+    age: booster.age,
+    location: booster.city || 'Non précisé',
+    work: booster.work || '',
+    description: booster.work || `Découvre ${booster.name || 'cette personne'} !`,
+    languages: booster.languages || [],
+    smoking: typeof booster.smoking === 'number' ? formatSmokingEnum(booster.smoking) : String(booster.smoking || ''),
+    drinking: typeof booster.drinking === 'number' ? formatDrinkingEnum(booster.drinking) : String(booster.drinking || ''),
+    zodiac: typeof booster.zodiac === 'number' ? formatZodiacEnum(booster.zodiac) : String(booster.zodiac || ''),
+    interests: booster.interests?.map(interest => ({
+      id: typeof interest.id === 'string' ? parseInt(interest.id, 10) || 0 : Number(interest.id),
+      name: interest.name,
+      icon: interest.icon || 'sparkles'
+    })) || [],
+    rarity: typeof booster.rarity === 'number' ?
+      (booster.rarity === 0 ? 'COMMON' :
+        booster.rarity === 1 ? 'UNCOMMON' :
+          booster.rarity === 2 ? 'RARE' :
+            booster.rarity === 3 ? 'EPIC' :
+              booster.rarity === 4 ? 'LEGENDARY' : 'COMMON') :
+      String(booster.rarity || 'COMMON'),
     isRevealed: true,
   };
 };

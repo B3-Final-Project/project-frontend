@@ -1,5 +1,6 @@
 'use client'
 import { SignInButton } from "@/components/auth/SignInButton";
+import { Button } from "@/components/ui/button";
 import {
   Sidebar,
   SidebarContent,
@@ -8,7 +9,10 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from '@/components/ui/sidebar';
+import { signout } from "@/providers/CognitoAuthProvider";
+import { clsx } from "clsx";
 import { Home } from 'lucide-react';
+import { Quantico } from "next/font/google";
 import Image from "next/image";
 import Link from 'next/link';
 import { FaRegUser } from "react-icons/fa";
@@ -28,10 +32,15 @@ export function SidebarComponent() {
   const items = [
     { title: "Home", url: '/', icon: Home },
     { title: "Messages", url: '/messages', icon: FiMessageSquare },
-    { canUse: true, title: "Open a Booster", url: '/booster' },
+    { canUse: true, title: "Open a Booster", url: '/boosters' },
     { title: "Profile", url: '/profile', icon: FaRegUser },
     { title: "Settings", url: '/register', icon: IoSettingsOutline },
   ]
+
+  const signOutAction = async () => {
+    await signout()
+    await auth.removeUser()
+  }
 
   return (
     <>
@@ -71,6 +80,7 @@ export function SidebarComponent() {
                   );
                 })}
               </SidebarMenu>
+              {auth.user && <Button onClick={() => signOutAction()}>Sign Out</Button>}
             </SidebarGroup>
           </SidebarContent>
         </Sidebar>
