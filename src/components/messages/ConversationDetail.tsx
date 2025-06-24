@@ -26,7 +26,8 @@ export default function ConversationDetail({ conversationId }: ConversationDetai
         lastReadConversationId,
         handleTyping,
         handleSendMessage,
-        handleKeyPress
+        handleKeyPress,
+        handleMarkAsRead
     } = useConversation(conversationId);
 
     // Gérer le responsive de la barre latérale
@@ -79,6 +80,8 @@ export default function ConversationDetail({ conversationId }: ConversationDetai
                     firstUnreadIndex={firstUnreadIndex}
                     lastReadConversationId={lastReadConversationId}
                     currentConversationId={conversationId}
+                    otherName={currentConversation?.name}
+                    onMarkAsRead={handleMarkAsRead}
                 />
 
                 <MessageInput

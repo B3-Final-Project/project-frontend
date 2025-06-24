@@ -21,7 +21,7 @@ export default function ConversationItem({
       className={`
         w-full text-left transition-colors
         ${isSelected ? 'bg-blue-50' : 'hover:bg-gray-50'}
-        ${!isExpanded ? 'p-2' : 'p-4'}
+        p-2
         border-b border-gray-100
       `}
     >
@@ -35,7 +35,7 @@ export default function ConversationItem({
             alt={conversation.name}
             className={`
               rounded-full
-              ${!isExpanded ? 'w-10 h-10' : 'w-12 h-12'}
+              w-12 h-12
             `}
           />
           {conversation.unread > 0 && (
@@ -47,8 +47,8 @@ export default function ConversationItem({
         
         {isExpanded && (
           <div className="flex-1 min-w-0">
-            <div className="flex justify-between items-start">
-              <div>
+            <div className="flex justify-between items-center w-full">
+              <div className="flex-1 min-w-0">
                 <h3 className="font-semibold text-gray-900 truncate">
                   {conversation.name}
                 </h3>
@@ -65,10 +65,8 @@ export default function ConversationItem({
                   )}
                 </div>
               </div>
-              <div className="text-right flex-shrink-0 ml-2">
-                <p className="text-xs text-gray-500">
-                  {conversation.timestamp}
-                </p>
+              <div className="text-xs text-gray-500 text-right flex-shrink-0 ml-2 self-start">
+                <p>{conversation.timestamp}</p>
               </div>
             </div>
           </div>
