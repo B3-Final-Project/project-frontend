@@ -175,4 +175,3 @@ export function useImageMutations() {
     removeError: removeImageMutation.error,
   };
 }
-
