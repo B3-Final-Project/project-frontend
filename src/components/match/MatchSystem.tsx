@@ -27,7 +27,7 @@ type MatchSystemProps = {
 const SESSION_STORAGE_PACK_PAID_KEY = 'holomatch_current_pack_paid_for_session';
 const MAX_PACKS_PER_WINDOW = 2;
 
-export default function MatchSystem({ profiles, onMatch, onReject }: MatchSystemProps) {
+export default function MatchSystem({ profiles }: MatchSystemProps) {
   const router = useRouter();
   const [matches, setMatches] = useState<ProfileCardType[]>([]);
   const [nonMatches, setNonMatches] = useState<ProfileCardType[]>([]);
@@ -141,7 +141,6 @@ export default function MatchSystem({ profiles, onMatch, onReject }: MatchSystem
     setShowMatchAnimation(true);
     const updatedMatches = [...matches, profile];
     setMatches(updatedMatches);
-    if (onMatch) onMatch(profile);
     setTimeout(() => {
       setShowMatchAnimation(false);
       setMatchedProfile(null);
@@ -155,7 +154,6 @@ export default function MatchSystem({ profiles, onMatch, onReject }: MatchSystem
     setShowRejectAnimation(true);
     const updatedNonMatches = [...nonMatches, profile];
     setNonMatches(updatedNonMatches);
-    if (onReject) onReject(profile);
     setTimeout(() => {
       setShowRejectAnimation(false);
       moveToNextCard();

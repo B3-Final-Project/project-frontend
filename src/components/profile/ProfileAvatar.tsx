@@ -84,8 +84,9 @@ export function ProfileAvatar() {
           name={query.data.user.name}
           age={query.data.user.age}
           location={query.data.user.location}
+          description={query.data.profile.interests?.map(interest => interest.description).join(', ') || "Découvrez mes centres d'intérêt !"}
           image_url={(query.data.profile.images && query.data.profile.images.length > 0 && query.data.profile.images[0]) || '/vintage.png'}
-          interests={query.data.profile.interests}
+          interests={query.data.profile.interests?.map(interest => interest.description)}
           languages={query.data.profile.languages}
           zodiac={getZodiacLabel(query.data.profile.zodiac)}
           smoking={getSmokingLabel(query.data.profile.smoking)}
