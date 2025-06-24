@@ -1,12 +1,7 @@
-// Définition locale des interfaces pour éviter les problèmes d'importation
-interface Interest {
-  id: string | number;
-  name: string;
-  icon?: string;
-}
-
 // Utilisation de number plutôt que des énumérations spécifiques car l'API les retourne comme des nombres
 // Ces types sont utilisés uniquement pour le typage, ils seront de toute façon convertis en chaînes dans le mapper
+
+import { Interest } from "@/lib/routes/profiles/interfaces/interest.interface";
 
 export interface BoosterUserProfile {
   id: string;

@@ -17,13 +17,14 @@ export interface ProfileCardType {
   smoking?: string;
   drinking?: string;
   zodiac?: string;
-  interests?: Array<{id: number; name: string; icon: string}>;
+  interests?: Interest[];
   rarity?: string;
   isRevealed: boolean;
 }
 
 import { useQuery } from '@tanstack/react-query';
 import React, { useEffect } from 'react';
+import { Interest } from "@/lib/routes/profiles/interfaces/interest.interface";
 
 export const fetchBoosters = async (count: number): Promise<any> => {
   return BoosterRouter.getBoosters(undefined, { count: count.toString() });
@@ -39,8 +40,8 @@ export const mapBoosterToProfileCardType = (booster: Booster): ProfileCardType =
   }
 
   // Filtrer les images null ou vides
-  const validImages = booster.images?.filter(img => img) as string[] || [];
-  
+  const validImages = booster.images?.filter(img => img) as string[] ?? [];
+
   // Conversion des énumérations en chaînes lisibles
   const getSmokingLabel = (value: number): string => {
     switch (value) {
@@ -56,7 +57,7 @@ export const mapBoosterToProfileCardType = (booster: Booster): ProfileCardType =
         return 'Non précisé';
     }
   };
-  
+
   const getDrinkingLabel = (value: number): string => {
     switch (value) {
       case DrinkingEnum.NEVER:
@@ -69,7 +70,7 @@ export const mapBoosterToProfileCardType = (booster: Booster): ProfileCardType =
         return 'Non précisé';
     }
   };
-  
+
   const getZodiacLabel = (value: number): string => {
     switch (value) {
       case ZodiacEnum.ARIES:
@@ -105,30 +106,26 @@ export const mapBoosterToProfileCardType = (booster: Booster): ProfileCardType =
 
   return {
     id: booster.id.toString(),
-    name: booster.name || 'Utilisateur Holomatch',
+    name: booster.name ?? 'Utilisateur Holomatch',
     surname: booster.surname,
     image_url: mainImage,
     images: validImages,
     age: booster.age,
-    location: booster.city || 'Non précisé',
-    work: booster.work || '',
-    description: booster.work || `Découvre ${booster.name || 'cette personne'} !`,
-    languages: booster.languages || [],
-    smoking: typeof booster.smoking === 'number' ? getSmokingLabel(booster.smoking) : String(booster.smoking || ''),
-    drinking: typeof booster.drinking === 'number' ? getDrinkingLabel(booster.drinking) : String(booster.drinking || ''),
-    zodiac: typeof booster.zodiac === 'number' ? getZodiacLabel(booster.zodiac) : String(booster.zodiac || ''),
-    interests: booster.interests?.map(interest => ({
-      id: typeof interest.id === 'string' ? parseInt(interest.id, 10) || 0 : Number(interest.id),
-      name: interest.name,
-      icon: interest.icon || 'sparkles'
-    })) || [],
-    rarity: typeof booster.rarity === 'number' ? 
-      (booster.rarity === 0 ? 'COMMON' : 
-       booster.rarity === 1 ? 'UNCOMMON' : 
-       booster.rarity === 2 ? 'RARE' : 
-       booster.rarity === 3 ? 'EPIC' : 
-       booster.rarity === 4 ? 'LEGENDARY' : 'COMMON') : 
-      String(booster.rarity || 'COMMON'),
+    location: booster.city ?? 'Non précisé',
+    work: booster.work ?? '',
+    description: booster.work ?? `Découvre ${booster.name ?? 'cette personne'} !`,
+    languages: booster.languages ?? [],
+    smoking: typeof booster.smoking === 'number' ? getSmokingLabel(booster.smoking) : String(booster.smoking ?? ''),
+    drinking: typeof booster.drinking === 'number' ? getDrinkingLabel(booster.drinking) : String(booster.drinking ?? ''),
+    zodiac: typeof booster.zodiac === 'number' ? getZodiacLabel(booster.zodiac) : String(booster.zodiac ?? ''),
+    interests: booster.interests,
+    rarity: typeof booster.rarity === 'number' ?
+      (booster.rarity === 0 ? 'COMMON' :
+       booster.rarity === 1 ? 'UNCOMMON' :
+       booster.rarity === 2 ? 'RARE' :
+       booster.rarity === 3 ? 'EPIC' :
+       booster.rarity === 4 ? 'LEGENDARY' : 'COMMON') :
+      String(booster.rarity ?? 'COMMON'),
     isRevealed: true,
   };
 };
@@ -143,7 +140,6 @@ const ProfileGenerator: React.FC<ProfileGeneratorProps> = ({ count, onProfilesLo
 
   const {
     data: boosterData,
-    isLoading,
     isError,
     error,
   } = useQuery<Booster[], Error>({
