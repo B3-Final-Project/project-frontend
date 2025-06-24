@@ -17,7 +17,7 @@ export default function ControlButtons({ currentProfile, handleMatch, handleReje
         className="bg-gradient-to-r from-red-500 to-pink-500 p-3 sm:p-4 rounded-full shadow-lg"
         onClick={() => currentProfile && handleReject(currentProfile)}
       >
-        <X className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
+        <X className="w-5 h-5 sm:w-6 sm:h-6 text-primary-foreground" />
       </motion.button>
 
       <motion.button
@@ -26,7 +26,7 @@ export default function ControlButtons({ currentProfile, handleMatch, handleReje
         className="bg-gradient-to-r from-green-400 to-blue-500 p-3 sm:p-4 rounded-full shadow-lg"
         onClick={() => currentProfile && handleMatch(currentProfile)}
       >
-        <Heart className="w-5 h-5 sm:w-6 sm:h-6 text-white" fill="white" />
+        <Heart className="w-5 h-5 sm:w-6 sm:h-6 text-primary-foreground" fill="white" />
       </motion.button>
     </div>
   );

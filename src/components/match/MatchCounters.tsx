@@ -25,7 +25,7 @@ export default function MatchCounters({
         onClick={() => setShowNonMatchList(true)}
       >
         <div className="bg-gradient-to-r from-red-500 to-pink-500 p-1.5 sm:p-2 rounded-full">
-          <UserX className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
+          <UserX className="w-4 h-4 sm:w-5 sm:h-5 text-primary-foreground" />
         </div>
         <span className="text-black text-sm sm:text-base font-medium">{nonMatchesCount}</span>
       </motion.div>
@@ -38,7 +38,7 @@ export default function MatchCounters({
       >
         <span className="text-black text-sm sm:text-base font-medium">{matchesCount}</span>
         <div className="bg-gradient-to-r from-green-400 to-blue-500 p-1.5 sm:p-2 rounded-full">
-          <UserCheck className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
+          <UserCheck className="w-4 h-4 sm:w-5 sm:h-5 text-primary-foreground" />
         </div>
       </motion.div>
     </div>

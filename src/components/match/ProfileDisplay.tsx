@@ -12,7 +12,7 @@ const ProfileDisplay = ({ profiles, onFinish }: ProfileDisplayProps) => {
     <div className="w-full">
       <div className="flex flex-col items-center gap-4">
         <motion.h2
-          className="text-2xl font-bold text-white"
+          className="text-2xl font-bold text-primary-foreground"
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3 }}
@@ -38,7 +38,7 @@ const ProfileDisplay = ({ profiles, onFinish }: ProfileDisplayProps) => {
                     className="w-full h-full object-cover"
                   />
                 </div>
-                <h3 className="text-xl font-semibold text-white">{profile.name}</h3>
+                <h3 className="text-xl font-semibold text-primary-foreground">{profile.name}</h3>
                 <p className="text-sm text-gray-300">{profile.age} ans • {profile.location}</p>
                 <p className="mt-2 text-sm text-gray-400 text-center line-clamp-3">{profile.description}</p>
               </div>
@@ -48,7 +48,7 @@ const ProfileDisplay = ({ profiles, onFinish }: ProfileDisplayProps) => {
 
 
         <motion.button
-          className="mt-6 px-6 py-3 bg-gradient-to-r from-pink-500 to-purple-600 rounded-full text-white font-semibold shadow-lg"
+          className="mt-6 px-6 py-3 bg-gradient-to-r from-pink-500 to-purple-600 rounded-full text-primary-foreground font-semibold shadow-lg"
           onClick={onFinish}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}

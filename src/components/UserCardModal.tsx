@@ -139,41 +139,41 @@ export function UserCardModal({
                 <div className="w-full h-full flex flex-col justify-between bg-gradient-to-t from-black/70 via-transparent to-transparent p-3">
                   <div className="flex justify-between items-start">
                     {age && (
-                      <div className="flex items-center gap-1 text-sm bg-white/10 text-white px-2 py-1 rounded-full">
+                      <div className="flex items-center gap-1 text-sm bg-white/10 text-primary-foreground px-2 py-1 rounded-full">
                         <User size={16} className="text-blue-300" />
                         {age} ans
                       </div>
                     )}
                     {location && (
-                      <div className="flex items-center gap-1 text-sm bg-white/10 text-white px-2 py-1 rounded-full">
+                      <div className="flex items-center gap-1 text-sm bg-white/10 text-primary-foreground px-2 py-1 rounded-full">
                         <MapPin size={16} className="text-red-400" />
                         {location}
                       </div>
                     )}
                   </div>
-                  <div className="text-white">
-                    <h2 className="text-xl font-bold drop-shadow-md mb-1">{name}</h2>
+                  <div className="text-primary-foreground">
+                    <h2 className="text-xl font-bold drop-shadow-md mb-1 text-primary-foreground">{name}</h2>
                     <div className="flex flex-wrap gap-2 pt-1">
                       {languages && languages.length > 0 && (
-                        <div className="flex items-center gap-1 text-sm bg-white/10 text-white px-2 py-1 rounded-full">
+                        <div className="flex items-center gap-1 text-sm bg-white/10 text-primary-foreground px-2 py-1 rounded-full">
                           <Languages size={16} className="text-yellow-300" />
                           {languages.slice(0, 2).join(', ')}
                         </div>
                       )}
                       {zodiac && (
-                        <div className="flex items-center gap-1 text-sm bg-white/10 text-white px-2 py-1 rounded-full">
+                        <div className="flex items-center gap-1 text-sm bg-white/10 text-primary-foreground px-2 py-1 rounded-full">
                           <Moon size={16} className="text-cyan-300" />
                           {zodiac}
                         </div>
                       )}
                       {smoking && (
-                        <div className="flex items-center gap-1 text-sm bg-white/10 text-white px-2 py-1 rounded-full">
+                        <div className="flex items-center gap-1 text-sm bg-white/10 text-primary-foreground px-2 py-1 rounded-full">
                           <Cigarette size={16} className="text-red-300" />
                           {smoking}
                         </div>
                       )}
                       {drinking && (
-                        <div className="flex items-center gap-1 text-sm bg-white/10 text-white px-2 py-1 rounded-full">
+                        <div className="flex items-center gap-1 text-sm bg-white/10 text-primary-foreground px-2 py-1 rounded-full">
                           <Wine size={16} className="text-purple-300" />
                           {drinking}
                         </div>
@@ -189,7 +189,7 @@ export function UserCardModal({
               className="w-full h-full rounded-xl p-[10px] absolute backface-hidden rotate-y-180 shadow-2xl overflow-hidden"
               style={{ background: getRarityGradient(rarity) }}
             >
-              <div className="w-full h-full rounded-lg bg-gradient-to-b from-black/90 to-black/70 flex flex-col justify-center p-7 text-white">
+              <div className="w-full h-full rounded-lg bg-gradient-to-b from-black/90 to-black/70 flex flex-col justify-center p-7 text-primary-foreground">
                 <div className="flex items-center gap-1 sm:gap-2 mb-3 sm:mb-4">
                   <Info className="text-purple-300 w-5 h-5 sm:w-6 sm:h-6" />
                   <h3 className="text-xl sm:text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-500">Interests</h3>

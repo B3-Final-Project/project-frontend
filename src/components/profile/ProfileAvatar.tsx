@@ -1,8 +1,8 @@
 'use client'
+import { Button } from "@/components/ui/button";
 import { UserCardModal } from "@/components/UserCardModal";
 import { useProfileQuery } from "@/hooks/react-query/profiles";
 import { DrinkingEnum, SmokingEnum, ZodiacEnum } from "@/lib/routes/profiles/enums"; // Assuming enums are barrel exported from here
-import Image from 'next/image';
 import { useState } from 'react';
 import { FullScreenLoading } from "../FullScreenLoading";
 
@@ -44,6 +44,12 @@ const getZodiacLabel = (value?: ZodiacEnum): string => {
   }
 };
 
+// Fonction pour capitaliser la première lettre du prénom
+const capitalizeFirstLetter = (name: string): string => {
+  if (!name) return '';
+  return name.charAt(0).toUpperCase() + name.slice(1);
+};
+
 export function ProfileAvatar() {
   const [isUserCardModalOpen, setUserCardModalOpen] = useState(false);
 
@@ -62,19 +68,20 @@ export function ProfileAvatar() {
 
   return (
     <>
-      <div className="w-[100px] h-[100px] border-4 border-background bg-red-500 rounded-full flex items-center justify-center -translate-y-1/2 overflow-hidden">
-        <Image
-          src="/vintage.png"
-          alt="Profile"
-          width={200}
-          height={200}
-          className="object-cover w-full h-full"
-        />
-      </div>
 
       {query.data?.profile && (
-        <div className={'flex justify-between items-center gap-4'}>
-          <h3 className="text-2xl font-bold cursor-pointer" onClick={handleOpenUserCardModal}>{query.data?.user.name}</h3>
+        <div className={'flex justify-between items-start gap-4  w-[300px]'}>
+          <h3 className="text-2xl font-bold cursor-pointer" onClick={handleOpenUserCardModal}>
+            {capitalizeFirstLetter(query.data?.user.name)}
+          </h3>
+          <Button
+            onClick={handleOpenUserCardModal}
+            className="ml-2"
+            variant="outline"
+            size="sm"
+          >
+            Voir profil
+          </Button>
         </div>
       )}
       {query.data?.user && query.data?.profile && (
@@ -83,7 +90,7 @@ export function ProfileAvatar() {
           onClose={handleCloseUserCardModal}
           name={query.data.user.name}
           age={query.data.user.age}
-          location={query.data.user.location}
+          location={typeof query.data.user.location === 'string' ? query.data.user.location : query.data.profile.city || 'Paris'}
           description={query.data.profile.interests?.map(interest => interest.description).join(', ') || "Découvrez mes centres d'intérêt !"}
           image_url={(query.data.profile.images && query.data.profile.images.length > 0 && query.data.profile.images[0]) || '/vintage.png'}
           interests={query.data.profile.interests?.map(interest => interest.description)}

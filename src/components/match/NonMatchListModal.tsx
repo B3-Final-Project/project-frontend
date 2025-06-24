@@ -35,13 +35,13 @@ export default function NonMatchListModal({
       >
         <div className="bg-black/80 backdrop-blur-md rounded-lg p-4 sm:p-6 overflow-hidden flex flex-col">
           <div className="flex justify-between items-center mb-4">
-            <h2 className="text-lg sm:text-xl font-bold text-white flex items-center gap-1.5 sm:gap-2">
+            <h2 className="text-lg sm:text-xl font-bold text-primary-foreground flex items-center gap-1.5 sm:gap-2">
               <X className="w-4 h-4 sm:w-5 sm:h-5 text-red-500" />
               Profils passés ({nonMatches.length})
             </h2>
             <button
               onClick={() => setShowNonMatchList(false)}
-              className="text-gray-400 hover:text-white"
+              className="text-gray-400 hover:text-primary-foreground"
             >
               <X className="w-5 h-5" />
             </button>

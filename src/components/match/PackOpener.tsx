@@ -135,11 +135,11 @@ const PackOpener = ({ onPackOpened, profiles = [] }: PackOpenerProps) => {
                           </div>
                         )}
                         <div className="flex justify-between items-center mb-3">
-                          <div className="rounded-full bg-gradient-to-r from-pink-500 to-purple-600 text-white px-3 py-1 text-xs font-bold shadow-md flex items-center gap-1">
+                          <div className="rounded-full bg-gradient-to-r from-pink-500 to-purple-600 text-primary-foreground px-3 py-1 text-xs font-bold shadow-md flex items-center gap-1">
                             <Calendar className="w-3 h-3" />
                             {profile.age} ans
                           </div>
-                          <div className="rounded-full bg-gradient-to-r from-pink-500 to-purple-600 text-white px-3 py-1 text-xs font-bold shadow-md flex items-center gap-1">
+                          <div className="rounded-full bg-gradient-to-r from-pink-500 to-purple-600 text-primary-foreground px-3 py-1 text-xs font-bold shadow-md flex items-center gap-1">
                             <MapPin className="w-3 h-3" />
                             {profile.location}
                           </div>
@@ -147,7 +147,7 @@ const PackOpener = ({ onPackOpened, profiles = [] }: PackOpenerProps) => {
                         <h3 className="text-lg font-bold mb-2">{profile.name}</h3>
                         <p className="text-sm text-gray-600 line-clamp-3 flex-grow">{profile.description}</p>
                         <motion.button
-                          className="mt-3 w-full py-2 rounded-lg bg-gradient-to-r from-pink-500 to-purple-600 text-white text-sm font-bold"
+                          className="mt-3 w-full py-2 rounded-lg bg-gradient-to-r from-pink-500 to-purple-600 text-primary-foreground text-sm font-bold"
                           whileHover={{ scale: 1.03 }}
                           whileTap={{ scale: 0.97 }}
                           onClick={(e) => {

@@ -194,7 +194,7 @@ export default function MatchSystem({ profiles }: MatchSystemProps) {
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center min-h-screen w-full bg-gray-900 text-white">
+      <div className="flex items-center justify-center min-h-screen w-full bg-gray-900 text-primary-foreground">
         Chargement...
       </div>
     );

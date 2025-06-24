@@ -5,13 +5,13 @@ import {
   DialogDescription,
   DialogTitle
 } from "@/components/ui/dialog";
-import { useState, useCallback, useMemo } from "react";
-import Image from "next/image";
-import { toast } from "@/hooks/use-toast";
 import {
   useImageMutations,
   useProfileQuery
 } from "@/hooks/react-query/profiles";
+import { toast } from "@/hooks/use-toast";
+import Image from "next/image";
+import { useCallback, useMemo, useState } from "react";
 
 const MAX_IMAGES = 6;
 const ACCEPTED_IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
@@ -23,7 +23,7 @@ export function PicturesDialog() {
 
   // Get current images directly from profile data, no local state sync needed
   const currentImages = useMemo(() =>
-      profile?.images ?? Array(MAX_IMAGES).fill(null),
+    profile?.images ?? Array(MAX_IMAGES).fill(null),
     [profile?.images]
   );
 
@@ -87,7 +87,7 @@ export function PicturesDialog() {
     setRemovingIndex(index);
 
     removeImage(
-      {index},
+      { index },
       {
         onSettled: () => setRemovingIndex(null),
       }
@@ -143,7 +143,7 @@ export function PicturesDialog() {
             {/* Remove button - visible on hover */}
             <button
               type="button"
-              className="absolute top-2 right-2 bg-red-500 hover:bg-red-600 text-white rounded-full w-8 h-8 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity shadow-lg disabled:opacity-50"
+              className="absolute top-2 right-2 bg-red-500 hover:bg-red-600 text-primary-foreground rounded-full w-8 h-8 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity shadow-lg disabled:opacity-50"
               onClick={() => handleRemoveImage(index)}
               disabled={isDisabled}
               aria-label={`Remove image ${index + 1}`}
@@ -154,7 +154,7 @@ export function PicturesDialog() {
             {/* Replace button - visible on hover */}
             <button
               type="button"
-              className="absolute bottom-2 right-2 bg-blue-500 hover:bg-blue-600 text-white rounded px-2 py-1 text-xs opacity-0 group-hover:opacity-100 transition-opacity shadow-lg disabled:opacity-50"
+              className="absolute bottom-2 right-2 bg-blue-500 hover:bg-blue-600 text-primary-foreground rounded px-2 py-1 text-xs opacity-0 group-hover:opacity-100 transition-opacity shadow-lg disabled:opacity-50"
               onClick={() => handleImageUpload(index)}
               disabled={isDisabled}
             >
