@@ -10,6 +10,7 @@ import { UserCardModal } from '../UserCardModal';
 import ControlButtons from './ControlButtons';
 
 import { ProfileCardType } from "@/components/match/ProfileGenerator";
+import { useMatchActions } from '@/hooks/react-query/matches';
 import MatchAnimation from './MatchAnimation';
 import MatchCounters from './MatchCounters';
 import MatchListModal from './MatchListModal';
@@ -53,6 +54,8 @@ export default function MatchSystem({ profiles, onMatch, onReject }: MatchSystem
   const rejectOpacity = useTransform(x, [-200, -100, 0], [1, 0.5, 0]);
 
   const constraintsRef = useRef<HTMLDivElement>(null);
+  const { likeMatch, passMatch } = useMatchActions();
+
 
   const refreshPackStatusAndCountdown = useCallback(() => {
     const { canOpen, timeUntilNextOpenMs, packsOpenedInWindow } = checkPackAvailability();
@@ -130,7 +133,11 @@ export default function MatchSystem({ profiles, onMatch, onReject }: MatchSystem
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
+
   const handleMatch = (profile: ProfileCardType) => {
+    likeMatch(profile.id);
+
+    console.log("like match", profile);
     setMatchedProfile(profile);
     setShowMatchAnimation(true);
     const updatedMatches = [...matches, profile];
@@ -144,6 +151,9 @@ export default function MatchSystem({ profiles, onMatch, onReject }: MatchSystem
   };
 
   const handleReject = (profile: ProfileCardType) => {
+    passMatch(profile.id);
+
+    console.log("pass match", profile);
     setShowRejectAnimation(true);
     const updatedNonMatches = [...nonMatches, profile];
     setNonMatches(updatedNonMatches);
