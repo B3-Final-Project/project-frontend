@@ -7,5 +7,7 @@ import {
 export class BoosterRouter {
   public static getBooster = createFetcher(RESTServerRoute.REST_BOOSTER, "GET")
   public static getBoosters = createFetcher(RESTServerRoute.REST_TEN_BOOSTERS, "GET")
+  public static getMatch = createFetcher(RESTServerRoute.REST_BOOSTER, "GET")
+  public static getMatches = createFetcher(RESTServerRoute.REST_TEN_BOOSTERS, "GET")
   public static getAvailablePacks = createFetcher<GetAvailablePacksDto>(RESTServerRoute.REST_AVAILABLE_PACKS, "GET")
 }

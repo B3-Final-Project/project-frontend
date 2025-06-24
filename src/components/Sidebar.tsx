@@ -19,12 +19,13 @@ import { FaRegUser } from "react-icons/fa";
 import { FiMessageSquare } from "react-icons/fi";
 import { IoSettingsOutline } from "react-icons/io5";
 import { useAuth } from "react-oidc-context";
+import {Quantico} from "next/font/google";
+import { clsx } from "clsx";
 
 const quantico = Quantico({
   subsets: ['latin'],
   weight: ['400', '700'],
 });
-
 
 export function SidebarComponent() {
   const auth = useAuth()
