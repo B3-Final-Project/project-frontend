@@ -1,22 +1,23 @@
 'use client'
-import { UserCardModal } from "@/components/UserCardModal";
-import { useProfileQuery } from "@/hooks/react-query/profiles";
-import Image from 'next/image';
-import { useState } from 'react';
-import { FullScreenLoading } from "../FullScreenLoading";
+
 import {
   formatDrinkingEnum,
   formatSmokingEnum,
   formatZodiacEnum
 } from "@/lib/utils/enum-utils";
+import { useState } from 'react';
+import { FullScreenLoading } from "../FullScreenLoading";
+import Image from 'next/image';
+import { UserCardModal } from "@/components/UserCardModal";
+import { useProfileQuery } from "@/hooks/react-query/profiles";
 
 export function ProfileAvatar() {
-  const [isUserCardModalOpen, setUserCardModalOpen] = useState(false);
+  const [isUserCardModalOpen, setIsUserCardModalOpen] = useState(false);
 
   const query = useProfileQuery();
 
-  const handleOpenUserCardModal = () => setUserCardModalOpen(true);
-  const handleCloseUserCardModal = () => setUserCardModalOpen(false);
+  const handleOpenUserCardModal = () => setIsUserCardModalOpen(true);
+  const handleCloseUserCardModal = () => setIsUserCardModalOpen(false);
 
   if (query.isLoading) {
     return <FullScreenLoading />
@@ -40,7 +41,12 @@ export function ProfileAvatar() {
 
       {query.data?.profile && (
         <div className={'flex justify-between items-center gap-4'}>
-          <h3 className="text-2xl font-bold cursor-pointer" onClick={handleOpenUserCardModal}>{query.data?.user.name}</h3>
+          <button
+            className="text-2xl font-bold cursor-pointer bg-transparent border-none p-0 text-inherit"
+            onClick={handleOpenUserCardModal}
+          >
+            {query.data?.user.name}
+          </button>
         </div>
       )}
       {query.data?.user && query.data?.profile && (

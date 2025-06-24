@@ -64,12 +64,6 @@ const MatchPage = () => {
               <div className="w-full h-full">
                 <MatchSystem
                   profiles={packProfiles}
-                  onMatch={() => {
-                    // console.log('Match avec:', profile.name);
-                  }}
-                  onReject={() => {
-                    // console.log('Profil rejeté:', profile.name);
-                  }}
                 />
               </div>
             ) : showCardAnimation ? (

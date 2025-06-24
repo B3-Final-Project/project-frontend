@@ -9,9 +9,9 @@ import {
 
 type NonMatchListModalProps = {
   showNonMatchList: boolean;
-  setShowNonMatchList: (show: boolean) => void;
   nonMatches: ProfileCardType[];
-  openModal: (profile: ProfileCardType) => void;
+  setShowNonMatchList(show: boolean): void;
+  openModal(profile: ProfileCardType): void;
 };
 
 export default function NonMatchListModal({

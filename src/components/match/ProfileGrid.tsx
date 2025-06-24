@@ -9,7 +9,7 @@ import {
 
 type ProfileGridProps = {
   profiles: ProfileCardType[];
-  openModal: (profile: ProfileCardType) => void;
+  openModal(profile: ProfileCardType): void;
   isGrayscale?: boolean;
 };
 

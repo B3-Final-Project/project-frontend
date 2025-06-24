@@ -32,10 +32,10 @@ export const InterestsInfoSchema = z.object({
 // Props interface for the shared component
 interface SharedInterestsFormProps {
   readonly formData: InterestInfo;
-  readonly setFormData: (data: InterestInfo) => void;
   readonly showTitle?: boolean;
   readonly titleText?: string;
   readonly descriptionText?: string;
+  setFormData(data: InterestInfo): void;
 }
 
 export function SharedInterestsForm({

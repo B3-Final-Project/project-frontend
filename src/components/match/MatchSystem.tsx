@@ -19,8 +19,6 @@ import {
 
 type MatchSystemProps = {
   profiles: ProfileCardType[];
-  onMatch?: (profile: ProfileCardType) => void;
-  onReject?: (profile: ProfileCardType) => void;
 };
 
 const SESSION_STORAGE_PACK_PAID_KEY = 'holomatch_current_pack_paid_for_session';

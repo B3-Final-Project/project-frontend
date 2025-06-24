@@ -3,7 +3,7 @@ import {
   ProfileCardType
 } from "@/lib/routes/profiles/dto/profile-card-type.dto";
 import {
-  formatDrinkingEnum, formatRarityEnum,
+  formatDrinkingEnum,
   formatSmokingEnum,
   formatZodiacEnum
 } from "@/lib/utils/enum-utils";
@@ -35,7 +35,7 @@ export const mapBoosterToProfileCardType = (booster: UserCard): ProfileCardType 
     drinking:  formatDrinkingEnum(booster.drinking ?? ''),
     zodiac:  formatZodiacEnum(booster.zodiac ?? ''),
     interests: booster.interests,
-    rarity: formatRarityEnum(booster.rarity ?? ''),
+    rarity: booster.rarity,
     isRevealed: true,
   };
 };

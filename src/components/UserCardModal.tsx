@@ -5,6 +5,7 @@ import { motion } from 'framer-motion';
 import { Cigarette, Info, Languages, MapPin, Moon, User, Wine } from 'lucide-react';
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Interest } from "@/lib/routes/profiles/interfaces/interest.interface";
+import { RarityEnum } from "@/lib/routes/booster/dto/rarity.enum";
 
 interface UserCardModalProps {
   name: string;
@@ -13,7 +14,7 @@ interface UserCardModalProps {
   description?: string;
   isOpen: boolean;
   onCloseAction: () => void;
-  rarity?: string;
+  rarity?: RarityEnum;
   image_url?: string;
   interests?: Interest[];
   languages?: string[];

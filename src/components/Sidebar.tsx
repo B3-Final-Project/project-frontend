@@ -18,6 +18,7 @@ import { IoSettingsOutline } from "react-icons/io5";
 import { useAuth } from "react-oidc-context";
 import {Quantico} from "next/font/google";
 import { clsx } from "clsx";
+import { useRouter } from "next/navigation";
 
 const quantico = Quantico({
   subsets: ['latin'],
@@ -26,6 +27,7 @@ const quantico = Quantico({
 
 export function SidebarComponent() {
   const auth = useAuth()
+  const router = useRouter()
   const items = [
     { title: "Home", url: '/', icon: Home },
     { title: "Messages", url: '/messages', icon: FiMessageSquare },
@@ -36,6 +38,7 @@ export function SidebarComponent() {
 
   const signOutAction = async () => {
     await auth.removeUser()
+    router.replace('/')
   }
 
   return (
@@ -45,7 +48,7 @@ export function SidebarComponent() {
         <Sidebar className={'md:w-16 lg:w-48'}>
           <SidebarContent>
             <SidebarGroup>
-              <div className={'relative mx-auto h-[156px] w-full flex items-center '}>
+              <div className={'relative mx-auto h-[43px] lg:h-[156px] w-full flex items-center '}>
                 <Image src="/logo.png" fill={true} alt="logo" />
               </div>
               <h2 className={clsx('hidden text-xl mx-auto lg:block', quantico.className)}>HOLOMATCH</h2>
@@ -76,7 +79,7 @@ export function SidebarComponent() {
                   );
                 })}
               </SidebarMenu>
-              {auth.user && <Button onClick={() => signOutAction()}>Sign Out</Button>}
+              {auth.user && <Button onClick={() => signOutAction()}>Logout</Button>}
             </SidebarGroup>
           </SidebarContent>
         </Sidebar>

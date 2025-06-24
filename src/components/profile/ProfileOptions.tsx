@@ -4,7 +4,7 @@ import { DialogTrigger } from "@/components/ui/dialog";
 
 interface ProfileOptionsProps {
   readonly data: {key: string, icon: React.ComponentType, description: string, title: string}[],
-  readonly setSelectedOption: (option: string) => void;
+  setSelectedOption(option: string): void;
 }
 
 export function ProfileOptions({ data, setSelectedOption }: ProfileOptionsProps) {

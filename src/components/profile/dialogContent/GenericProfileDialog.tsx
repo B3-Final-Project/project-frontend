@@ -15,13 +15,13 @@ import { UpdateProfileDto } from "@/lib/routes/profiles/dto/update-profile.dto";
 interface GenericProfileDialogProps<T> {
   readonly title: string;
   readonly initialFormData: T;
-  readonly extractFormDataFromProfile: (profile: Profile, user: User) => T;
-  readonly buildUpdatePayload: (formData: T) => Partial<UpdateProfileDto>;
-  readonly renderFormContent: (
+  extractFormDataFromProfile(profile: Profile, user: User): T;
+  buildUpdatePayload(formData: T): Partial<UpdateProfileDto>;
+  renderFormContent(
     formData: T,
     handleInputChange: (fieldName: string, value: string | number) => void,
     setFormData: React.Dispatch<React.SetStateAction<T>>
-  ) => ReactNode;
+  ): ReactNode;
 }
 
 export function GenericProfileDialog<T>({

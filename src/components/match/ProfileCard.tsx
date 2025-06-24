@@ -15,8 +15,8 @@ type ProfileCardProps = {
   matchOpacity: MotionValue<number>;
   rejectOpacity: MotionValue<number>;
   constraintsRef: React.RefObject<HTMLDivElement | null>;
-  handleDragEnd: (event: Event, info: {offset: {x: number}}) => void;
-  openModal: (profile: ProfileCardType) => void;
+  handleDragEnd(event: Event, info: {offset: {x: number}}): void;
+  openModal(profile: ProfileCardType): void;
 };
 
 export default function ProfileCard({
