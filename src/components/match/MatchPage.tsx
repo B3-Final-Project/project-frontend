@@ -41,8 +41,6 @@ const MatchPage = () => {
     setShowCardAnimation(true);
     setShouldFetchBoosters(false);
 
-    console.log(newProfiles);
-
     setTimeout(() => {
       setShowMatchSystem(true);
       setShowCardAnimation(false);

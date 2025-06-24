@@ -137,7 +137,6 @@ export default function MatchSystem({ profiles, onMatch, onReject }: MatchSystem
   const handleMatch = (profile: ProfileCardType) => {
     likeMatch(profile.id);
 
-    console.log("like match", profile);
     setMatchedProfile(profile);
     setShowMatchAnimation(true);
     const updatedMatches = [...matches, profile];
@@ -153,7 +152,6 @@ export default function MatchSystem({ profiles, onMatch, onReject }: MatchSystem
   const handleReject = (profile: ProfileCardType) => {
     passMatch(profile.id);
 
-    console.log("pass match", profile);
     setShowRejectAnimation(true);
     const updatedNonMatches = [...nonMatches, profile];
     setNonMatches(updatedNonMatches);
