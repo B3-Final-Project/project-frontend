@@ -3,10 +3,10 @@
 import { useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import clsx from "clsx";
-import AdminStats from "./root/AdminStats";
 import RecentReports from "./reports/RecentReports";
 import UserManagement from "./users/UserManagement";
 import { JSX } from "react";
+import AdminStats from "@/components/admin/dashboard/AdminStats";
 
 const adminRoutes: Record<
   string,
@@ -33,13 +33,13 @@ function AdminPage() {
   );
 
   return (
-    <div>
-      <nav className="flex gap-2 mb-4">
+    <>
+      <nav className="flex w-full items-center justify-center gap-4 my-4">
         {Object.entries(adminRoutes).map(([key, { title }]) => {
           const isSelected = key === currentKey;
           return (
             <a key={key} href={`/admin?${key}`}>
-              <Button className={clsx({ "bg-blue-300": isSelected })}>
+              <Button className={clsx('bg-transparent text-black hover:text-white',{ "bg-blue-300": isSelected })}>
                 {title}
               </Button>
             </a>
@@ -52,7 +52,7 @@ function AdminPage() {
       ) : (
         <p>Select a section from above.</p>
       )}
-    </div>
+    </>
   );
 }
 
