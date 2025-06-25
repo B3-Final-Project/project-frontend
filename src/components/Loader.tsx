@@ -1,4 +1,6 @@
-export function LoadingFallback() {
+"use client"
+
+export const Loader = () => {
   return (
     <div className="fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-background">
       <div className="flex flex-col items-center justify-center gap-8">
@@ -30,4 +32,4 @@ export function LoadingFallback() {
       </div>
     </div>
   );
-}
+};

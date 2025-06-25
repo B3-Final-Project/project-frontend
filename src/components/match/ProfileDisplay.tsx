@@ -12,7 +12,7 @@ const ProfileDisplay = ({ profiles, onFinish }: ProfileDisplayProps) => {
     <div className="w-full">
       <div className="flex flex-col items-center gap-4">
         <motion.h2
-          className="text-2xl font-bold text-primary-foreground"
+          className="text-2xl  text-primary-foreground"
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3 }}

@@ -152,7 +152,7 @@ export function UserCardModal({
                     )}
                   </div>
                   <div className="text-primary-foreground">
-                    <h2 className="text-xl font-bold drop-shadow-md mb-1 text-primary-foreground">{name}</h2>
+                    <h2 className="text-xl  drop-shadow-md mb-1 text-primary-foreground">{name}</h2>
                     <div className="flex flex-wrap gap-2 pt-1">
                       {languages && languages.length > 0 && (
                         <div className="flex items-center gap-1 text-sm bg-white/10 text-primary-foreground px-2 py-1 rounded-full">
@@ -192,7 +192,7 @@ export function UserCardModal({
               <div className="w-full h-full rounded-lg bg-gradient-to-b from-black/90 to-black/70 flex flex-col justify-center p-7 text-primary-foreground">
                 <div className="flex items-center gap-1 sm:gap-2 mb-3 sm:mb-4">
                   <Info className="text-purple-300 w-5 h-5 sm:w-6 sm:h-6" />
-                  <h3 className="text-xl sm:text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-500">Interests</h3>
+                  <h3 className="bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-500">Interests</h3>
                 </div>
                 <div className="mb-3 text-gray-200 leading-relaxed overflow-auto max-h-[300px] custom-scrollbar">
                   {interests && interests.length > 0 && (

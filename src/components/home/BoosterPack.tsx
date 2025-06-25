@@ -28,7 +28,7 @@ export function BoosterPack({ pack }: BoosterPackProps) {
     >
       {/* Pack Logo/Icon */}
       <div className="flex flex-col items-center justify-center flex-1 w-full p-6">
-        <h2 className="text-lg font-bold drop-shadow text-primary-foreground tracking-wide uppercase text-center">
+        <h2 className=" drop-shadow text-primary-foreground tracking-wide uppercase text-center">
           {pack.name}
         </h2>
       </div>

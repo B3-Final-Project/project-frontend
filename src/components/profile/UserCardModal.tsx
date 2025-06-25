@@ -83,7 +83,7 @@ export function UserCardModal({
             {/* Back side of the card */}
             <div className="w-full h-full rounded-xl p-[8px] bg-gradient-to-b from-[#00AEEF] to-[#ED2272] absolute backface-hidden rotate-y-180">
               <div className="w-full h-full rounded-lg bg-black/80 flex flex-col justify-center p-6 text-white">
-                <h3 className="text-xl font-bold mb-4">Description</h3>
+                <h3 className="text-xl  mb-4">Description</h3>
                 <p className="mb-3">
                   {description ||
                     "Lorem ipsum dolor sit amet consectetur adipisicing elit. Expedita at vero voluptatem, eum voluptate quia corrupti doloremque voluptatum quos obcaecati dicta eos distinctio ea earum eligendi odit reprehenderit! Iste, vitae!"}

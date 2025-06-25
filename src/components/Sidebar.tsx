@@ -2,12 +2,22 @@
 import { signout } from "@/providers/CognitoAuthProvider";
 import { Heart, Home, MessageSquare, User } from 'lucide-react';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { useAuth } from "react-oidc-context";
 
 
 
 export function SidebarComponent() {
   const auth = useAuth()
+  const pathname = usePathname()
+
+  const isActive = (itemUrl: string) => {
+    if (itemUrl === '/') {
+      return pathname === '/';
+    }
+    return pathname?.startsWith(itemUrl);
+  }
+
   const items = [
     { title: "Home", url: '/', icon: Home },
     { title: "Messages", url: '/messages', icon: MessageSquare },
@@ -71,16 +81,17 @@ export function SidebarComponent() {
           {items.map((item) => {
             const IconComponent = item.icon as React.ElementType<{ size: number }>;
             return (
-              <div className="flex flex-col items-center justify-center py-2 px-3">
+              <div
+                key={item.url}
+                className={`flex flex-col items-center justify-center py-2 px-3 rounded-lg ${isActive(item.url) ? 'bg-primary/10 text-primary' : 'text-muted-foreground'}`}>
                 <Link
-                  key={item.url}
                   href={item.url}
-                  className="flex flex-col items-center justify-center mb-1"
+                  className={`flex flex-col items-center justify-center mb-1`}
                 >
                   <IconComponent size={24} />
                 </Link>
 
-                <p className="text-xs font-medium">{item.title}</p>
+                <p className={`text-xs font-medium ${isActive(item.url) ? 'text-primary' : 'text-muted-foreground'}`}>{item.title}</p>
               </div>
             )
           })

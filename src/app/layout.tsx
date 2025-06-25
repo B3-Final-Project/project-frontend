@@ -21,7 +21,6 @@ export default function RootLayout({
       <body>
         <ReactQueryClientProvider>
           <CognitoAuthProvider>
-            {/* <Background /> */}
             <SidebarProvider>
               <SidebarComponent />
               <main className={'h-screen w-full'}>

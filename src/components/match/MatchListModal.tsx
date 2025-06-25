@@ -30,7 +30,7 @@ export default function MatchListModal({ showMatchList, setShowMatchList, matche
       >
         <div className="bg-black/80 backdrop-blur-md rounded-lg p-4 sm:p-6 overflow-hidden flex flex-col">
           <div className="flex justify-between items-center mb-4">
-            <h2 className="text-lg sm:text-xl font-bold text-primary-foreground flex items-center gap-1.5 sm:gap-2">
+            <h2 className="text-primary-foreground flex items-center gap-1.5 sm:gap-2">
               <Heart className="w-4 h-4 sm:w-5 sm:h-5 text-pink-500" fill="#ec4899" />
               Vos matches ({matches.length})
             </h2>

@@ -29,7 +29,7 @@ export default function ProfileGrid({ profiles, openModal, isGrayscale = false }
                 className="w-full h-full object-cover"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent flex flex-col justify-end p-2">
-                <h3 className="text-primary-foreground font-bold text-sm">{profile.name}</h3>
+                <h3 className="text-primary-foreground  text-sm">{profile.name}</h3>
                 <div className="flex items-center gap-1">
                   <User className={`${isGrayscale ? 'text-gray-300' : 'text-blue-300'} w-3 h-3`} />
                   <p className="text-primary-foreground text-xs">{profile.age || "?"} ans</p>

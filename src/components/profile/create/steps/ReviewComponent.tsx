@@ -1,11 +1,7 @@
 'use client';
 import { Button } from "@/components/ui/button";
-import { useProfileCreation } from "@/providers/ProfileCreationProvider";
-import { PROFILE_STEPS } from "../StepComponent";
 import { Card } from "@/components/ui/card";
-import { useParams } from "next/navigation";
 import { Separator } from "@/components/ui/separator";
-import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import {
   formatDrinkingEnum,
@@ -17,6 +13,10 @@ import {
   formatSmokingEnum,
   formatZodiacEnum
 } from "@/lib/utils/enum-utils";
+import { useProfileCreation } from "@/providers/ProfileCreationProvider";
+import { useParams } from "next/navigation";
+import { useState } from "react";
+import { PROFILE_STEPS } from "../StepComponent";
 
 export function ReviewComponent() {
   const { personalInfo, preferenceInfo, locationWork, lifestyleInfo, goToPreviousStep, saveProfile, goToStep } = useProfileCreation();
@@ -52,7 +52,7 @@ export function ReviewComponent() {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-2xl font-bold mb-2">Review Your Profile</h2>
+        <h2 className="text-2xl  mb-2">Review Your Profile</h2>
         <p className="text-gray-500">Please review your information before submitting.</p>
       </div>
 

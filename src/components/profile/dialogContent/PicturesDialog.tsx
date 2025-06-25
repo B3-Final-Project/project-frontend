@@ -112,7 +112,7 @@ export function PicturesDialog() {
     const isDisabled = isCurrentlyUploading || isCurrentlyRemoving || isUploading || isRemoving;
 
     return (
-      <div className="aspect-square relative rounded-lg overflow-hidden border-2 border-dashed border-gray-300">
+      <div className="aspect-square relative rounded-lg border-2 border-dashed border-gray-300">
         {/* Hidden file input */}
         <input
           id={`profile-image-input-${index}`}
@@ -187,7 +187,7 @@ export function PicturesDialog() {
   };
 
   return (
-    <DialogContent className="max-w-2xl">
+    <DialogContent>
       <DialogTitle>Profile Pictures</DialogTitle>
       <DialogDescription className="text-sm text-gray-500 mb-4">
         Add up to {MAX_IMAGES} photos to your profile. The first photo will be your main profile picture.
@@ -201,7 +201,7 @@ export function PicturesDialog() {
       </div>
 
       {/* Tips section */}
-      <div className="bg-blue-50 p-4 rounded-lg">
+      <div className="bg-blue-50 p-4 rounded-lg hidden md:block">
         <p className="text-sm font-medium text-blue-900 mb-2">Photo Tips:</p>
         <ul className="text-sm text-blue-800 space-y-1">
           <li>• Clear photos of your face perform better</li>

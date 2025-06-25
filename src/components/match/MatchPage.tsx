@@ -122,7 +122,7 @@ const MatchPage = () => {
                         )}
                       </div>
                       <div className="text-primary-foreground">
-                        <h2 className="text-xl font-bold drop-shadow-md mb-1">{profile.name}</h2>
+                        <h2 className=" drop-shadow-md mb-1">{profile.name}</h2>
                         <div className="flex flex-wrap gap-2 pt-1">
                           {profile.languages && profile.languages.length > 0 && (
                             <div className="flex items-center gap-1 text-sm bg-white/10 text-primary-foreground px-2 py-1 rounded-full">
@@ -169,7 +169,7 @@ const MatchPage = () => {
               </>
             ) : isVerified ? (
               <div className="flex flex-col items-center justify-center w-full">
-                <h2 className="text-2xl font-bold mb-8 text-primary-foreground text-center">Ouvrir un pack</h2>
+                <h2 className="text-2xl  mb-8 text-primary-foreground text-center">Ouvrir un pack</h2>
                 <PackOpener onPackOpened={() => {
                   recordPackOpening();
                   setShouldFetchBoosters(true);

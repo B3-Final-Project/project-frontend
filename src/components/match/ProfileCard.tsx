@@ -65,7 +65,7 @@ export default function ProfileCard({
                 <p className="text-primary-foreground">{profile.age || "?"} ans</p>
               </div>
             </div>
-            <div className="p-3 sm:p-5 font-bold flex flex-col items-start bg-gradient-to-t from-black/80 via-black/40 to-transparent text-primary-foreground">
+            <div className="p-3 sm:p-5  flex flex-col items-start bg-gradient-to-t from-black/80 via-black/40 to-transparent text-primary-foreground">
               <h2 className="text-lg sm:text-xl md:text-2xl mb-1 drop-shadow-md text-primary-foreground">{profile.name}</h2>
               <button
                 onClick={(e) => {

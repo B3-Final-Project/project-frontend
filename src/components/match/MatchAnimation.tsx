@@ -43,7 +43,7 @@ export default function MatchAnimation({ showMatchAnimation, matchedProfile }: M
               <Heart className="w-12 h-12 sm:w-16 sm:h-16 text-pink-500" fill="#ec4899" />
             </motion.div>
           </div>
-          <h2 className="text-xl sm:text-2xl font-bold text-primary-foreground mb-2">C'est un match!</h2>
+          <h2 className="text-xl sm:text-2xl  text-primary-foreground mb-2">C'est un match!</h2>
           <p className="text-gray-300 text-center mb-4">
             Vous avez matché avec <span className="font-semibold text-blue-300">{matchedProfile.name}</span>
           </p>

@@ -8,7 +8,7 @@ export function StartComponent() {
 
   return (
     <div className="text-center space-y-6">
-      <h1 className="text-3xl font-bold">Create Your Dating Profile</h1>
+      <h1 className="text-3xl ">Create Your Dating Profile</h1>
       <p className="text-lg text-gray-600">
         Welcome to Holomatch! We&#39;ll guide you through creating a profile that shows your best self.
       </p>
