@@ -1,5 +1,5 @@
 export interface Conversation {
-  id: number;
+  id: string;
   name: string;
   lastMessage: string;
   timestamp: string;
@@ -10,7 +10,7 @@ export interface Conversation {
 }
 
 export interface Message {
-  id: number;
+  id: string;
   sender: string;
   content: string;
   timestamp: string;

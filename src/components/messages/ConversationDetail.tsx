@@ -9,7 +9,7 @@ import { ConversationHeader } from './conversation/ConversationHeader';
 import { useConversation } from './conversation/useConversation';
 
 interface ConversationDetailProps {
-    conversationId: number;
+    conversationId: string;
 }
 
 export default function ConversationDetail({ conversationId }: ConversationDetailProps) {
@@ -49,7 +49,7 @@ export default function ConversationDetail({ conversationId }: ConversationDetai
         }
     }, [conversationId]);
 
-    const handleConversationSelect = (id: number) => {
+    const handleConversationSelect = (id: string) => {
         if (id !== conversationId) {
             router.push(`/messages/${id}`);
         }

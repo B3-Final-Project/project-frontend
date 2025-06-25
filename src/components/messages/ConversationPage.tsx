@@ -15,7 +15,7 @@ const COMMON_ICON_CLASSES = 'w-5 h-5 text-gray-600';
 
 export default function ConversationPage() {
     const [isExpanded, setIsExpanded] = useState(true);
-    const [selectedConversation, setSelectedConversation] = useState<number | null>(null);
+    const [selectedConversation, setSelectedConversation] = useState<string | null>(null);
     const [messages, setMessages] = useState<Message[]>([]);
     const [newMessage, setNewMessage] = useState('');
     const router = useRouter();
@@ -41,7 +41,7 @@ export default function ConversationPage() {
         }
     };
 
-    const handleConversationSelect = (conversationId: number) => {
+    const handleConversationSelect = (conversationId: string) => {
         setSelectedConversation(conversationId);
         router.push(`/messages/${conversationId}`);
     };

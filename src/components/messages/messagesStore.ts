@@ -2,10 +2,10 @@ import type { Message, Conversation } from './types';
 import { getMessagesForConversation, mockConversations } from './mockData';
 
 // Stockage en mémoire des messages et conversations
-const messagesStore: { [key: number]: Message[] } = {};
+const messagesStore: { [key: string]: Message[] } = {};
 const conversationsStore: Conversation[] = [...mockConversations];
 // Ajout d'un état de typing indépendant pour chaque utilisateur dans chaque conversation
-const typingStatus: { [key: number]: { me: boolean; other: boolean } } = {};
+const typingStatus: { [key: string]: { me: boolean; other: boolean } } = {};
 
 // Initialisation avec les données mockées pour toutes les conversations
 mockConversations.forEach((conv) => {
@@ -13,7 +13,7 @@ mockConversations.forEach((conv) => {
   typingStatus[conv.id] = { me: false, other: !!conv.isTyping };
 });
 
-export const getMessages = (conversationId: number): Message[] => {
+export const getMessages = (conversationId: string): Message[] => {
   return messagesStore[conversationId] || [];
 };
 
@@ -21,10 +21,10 @@ export const getConversations = (): Conversation[] => {
   return conversationsStore;
 };
 
-export const addMessage = (conversationId: number, content: string, sender: string): void => {
+export const addMessage = (conversationId: string, content: string, sender: string): void => {
   const messages = messagesStore[conversationId] || [];
   const newMessage: Message = {
-    id: messages.length + 1,
+    id: (messages.length + 1).toString(),
     sender,
     content,
     timestamp: new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }),
@@ -50,7 +50,7 @@ export const addMessage = (conversationId: number, content: string, sender: stri
   }
 };
 
-export const markConversationAsRead = (conversationId: number): void => {
+export const markConversationAsRead = (conversationId: string): void => {
   // Marquer tous les messages comme lus
   if (messagesStore[conversationId]) {
     messagesStore[conversationId] = messagesStore[conversationId].map(msg => ({
@@ -73,7 +73,7 @@ export const markConversationAsRead = (conversationId: number): void => {
 };
 
 // Fonction simplifiée pour gérer le typing basé sur le contenu de l'input
-export const setTypingStatus = (conversationId: number, who: 'me' | 'other', isTyping: boolean): void => {
+export const setTypingStatus = (conversationId: string, who: 'me' | 'other', isTyping: boolean): void => {
   // Initialiser la structure si elle n'existe pas
   if (!typingStatus[conversationId]) {
     typingStatus[conversationId] = { me: false, other: false };
@@ -83,12 +83,12 @@ export const setTypingStatus = (conversationId: number, who: 'me' | 'other', isT
   typingStatus[conversationId][who] = isTyping;
 };
 
-export const getTypingStatus = (conversationId: number): { me: boolean; other: boolean } => {
+export const getTypingStatus = (conversationId: string): { me: boolean; other: boolean } => {
   return typingStatus[conversationId] || { me: false, other: false };
 };
 
 // Fonction pour obtenir le nombre de messages non lus
-export const getUnreadCount = (conversationId: number): number => {
+export const getUnreadCount = (conversationId: string): number => {
   return messagesStore[conversationId]?.filter(msg => !msg.isRead && !msg.isMe).length || 0;
 };
 

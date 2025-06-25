@@ -3,13 +3,13 @@ import { getMessages, addMessage, getConversations, markConversationAsRead, setT
 import type { Message, Conversation } from '../types';
 import { REFRESH_INTERVAL, TYPING_INTERVAL } from './constants';
 
-export const useConversation = (conversationId: number) => {
+export const useConversation = (conversationId: string) => {
     const [messages, setMessages] = useState<Message[]>([]);
     const [conversations, setConversations] = useState<Conversation[]>([]);
     const [newMessage, setNewMessage] = useState('');
     const [typing, setTyping] = useState<{ me: boolean; other: boolean }>({ me: false, other: false });
-    const lastReadConversationId = useRef<number | null>(null);
-    const [firstUnreadId, setFirstUnreadId] = useState<number | null>(null);
+    const lastReadConversationId = useRef<string | null>(null);
+    const [firstUnreadId, setFirstUnreadId] = useState<string | null>(null);
     const [unreadCount, setUnreadCount] = useState<number>(0);
     const [firstUnreadIndex, setFirstUnreadIndex] = useState<number | null>(null);
     const [hasShownUnreadBar, setHasShownUnreadBar] = useState<boolean>(false);

@@ -7,9 +7,9 @@ import ConversationItem from './ConversationItem';
 
 export default function MessagesList() {
     const router = useRouter();
-    const [selectedConversation, setSelectedConversation] = useState<number | null>(null);
+    const [selectedConversation, setSelectedConversation] = useState<string | null>(null);
 
-    const handleConversationSelect = (conversationId: number) => {
+    const handleConversationSelect = (conversationId: string) => {
         setSelectedConversation(conversationId);
         router.push(`/messages/${conversationId}`);
     };

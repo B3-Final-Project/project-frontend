@@ -5,8 +5,8 @@ import ConversationItem from '../ConversationItem';
 interface SidebarProps {
     isExpanded: boolean;
     conversations: Conversation[];
-    currentConversationId: number;
-    onConversationSelect: (id: number) => void;
+    currentConversationId: string;
+    onConversationSelect: (id: string) => void;
 }
 
 export const Sidebar: React.FC<SidebarProps> = ({
