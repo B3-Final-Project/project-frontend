@@ -1,5 +1,78 @@
 export const CHART_COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884D8', '#82CA9D'];
 
+// DTO Interfaces matching backend structure
+export interface AppStatsDto {
+  totalUsers: number;
+  totalMatches: number;
+  totalPasses: number;
+  totalLikes: number;
+}
+
+export interface BoosterStatsDto {
+  boosterId: number;
+  boosterName: string;
+  boosterType: string;
+  timesOpened: number;
+}
+
+export interface DetailedStatsDto {
+  appStats: AppStatsDto;
+  boosterStats: BoosterStatsDto[];
+}
+
+export interface UserDemographicsDto {
+  malePercentage: number;
+  femalePercentage: number;
+  averageAge: number;
+  ageDistribution: Record<string, number>;
+}
+
+export interface EngagementStatsDto {
+  averageLikesPerUser: number;
+  averageMatchesPerUser: number;
+  matchRate: number;
+  dailyActiveUsers: number;
+  weeklyActiveUsers: number;
+  monthlyActiveUsers: number;
+}
+
+export interface GeographicStatsDto {
+  topCity: string;
+  topCityUserCount: number;
+  topCities: Array<{ city: string; count: number }>;
+}
+
+export interface RelationshipGoalsStatsDto {
+  relationshipGoalsDistribution: Record<string, number>;
+}
+
+export interface ActivityStatsDto {
+  newUsersToday: number;
+  newUsersThisWeek: number;
+  newUsersThisMonth: number;
+  profileViewsToday: number;
+  profileViewsThisWeek: number;
+  profileViewsThisMonth: number;
+}
+
+export interface SuccessMetricsDto {
+  conversationsStarted: number;
+  matchToConversationRate: number;
+  averageTimeToFirstMatch: number;
+  averageTimeToFirstLike: number;
+}
+
+export interface ComprehensiveStatsDto {
+  appStats: AppStatsDto;
+  boosterStats: BoosterStatsDto[];
+  demographics: UserDemographicsDto;
+  engagement: EngagementStatsDto;
+  geographic: GeographicStatsDto;
+  relationshipGoals: RelationshipGoalsStatsDto;
+  activity: ActivityStatsDto;
+  successMetrics: SuccessMetricsDto;
+}
+
 /**
  * Formats a number as a percentage string with one decimal place
  */
@@ -32,3 +105,27 @@ export const createColoredData = <T extends Record<string, unknown>>(
     ...item,
     [colorKey]: CHART_COLORS[index % CHART_COLORS.length]
   })) as Array<T & { [K in typeof colorKey]: string }>;
+
+// Legacy chart data interfaces (keeping for backward compatibility)
+export interface ChartDataItem {
+  name: string;
+  value: number;
+  color?: string;
+}
+
+export interface PieChartEntry {
+  name?: string;
+  percent?: number;
+  goal?: string;
+}
+
+export interface ActivityDataItem {
+  period: string;
+  newUsers: number;
+  views: number;
+}
+
+export interface EngagementDataItem {
+  name: string;
+  value: number;
+}

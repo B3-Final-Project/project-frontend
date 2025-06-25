@@ -1,19 +1,20 @@
 "use client";
 
-import { Separator } from "@/components/ui/separator";
-import { useComprehensiveStatsQuery } from "@/hooks/react-query/stats";
 import { AdminStatsLoadingFallback, useAdminStatsLoading } from "@/components/admin/dashboard/AdminStatsLoading";
-import { MetricCards } from "@/components/admin/dashboard/MetricCards";
-import { BoosterUsageChart } from "@/components/admin/dashboard/modules/BoosterUsageChart";
-import { AgeDistributionChart } from "@/components/admin/dashboard/modules/AgeDistributionChart";
-import { GenderDistributionChart } from "@/components/admin/dashboard/modules/GenderDistributionChart";
-import { ActivityTrendsChart } from "@/components/admin/dashboard/modules/ActivityTrendsChart";
+
 import { ActiveUsersChart } from "@/components/admin/dashboard/modules/ActiveUsersChart";
-import { RelationshipGoalsChart } from "@/components/admin/dashboard/modules/RelationshipGoalsChart";
+import { ActivityTrendsChart } from "@/components/admin/dashboard/modules/ActivityTrendsChart";
+import { AgeDistributionChart } from "@/components/admin/dashboard/modules/AgeDistributionChart";
+import { BoosterUsageChart } from "@/components/admin/dashboard/modules/BoosterUsageChart";
+import { GenderDistributionChart } from "@/components/admin/dashboard/modules/GenderDistributionChart";
 import { GeographicStats } from "@/components/admin/dashboard/modules/GeographicStats";
+import { MetricCards } from "@/components/admin/dashboard/MetricCards";
+import { RelationshipGoalsChart } from "@/components/admin/dashboard/modules/RelationshipGoalsChart";
+import { Separator } from "@/components/ui/separator";
 import {
   UserActionsChart
 } from "@/components/admin/dashboard/modules/UserActionsChart";
+import { useComprehensiveStatsQuery } from "@/hooks/react-query/stats";
 
 function AdminStats() {
   const { data: comprehensiveStats } = useComprehensiveStatsQuery();
@@ -46,7 +47,7 @@ function AdminStats() {
       {/* Key Metrics Cards */}
       <MetricCards />
 
-      {/* Charts Grid */}
+       {/* Charts Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <UserActionsChart />
         <BoosterUsageChart />

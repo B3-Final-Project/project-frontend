@@ -3,17 +3,17 @@
 import { Bar, BarChart, CartesianGrid, Tooltip, XAxis, YAxis } from 'recharts';
 
 import { ChartCard } from '../shared/ChartCard';
-import { useEngagementStatsQuery } from "@/hooks/react-query/stats";
+import { useComprehensiveStatsQuery } from "@/hooks/react-query/stats";
 
 export function ActiveUsersChart() {
-  const { data: engagementStats } = useEngagementStatsQuery();
+  const { data: comprehensiveStats } = useComprehensiveStatsQuery();
 
-  if (!engagementStats) return null;
+  if (!comprehensiveStats?.engagement) return null;
 
   const engagementData = [
-    { name: 'Daily Active', value: engagementStats.dailyActiveUsers },
-    { name: 'Weekly Active', value: engagementStats.weeklyActiveUsers },
-    { name: 'Monthly Active', value: engagementStats.monthlyActiveUsers },
+    { name: 'Daily Active', value: comprehensiveStats.engagement.dailyActiveUsers },
+    { name: 'Weekly Active', value: comprehensiveStats.engagement.weeklyActiveUsers },
+    { name: 'Monthly Active', value: comprehensiveStats.engagement.monthlyActiveUsers },
   ];
 
   if (engagementData.length === 0) return null;

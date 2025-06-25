@@ -3,17 +3,17 @@
 import { CartesianGrid, Line, LineChart, Tooltip, XAxis, YAxis } from 'recharts';
 
 import { ChartCard } from '../shared/ChartCard';
-import { useActivityStatsQuery } from "@/hooks/react-query/stats";
+import { useComprehensiveStatsQuery } from "@/hooks/react-query/stats";
 
 export function ActivityTrendsChart() {
-  const { data: activityStats } = useActivityStatsQuery();
+  const { data: comprehensiveStats } = useComprehensiveStatsQuery();
 
-  if (!activityStats) return null;
+  if (!comprehensiveStats?.activity) return null;
 
   const activityData = [
-    { period: 'Today', newUsers: activityStats.newUsersToday, views: activityStats.profileViewsToday },
-    { period: 'This Week', newUsers: activityStats.newUsersThisWeek, views: activityStats.profileViewsThisWeek },
-    { period: 'This Month', newUsers: activityStats.newUsersThisMonth, views: activityStats.profileViewsThisMonth },
+    { period: 'Today', newUsers: comprehensiveStats.activity.newUsersToday, views: comprehensiveStats.activity.profileViewsToday },
+    { period: 'This Week', newUsers: comprehensiveStats.activity.newUsersThisWeek, views: comprehensiveStats.activity.profileViewsThisWeek },
+    { period: 'This Month', newUsers: comprehensiveStats.activity.newUsersThisMonth, views: comprehensiveStats.activity.profileViewsThisMonth },
   ];
 
   if (activityData.length === 0) return null;

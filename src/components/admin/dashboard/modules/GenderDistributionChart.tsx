@@ -2,18 +2,20 @@
 
 import { Legend, RadialBar, RadialBarChart, Tooltip } from 'recharts';
 
-import { useUserDemographicsQuery } from "@/hooks/react-query/stats";
-import { formatPercentage } from "@/lib/utils/stats-utils";
 import { ChartCard } from "@/components/admin/dashboard/shared/ChartCard";
+import { formatPercentage } from "@/lib/utils/stats-utils";
+import { useComprehensiveStatsQuery } from "@/hooks/react-query/stats";
 
 export function GenderDistributionChart() {
-  const { data: demographicsStats } = useUserDemographicsQuery();
+  const { data: comprehensiveStats } = useComprehensiveStatsQuery();
 
-  if (!demographicsStats) return null;
+  if (!comprehensiveStats?.demographics) return null;
 
   const genderData = [
-    { name: 'Male', value: demographicsStats.malePercentage, color: '#0088FE' },
-    { name: 'Female', value: demographicsStats.femalePercentage, color: '#FF8042' },
+    { name: 'Male', value: comprehensiveStats.demographics.malePercentage, color: '#0088FE' },
+    { name: 'Female', value: comprehensiveStats.demographics.femalePercentage, color: '#FF8042' },
+    { name: 'Non-Binary', value: comprehensiveStats.demographics.nonBinaryPercentage, color: '#00C49F' },
+    { name: 'Other', value: comprehensiveStats.demographics.otherPercentage, color: '#FFBB28' },
   ];
 
   if (genderData.length === 0) return null;

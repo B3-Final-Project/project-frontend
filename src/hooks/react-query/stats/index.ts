@@ -1,7 +1,15 @@
 import { StatsRouter } from "@/lib/routes/stats";
 import { useQuery } from "@tanstack/react-query";
 
-// App statistics
+// Comprehensive statistics (all stats combined) - main hook for dashboard
+export function useComprehensiveStatsQuery() {
+  return useQuery({
+    queryKey: ["stats", "comprehensive"],
+    queryFn: () => StatsRouter.getComprehensiveStats(),
+  });
+}
+
+// Individual statistics hooks (kept for potential future use or specific components)
 export function useAppStatsQuery() {
   return useQuery({
     queryKey: ["stats", "app"],
@@ -9,7 +17,6 @@ export function useAppStatsQuery() {
   });
 }
 
-// Booster statistics
 export function useBoosterStatsQuery() {
   return useQuery({
     queryKey: ["stats", "boosters"],
@@ -17,7 +24,6 @@ export function useBoosterStatsQuery() {
   });
 }
 
-// Detailed statistics (app + boosters combined)
 export function useDetailedStatsQuery() {
   return useQuery({
     queryKey: ["stats", "detailed"],
@@ -25,7 +31,28 @@ export function useDetailedStatsQuery() {
   });
 }
 
-// Count queries
+export function useUserDemographicsQuery() {
+  return useQuery({
+    queryKey: ["stats", "demographics"],
+    queryFn: () => StatsRouter.getUserDemographics(),
+  });
+}
+
+export function useEngagementStatsQuery() {
+  return useQuery({
+    queryKey: ["stats", "engagement"],
+    queryFn: () => StatsRouter.getEngagementStats(),
+  });
+}
+
+export function useActivityStatsQuery() {
+  return useQuery({
+    queryKey: ["stats", "activity"],
+    queryFn: () => StatsRouter.getActivityStats(),
+  });
+}
+
+// Count queries (kept for specific use cases)
 export function useUsersCountQuery() {
   return useQuery({
     queryKey: ["stats", "users", "count"],
@@ -59,68 +86,4 @@ export function useTotalBoosterUsageQuery() {
     queryKey: ["stats", "boosters", "usage", "total"],
     queryFn: () => StatsRouter.getTotalBoosterUsage(),
   });
-}
-
-// Demographics and engagement
-export function useUserDemographicsQuery() {
-  return useQuery({
-    queryKey: ["stats", "demographics"],
-    queryFn: () => StatsRouter.getUserDemographics(),
-  });
-}
-
-export function useEngagementStatsQuery() {
-  return useQuery({
-    queryKey: ["stats", "engagement"],
-    queryFn: () => StatsRouter.getEngagementStats(),
-  });
-}
-
-// Activity statistics
-export function useActivityStatsQuery() {
-  return useQuery({
-    queryKey: ["stats", "activity"],
-    queryFn: () => StatsRouter.getActivityStats(),
-  });
-}
-
-// Comprehensive statistics (all stats combined)
-export function useComprehensiveStatsQuery() {
-  return useQuery({
-    queryKey: ["stats", "comprehensive"],
-    queryFn: () => StatsRouter.getComprehensiveStats(),
-  });
-}
-
-// Utility hooks for commonly used combinations
-export function useBasicStatsQuery() {
-  const appStats = useAppStatsQuery();
-  const boosterStats = useBoosterStatsQuery();
-  
-  return {
-    appStats,
-    boosterStats,
-    isLoading: appStats.isLoading || boosterStats.isLoading,
-    isError: appStats.isError || boosterStats.isError,
-    error: appStats.error || boosterStats.error,
-  };
-}
-
-export function useAllCountsQuery() {
-  const usersCount = useUsersCountQuery();
-  const matchesCount = useMatchesCountQuery();
-  const passesCount = usePassesCountQuery();
-  const likesCount = useLikesCountQuery();
-  const boosterUsage = useTotalBoosterUsageQuery();
-  
-  return {
-    usersCount,
-    matchesCount,
-    passesCount,
-    likesCount,
-    boosterUsage,
-    isLoading: usersCount.isLoading || matchesCount.isLoading || passesCount.isLoading || likesCount.isLoading || boosterUsage.isLoading,
-    isError: usersCount.isError || matchesCount.isError || passesCount.isError || likesCount.isError || boosterUsage.isError,
-    error: usersCount.error || matchesCount.error || passesCount.error || likesCount.error || boosterUsage.error,
-  };
 }

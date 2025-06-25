@@ -20,6 +20,8 @@ export interface DetailedStatsDto {
 export interface UserDemographicsDto {
   malePercentage: number;
   femalePercentage: number;
+  nonBinaryPercentage: number;
+  otherPercentage: number;
   averageAge: number;
   ageDistribution: Record<string, number>;
 }

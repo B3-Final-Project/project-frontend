@@ -2,16 +2,16 @@
 
 import { Area, AreaChart, CartesianGrid, Tooltip, XAxis, YAxis } from 'recharts';
 
-import { useUserDemographicsQuery } from "@/hooks/react-query/stats";
-import { transformObjectToChartData } from "@/lib/utils/stats-utils";
 import { ChartCard } from "@/components/admin/dashboard/shared/ChartCard";
+import { transformObjectToChartData } from "@/lib/utils/stats-utils";
+import { useComprehensiveStatsQuery } from "@/hooks/react-query/stats";
 
 export function AgeDistributionChart() {
-  const { data: demographicsStats } = useUserDemographicsQuery();
+  const { data: comprehensiveStats } = useComprehensiveStatsQuery();
 
-  if (!demographicsStats?.ageDistribution) return null;
+  if (!comprehensiveStats?.demographics?.ageDistribution) return null;
 
-  const ageDistributionData = transformObjectToChartData(demographicsStats.ageDistribution, 'age', 'count');
+  const ageDistributionData = transformObjectToChartData(comprehensiveStats.demographics.ageDistribution, 'age', 'count');
 
   if (ageDistributionData.length === 0) return null;
 

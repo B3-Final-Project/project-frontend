@@ -1,19 +1,13 @@
 "use client";
 
 import { Heart, TrendingUp, Users, Zap } from 'lucide-react';
-import {
-  useActivityStatsQuery,
-  useComprehensiveStatsQuery,
-  useEngagementStatsQuery
-} from "@/hooks/react-query/stats";
 
 import { MetricCard } from './shared/MetricCard';
 import { formatPercentage } from "@/lib/utils/stats-utils";
+import { useComprehensiveStatsQuery } from "@/hooks/react-query/stats";
 
 export function MetricCards() {
   const { data: comprehensiveStats } = useComprehensiveStatsQuery();
-  const { data: engagementStats } = useEngagementStatsQuery();
-  const { data: activityStats } = useActivityStatsQuery();
 
   if (!comprehensiveStats) return null;
 
@@ -27,18 +21,18 @@ export function MetricCards() {
     {
       title: "Total Users",
       value: comprehensiveStats.appStats.totalUsers,
-      subtitle: activityStats ? `+${activityStats.newUsersToday} today` : undefined,
+      subtitle: comprehensiveStats.activity ? `+${comprehensiveStats.activity.newUsersToday} today` : undefined,
       icon: Users
     },
     {
       title: "Total Matches",
       value: comprehensiveStats.appStats.totalMatches,
-      subtitle: engagementStats ? `${formatPercentage(engagementStats.matchRate)} match rate` : undefined,
+      subtitle: comprehensiveStats.engagement ? `${formatPercentage(comprehensiveStats.engagement.matchRate)} match rate` : undefined,
       icon: Heart
     },
     {
       title: "Engagement",
-      value: engagementStats?.averageLikesPerUser ? engagementStats.averageLikesPerUser.toFixed(1) : '0',
+      value: comprehensiveStats.engagement?.averageLikesPerUser ? comprehensiveStats.engagement.averageLikesPerUser.toFixed(1) : '0',
       subtitle: "avg likes per user",
       icon: TrendingUp
     },

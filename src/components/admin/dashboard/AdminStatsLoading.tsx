@@ -1,26 +1,14 @@
 "use client";
 
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import {
-  useActivityStatsQuery,
-  useAllCountsQuery,
-  useBasicStatsQuery,
-  useComprehensiveStatsQuery,
-  useEngagementStatsQuery,
-  useUserDemographicsQuery
-} from "@/hooks/react-query/stats";
 
 import { Skeleton } from "@/components/ui/skeleton";
+import { useComprehensiveStatsQuery } from "@/hooks/react-query/stats";
 
 export function useAdminStatsLoading() {
   const { isLoading: comprehensiveLoading } = useComprehensiveStatsQuery();
-  const { isLoading: countsLoading } = useAllCountsQuery();
-  const { isLoading: basicLoading } = useBasicStatsQuery();
-  const { isLoading: engagementLoading } = useEngagementStatsQuery();
-  const { isLoading: activityLoading } = useActivityStatsQuery();
-  const { isLoading: demographicsLoading } = useUserDemographicsQuery();
 
-  return comprehensiveLoading || countsLoading || basicLoading || engagementLoading || activityLoading || demographicsLoading;
+  return comprehensiveLoading;
 }
 
 export function AdminStatsLoadingFallback() {
