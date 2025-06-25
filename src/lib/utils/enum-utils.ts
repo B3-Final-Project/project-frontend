@@ -52,7 +52,9 @@ export function formatRelationshipTypeEnum(value: number | string): string {
     case RelationshipTypeEnum.MARRIAGE: return 'Marriage';
     case RelationshipTypeEnum.FRIENDSHIP: return 'Friendship';
     case RelationshipTypeEnum.UNSURE: return 'Not Sure Yet';
-    default: return '';
+    case RelationshipTypeEnum.ANY:
+    default:
+      return 'Any Type';
   }
 }
 
