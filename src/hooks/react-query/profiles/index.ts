@@ -1,16 +1,18 @@
+import { removeImage, sendImage } from "@/lib/utils";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+
 import { ProfileRouter } from "@/lib/routes/profiles";
 import { UpdateProfileDto } from "@/lib/routes/profiles/dto/update-profile.dto";
 import { toast } from "@/hooks/use-toast";
 import { useRouter } from "next/navigation";
-import { removeImage, sendImage } from "@/lib/utils";
 
 // Fetch a single profile
-export function useProfileQuery() {
+export function useProfileQuery(enabled: boolean = true) {
   return useQuery({
     queryKey: ["profile"],
     queryFn: () => ProfileRouter.getProfile(),
     retry: false,
+    enabled,
   });
 }
 
