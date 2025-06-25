@@ -34,6 +34,7 @@ export const createFetcher = <T = unknown, B = undefined>(
   };
 };
 
+
 export const sendImage = async ({formData, index}: {formData: unknown, index: number}) => authenticatedAxios.put(RESTServerRoute.REST_PROFILES_IMAGES + `/${index}`, formData, {
   headers: {
     "Content-Type": "multipart/form-data",
