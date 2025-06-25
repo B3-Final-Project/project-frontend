@@ -68,7 +68,7 @@ export function ProfileHeader() {
   }
 
   return (
-    <div className="flex justify-between items-center gap-4 px-5 py-8">
+    <div className="flex justify-between items-center px-5 py-8 w-full md:max-w-[750px] md:mx-auto">
 
       <Settings />
 

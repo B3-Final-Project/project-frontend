@@ -205,12 +205,6 @@ export default function MatchSystem({ profiles }: MatchSystemProps) {
   return (
     <div className="relative min-h-screen w-full overflow-hidden">
       <div className="container mx-auto px-4 py-6 sm:py-10 relative z-10 flex flex-col items-center w-full h-screen">
-        <MatchCounters
-          matchesCount={matches.length}
-          nonMatchesCount={nonMatches.length}
-          setShowMatchList={setShowMatchList}
-          setShowNonMatchList={setShowNonMatchList}
-        />
         <div className="h-12 sm:h-16 relative w-full">
           <AnimatePresence>
             {showRejectAnimation && (
@@ -220,6 +214,13 @@ export default function MatchSystem({ profiles }: MatchSystemProps) {
             )}
           </AnimatePresence>
         </div>
+        <MatchCounters
+          matchesCount={matches.length}
+          nonMatchesCount={nonMatches.length}
+          setShowMatchList={setShowMatchList}
+          setShowNonMatchList={setShowNonMatchList}
+        />
+
         <div
           ref={constraintsRef}
           className="relative flex items-center justify-center"

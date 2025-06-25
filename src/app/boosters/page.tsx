@@ -51,7 +51,7 @@ const BoosterVerificationPage = () => {
     return (
       <div className="flex flex-col items-center justify-center min-h-[calc(100vh-100px)] p-6 sm:p-10 text-center my-5 mx-auto max-w-[600px] w-full">
         <h1 className="telxt-2x sm:text-3xl text-slate-800 mb-5 sm:mb-6 font-semibold">Prochain booster disponible</h1>
-        <p className="text-6xl sm:text-8xl  text-indigo-600 my-5 sm:my-6 mb-8 sm:mb-10 tracking-wider">{new Date(countdown).toISOString().substring(11, 19)}</p>
+        <p className="text-6xl sm:text-8xl  text-primary my-5 sm:my-6 mb-8 sm:mb-10 tracking-wider">{new Date(countdown).toISOString().substring(11, 19)}</p>
         <p className="text-base sm:text-lg text-slate-500">Vous serez redirigé automatiquement.</p>
       </div>
     );
