@@ -1,7 +1,6 @@
-function page() {
-  return (
-    <div>ADMIN</div>
-  )
-}
+import AdminPage from "@/components/admin/AdminPage"
 
-export default page
+export default function page() {
+  return <AdminPage/>
+
+}

@@ -13,7 +13,7 @@ import { Home } from 'lucide-react';
 import Image from "next/image";
 import Link from 'next/link';
 import { FaRegUser } from "react-icons/fa";
-import { FiMessageSquare } from "react-icons/fi";
+import { FiMessageSquare, FiShield } from "react-icons/fi";
 import { IoSettingsOutline } from "react-icons/io5";
 import { useAuth } from "react-oidc-context";
 import {Quantico} from "next/font/google";
@@ -35,6 +35,8 @@ export function SidebarComponent() {
     { title: "Profile", url: '/profile', icon: FaRegUser },
     { title: "Settings", url: '/register', icon: IoSettingsOutline },
   ]
+  const groups = auth.user?.profile['cognito:groups'] as string[]
+  const isAdmin = groups.includes('admin');
 
   const signOutAction = async () => {
     await auth.removeUser()
@@ -78,6 +80,12 @@ export function SidebarComponent() {
                     </SidebarMenuItem>
                   );
                 })}
+                {isAdmin && <SidebarMenuButton asChild>
+                  <Link href={'/admin'}>
+                    <FiShield style={{ width: '1.5rem', height: '1.5rem' }} size={40} />
+                    <span className="hidden lg:block">Admin Dashboard</span>
+                  </Link>
+                </SidebarMenuButton>}
               </SidebarMenu>
               {auth.user && <Button onClick={() => signOutAction()}>Logout</Button>}
             </SidebarGroup>
