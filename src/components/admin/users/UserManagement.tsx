@@ -1,14 +1,24 @@
+import { useMemo, useState } from "react";
+
 import { Button } from "@/components/ui/button";
 import { DataTable } from "./data-table"
 import { FullScreenLoading } from "@/components/FullScreenLoading";
 import SearchBar from "@/components/admin/users/SearchBar";
+import { SortControls } from "@/components/admin/users/SortControls";
 import { UserManagementCollumns } from "./collumns";
 import { UserManagementDto } from "@/lib/routes/admin/dto/user-management.dto";
-import { useAllProfilesQuery } from "@/hooks/react-query/profiles"
-import { useMemo } from "react";
+import { useAllProfilesQuery } from "@/hooks/react-query/profiles";
 
 function UserManagement() {
-  const query = useAllProfilesQuery()
+  const [sortBy, setSortBy] = useState<'reportCount' | 'createdAt' | undefined>();
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc' | undefined>();
+
+  const query = useAllProfilesQuery(sortBy, sortOrder);
+
+  const handleSortChange = (newSortBy: 'reportCount' | 'createdAt', newSortOrder: 'asc' | 'desc') => {
+    setSortBy(newSortBy);
+    setSortOrder(newSortOrder);
+  };
 
   // Flatten all pages data
   const allUsers = useMemo(() => {
@@ -42,7 +52,14 @@ function UserManagement() {
 
   return (
     <div className="space-y-6 p-6">
-      <SearchBar/>
+      <div className="flex flex-col sm:flex-row gap-4 justify-between items-start sm:items-center">
+        <SearchBar/>
+        <SortControls 
+          sortBy={sortBy} 
+          sortOrder={sortOrder} 
+          onSortChange={handleSortChange} 
+        />
+      </div>
       <div className="space-y-4">
         <DataTable columns={UserManagementCollumns} data={allUsers}/>
 

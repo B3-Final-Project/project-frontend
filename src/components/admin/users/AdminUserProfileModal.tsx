@@ -1,15 +1,15 @@
 "use client";
 
-import { AlertTriangle } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { formatDrinkingEnum, formatSmokingEnum, formatZodiacEnum } from "@/lib/utils/enum-utils";
 
+import { AlertTriangle } from "lucide-react";
 import { UserCardModal } from "@/components/UserCardModal";
 import { UserManagementDto } from "@/lib/routes/admin/dto/user-management.dto";
+import { useEffect } from "react";
 import {
   useProfileByIdMutation,
 } from "@/hooks/react-query/profiles";
-import { useEffect } from "react";
 
 interface AdminUserProfileModalProps {
   readonly user: UserManagementDto;
@@ -21,7 +21,7 @@ export function AdminUserProfileModal({
   user,
   isOpen,
   onClose
-}: AdminUserProfileModalProps) {
+}: Readonly<AdminUserProfileModalProps>) {
   const { mutate, data, isError } = useProfileByIdMutation(user.userId);
 
   useEffect(

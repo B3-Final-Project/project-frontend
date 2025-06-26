@@ -2,7 +2,6 @@ export enum RESTServerRoute {
   REST_AUTH_SETTINGS = 'settings/auth',
   REST_PROFILES = 'profiles',
   REST_PROFILE = 'profiles/:id',
-  REST_PROFILES_ALL = 'profiles/all',
   REST_PROFILE_MATCHES = 'profiles/matches',
   REST_BOOSTER = 'booster',
   REST_TEN_BOOSTERS = 'booster/10',
@@ -15,7 +14,8 @@ export enum RESTServerRoute {
   REST_MATCHES_LIKE = 'matches/like/:id',
   REST_MATCHES_PASS = 'matches/pass/:id',
   // Admin routes
-  REST_ADMIN_BAN_USER = 'admin/users/:userId/ban',
-  REST_ADMIN_UNBAN_USER = 'admin/users/:userId/unban',
-  REST_ADMIN_USER_PROFILE = 'admin/users/:userId/profile',
+  REST_PROFILES_ALL = 'profiles/all',
+  REST_ADMIN_BAN_USER = 'profiles/:userId/ban',
+  REST_ADMIN_UNBAN_USER = 'profiles/:userId/unban',
+  REST_ADMIN_USER_PROFILE = 'profiles/:userId/profile',
 }

@@ -1,11 +1,11 @@
 import { removeImage, sendImage } from "@/lib/utils";
 import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
+import { GetProfileResponse } from "@/lib/routes/profiles/response/get-profile.response";
 import { ProfileRouter } from "@/lib/routes/profiles";
 import { UpdateProfileDto } from "@/lib/routes/profiles/dto/update-profile.dto";
 import { toast } from "@/hooks/use-toast";
 import { useRouter } from "next/navigation";
-import { GetProfileResponse } from "@/lib/routes/profiles/response/get-profile.response";
 
 // Fetch a single profile
 export function useProfileQuery(enabled: boolean = true) {
@@ -39,14 +39,23 @@ export function useProfileByIdMutation(id: string) {
 }
 
 // Fetch all profiles with infinite scrolling
-export function useAllProfilesQuery() {
+export function useAllProfilesQuery(sortBy?: 'reportCount' | 'createdAt', sortOrder?: 'asc' | 'desc') {
   return useInfiniteQuery({
-    queryKey: ["profiles"],
+    queryKey: ["profiles", sortBy, sortOrder],
     queryFn: async ({ pageParam = 0 }) => {
-      return ProfileRouter.getAllProfiles({
+      const params: Record<string, string | number> = {
         offset: pageParam,
         limit: 10
-      });
+      };
+
+      if (sortBy) {
+        params.sortBy = sortBy;
+      }
+      if (sortOrder) {
+        params.sortOrder = sortOrder;
+      }
+
+      return ProfileRouter.getAllProfiles(params);
     },
     getNextPageParam: (lastPage, allPages) => {
       // If the last page has fewer items than the limit, we've reached the end

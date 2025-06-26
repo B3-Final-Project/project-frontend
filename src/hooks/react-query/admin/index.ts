@@ -1,4 +1,4 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import { AdminRouter } from "@/lib/routes/admin";
 import { toast } from "@/hooks/use-toast";
@@ -52,5 +52,15 @@ export function useUnbanUserMutation() {
         variant: "destructive",
       });
     },
+  });
+}
+
+// Hook to get user profile for admin view
+export function useAdminUserProfileQuery(userId: string, enabled: boolean = true) {
+  return useQuery({
+    queryKey: ["admin", "user-profile", userId],
+    queryFn: () => AdminRouter.getUserProfile(undefined, { userId }),
+    enabled: enabled && !!userId,
+    retry: false,
   });
 }
