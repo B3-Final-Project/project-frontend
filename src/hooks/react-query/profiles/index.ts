@@ -39,9 +39,9 @@ export function useProfileByIdMutation(id: string) {
 }
 
 // Fetch all profiles with infinite scrolling
-export function useAllProfilesQuery(sortBy?: 'reportCount' | 'createdAt', sortOrder?: 'asc' | 'desc') {
+export function useAllProfilesQuery(sortBy?: 'reportCount' | 'createdAt', sortOrder?: 'ASC' | 'DESC', searchTerm?: string) {
   return useInfiniteQuery({
-    queryKey: ["profiles", sortBy, sortOrder],
+    queryKey: ["profiles", sortBy, sortOrder, searchTerm],
     queryFn: async ({ pageParam = 0 }) => {
       const params: Record<string, string | number> = {
         offset: pageParam,
@@ -54,8 +54,27 @@ export function useAllProfilesQuery(sortBy?: 'reportCount' | 'createdAt', sortOr
       if (sortOrder) {
         params.sortOrder = sortOrder;
       }
+      if (searchTerm && searchTerm.trim() !== '') {
+        params.search = searchTerm.trim();
+      }
 
-      return ProfileRouter.getAllProfiles(params);
+      try {
+        return await ProfileRouter.getAllProfiles(params);
+      } catch (error) {
+        // If sorting fails, try again without sorting parameters
+        if (sortBy || sortOrder) {
+          console.warn('Sorting failed, retrying without sort parameters:', error);
+          const fallbackParams: Record<string, string | number> = {
+            offset: pageParam,
+            limit: 10
+          };
+          if (searchTerm && searchTerm.trim() !== '') {
+            fallbackParams.search = searchTerm.trim();
+          }
+          return await ProfileRouter.getAllProfiles(fallbackParams);
+        }
+        throw error;
+      }
     },
     getNextPageParam: (lastPage, allPages) => {
       // If the last page has fewer items than the limit, we've reached the end

@@ -1,6 +1,6 @@
 "use client"
 
-import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight, Search } from "lucide-react"
+import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from "lucide-react"
 import {
   ColumnDef,
   ColumnFiltersState,
@@ -22,7 +22,6 @@ import {
 } from "@/components/ui/table"
 
 import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
 import { useState } from "react"
 
 interface DataTableProps<TData, TValue> {
@@ -62,24 +61,6 @@ export function DataTable<TData, TValue>({
 
   return (
     <div className="space-y-4">
-      {/* Search and Filters */}
-      <div className="flex items-center space-x-2">
-        <div className="relative flex-1 max-w-sm">
-          <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-          <Input
-            placeholder="Search users..."
-            value={globalFilter ?? ""}
-            onChange={(event) => setGlobalFilter(String(event.target.value))}
-            className="pl-8"
-          />
-        </div>
-        <div className="flex items-center space-x-2 text-sm text-muted-foreground">
-          <span>
-            {table.getFilteredRowModel().rows.length} of {table.getCoreRowModel().rows.length} users
-          </span>
-        </div>
-      </div>
-
       {/* Table */}
       <div className="rounded-md border bg-white shadow-sm">
         <Table>
@@ -145,7 +126,7 @@ export function DataTable<TData, TValue>({
             ))}
           </select>
         </div>
-        
+
         <div className="flex items-center space-x-6 lg:space-x-8">
           <div className="flex w-[100px] items-center justify-center text-sm font-medium">
             Page {table.getState().pagination.pageIndex + 1} of{" "}

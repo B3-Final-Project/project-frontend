@@ -2,25 +2,31 @@
 
 import { getRarityGradient } from '@/utils/rarityHelper';
 import { motion } from 'framer-motion';
-import { Cigarette, Info, Languages, MapPin, Moon, User, Wine } from 'lucide-react';
+import { Cigarette, Info, Languages, MapPin, Moon, User, Wine, Flag } from 'lucide-react';
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Interest } from "@/lib/routes/profiles/interfaces/interest.interface";
 import { RarityEnum } from "@/lib/routes/booster/dto/rarity.enum";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { useReportUserMutation } from "@/hooks/react-query/admin";
 
 interface UserCardModalProps {
-  name: string;
-  age?: number;
-  location?: string;
-  description?: string;
-  isOpen: boolean;
-  onCloseAction: () => void;
-  rarity?: RarityEnum;
-  image_url?: string;
-  interests?: Interest[];
-  languages?: string[];
-  zodiac?: string;
-  smoking?: string;
-  drinking?: string;
+  readonly name: string;
+  readonly age?: number;
+  readonly location?: string;
+  readonly isOpen: boolean;
+  readonly onCloseAction: () => void;
+  readonly rarity?: RarityEnum;
+  readonly image_url?: string;
+  readonly interests?: Interest[];
+  readonly languages?: string[];
+  readonly zodiac?: string;
+  readonly smoking?: string;
+  readonly drinking?: string;
+  readonly profileId?: string; // Add profileId for reporting
 }
 
 export function UserCardModal({
@@ -36,9 +42,39 @@ export function UserCardModal({
   zodiac,
   smoking,
   drinking,
-}: UserCardModalProps) {
+  profileId,
+}: Readonly<UserCardModalProps>) {
   const [isFlipped, setIsFlipped] = useState(false);
+  const [isReportModalOpen, setIsReportModalOpen] = useState(false);
+  const [reportReason, setReportReason] = useState("");
+  const [reportCategory, setReportCategory] = useState("");
   const modalRef = useRef<HTMLDivElement>(null);
+  
+  const reportMutation = useReportUserMutation();
+
+  const reportCategories = [
+    "Inappropriate content",
+    "Fake profile", 
+    "Harassment",
+    "Spam",
+    "Underage user",
+    "Other"
+  ];
+
+  const handleReportSubmit = () => {
+    if (!profileId) return;
+    
+    const fullReason = reportCategory ? `${reportCategory}: ${reportReason.trim()}` : reportReason.trim();
+    if (fullReason) {
+      reportMutation.mutate({ 
+        userId: profileId, 
+        reason: fullReason 
+      });
+      setReportReason("");
+      setReportCategory("");
+      setIsReportModalOpen(false);
+    }
+  };
 
   const handleCardFlip = () => {
     setIsFlipped(!isFlipped);
@@ -131,12 +167,11 @@ export function UserCardModal({
               style={{ background: getRarityGradient(rarity) }}
             >
               <div
-                className="w-full h-full rounded-lg overflow-hidden"
-                style={{
-                  backgroundImage: `url(${image_url || '/vintage.png'})`,
-                  backgroundSize: "cover",
-                  backgroundPosition: "center",
-                }}
+                className="w-full h-full rounded-lg overflow-hidden"            style={{
+              backgroundImage: `url(${image_url ?? '/vintage.png'})`,
+              backgroundSize: "cover",
+              backgroundPosition: "center",
+            }}
               >
                 <div className="w-full h-full flex flex-col justify-between bg-gradient-to-t from-black/70 via-transparent to-transparent p-3">
                   <div className="flex justify-between items-start">
@@ -153,6 +188,23 @@ export function UserCardModal({
                       </div>
                     )}
                   </div>
+                  
+                  {/* Report Button */}
+                  {profileId && (
+                    <div className="flex justify-end">
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setIsReportModalOpen(true);
+                        }}
+                        className="flex items-center gap-1 text-sm bg-red-500/80 hover:bg-red-600/90 text-white px-2 py-1 rounded-full transition-colors shadow-lg"
+                      >
+                        <Flag size={14} />
+                        Report
+                      </button>
+                    </div>
+                  )}
+                  
                   <div className="text-white">
                     <h2 className="text-xl font-bold drop-shadow-md mb-1">{name}</h2>
                     <div className="flex flex-wrap gap-2 pt-1">
@@ -199,9 +251,9 @@ export function UserCardModal({
                 <div className="mb-3 text-gray-200 leading-relaxed overflow-auto max-h-[300px] custom-scrollbar">
                   {interests && interests.length > 0 && (
                     <div className="flex flex-wrap gap-1 mt-1">
-                      {interests.map((interest, index) => (
+                      {interests.map((interest) => (
                         <span
-                          key={index}
+                          key={interest.id}
                           className="bg-white/10 text-white px-2 py-1 rounded-full text-sm"
                         >
                           {interest.prompt}:
@@ -221,6 +273,62 @@ export function UserCardModal({
           </motion.div>
         </motion.div>
       </motion.div>
+      
+      {/* Report Modal */}
+      <Dialog open={isReportModalOpen} onOpenChange={setIsReportModalOpen}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Report User: {name}</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 p-4">
+            <div>
+              <Label htmlFor="report-category">Report Category</Label>
+              <Select value={reportCategory} onValueChange={setReportCategory}>
+                <SelectTrigger className="mt-2">
+                  <SelectValue placeholder="Select a category" />
+                </SelectTrigger>
+                <SelectContent>
+                  {reportCategories.map((category) => (
+                    <SelectItem key={category} value={category}>
+                      {category}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <Label htmlFor="report-reason">Additional Details</Label>
+              <Textarea
+                id="report-reason"
+                placeholder="Please provide additional details about the report..."
+                value={reportReason}
+                onChange={(e) => setReportReason(e.target.value)}
+                rows={4}
+                className="mt-2"
+              />
+            </div>
+            <div className="flex gap-2 justify-end">
+              <Button
+                variant="outline"
+                onClick={() => {
+                  setIsReportModalOpen(false);
+                  setReportReason("");
+                  setReportCategory("");
+                }}
+              >
+                Cancel
+              </Button>
+              <Button
+                onClick={handleReportSubmit}
+                disabled={!reportCategory || reportMutation.isPending}
+                className="bg-red-600 hover:bg-red-700"
+              >
+                {reportMutation.isPending ? "Submitting..." : "Submit Report"}
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </motion.div>
   );
 }

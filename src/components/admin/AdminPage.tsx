@@ -1,12 +1,13 @@
 "use client";
 
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
+
+import AdminStats from "@/components/admin/dashboard/AdminStats";
 import { Button } from "@/components/ui/button";
-import clsx from "clsx";
+import { JSX } from "react";
 import RecentReports from "./reports/RecentReports";
 import UserManagement from "./users/UserManagement";
-import { JSX } from "react";
-import AdminStats from "@/components/admin/dashboard/AdminStats";
+import clsx from "clsx";
 
 const adminRoutes: Record<
   string,
@@ -28,9 +29,14 @@ const adminRoutes: Record<
 
 function AdminPage() {
   const searchParams = useSearchParams();
+  const router = useRouter();
   const currentKey = Object.keys(adminRoutes).find((key) =>
     searchParams.has(key)
   );
+
+  const handleNavigation = (key: string) => {
+    router.push(`/admin?${key}`);
+  };
 
   return (
     <>
@@ -38,11 +44,13 @@ function AdminPage() {
         {Object.entries(adminRoutes).map(([key, { title }]) => {
           const isSelected = key === currentKey;
           return (
-            <a key={key} href={`/admin?${key}`}>
-              <Button className={clsx('bg-transparent text-black hover:text-white',{ "bg-blue-300": isSelected })}>
-                {title}
-              </Button>
-            </a>
+            <Button 
+              key={key} 
+              onClick={() => handleNavigation(key)}
+              className={clsx('bg-transparent text-black hover:text-white',{ "bg-blue-300": isSelected })}
+            >
+              {title}
+            </Button>
           );
         })}
       </nav>

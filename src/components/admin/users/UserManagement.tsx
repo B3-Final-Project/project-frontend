@@ -1,8 +1,7 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { DataTable } from "./data-table"
-import { FullScreenLoading } from "@/components/FullScreenLoading";
 import SearchBar from "@/components/admin/users/SearchBar";
 import { SortControls } from "@/components/admin/users/SortControls";
 import { UserManagementCollumns } from "./collumns";
@@ -11,14 +10,35 @@ import { useAllProfilesQuery } from "@/hooks/react-query/profiles";
 
 function UserManagement() {
   const [sortBy, setSortBy] = useState<'reportCount' | 'createdAt' | undefined>();
-  const [sortOrder, setSortOrder] = useState<'asc' | 'desc' | undefined>();
+  const [sortOrder, setSortOrder] = useState<'ASC' | 'DESC' | undefined>();
+  const [searchTerm, setSearchTerm] = useState<string>('');
+  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState<string>('');
 
-  const query = useAllProfilesQuery(sortBy, sortOrder);
+  // Debounce search term for API calls
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      // Only search if there are at least 2 characters or if it's empty (to show all)
+      if (searchTerm.length >= 2 || searchTerm.length === 0) {
+        setDebouncedSearchTerm(searchTerm);
+      }
+    }, 700);
 
-  const handleSortChange = (newSortBy: 'reportCount' | 'createdAt', newSortOrder: 'asc' | 'desc') => {
+    return () => clearTimeout(timer);
+  }, [searchTerm]);
+
+  const query = useAllProfilesQuery(sortBy, sortOrder, debouncedSearchTerm);
+
+  const handleSortChange = (newSortBy: 'reportCount' | 'createdAt', newSortOrder: 'ASC' | 'DESC') => {
     setSortBy(newSortBy);
     setSortOrder(newSortOrder);
   };
+
+  const handleSearch = (newSearchTerm: string) => {
+    setSearchTerm(newSearchTerm);
+  };
+
+  // Show loading state only when searchTerm doesn't match debouncedSearchTerm
+  const isSearching = searchTerm !== debouncedSearchTerm && query.isFetching;
 
   // Flatten all pages data
   const allUsers = useMemo(() => {
@@ -30,14 +50,6 @@ function UserManagement() {
 
   // Get total count from the first page
   const totalCount = query.data?.pages?.[0]?.totalCount ?? 0;
-
-  if (query.isLoading) {
-    return (
-      <div className="flex items-center justify-center min-h-[400px]">
-        <FullScreenLoading />
-      </div>
-    );
-  }
 
   if (query.isError) {
     return (
@@ -52,12 +64,17 @@ function UserManagement() {
 
   return (
     <div className="space-y-6 p-6">
+      <SearchBar
+        userData={allUsers}
+        onSearch={handleSearch}
+        searchTerm={searchTerm}
+        isSearching={isSearching}
+      />
       <div className="flex flex-col sm:flex-row gap-4 justify-between items-start sm:items-center">
-        <SearchBar/>
-        <SortControls 
-          sortBy={sortBy} 
-          sortOrder={sortOrder} 
-          onSortChange={handleSortChange} 
+        <SortControls
+          sortBy={sortBy}
+          sortOrder={sortOrder}
+          onSortChange={handleSortChange}
         />
       </div>
       <div className="space-y-4">

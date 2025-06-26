@@ -292,6 +292,7 @@ export default function MatchSystem({ profiles }: MatchSystemProps) {
           zodiac={selectedCard.zodiac}
           smoking={selectedCard.smoking}
           drinking={selectedCard.drinking}
+          profileId={selectedCard.id}
         />
       )}
     </div>
