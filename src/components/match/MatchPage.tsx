@@ -64,7 +64,7 @@ const MatchPage = () => {
           />
         </div>
       ) : showCardAnimation ? (
-        <div className="card-reveal-container relative w-full h-full flex items-center justify-center">
+        <div className="relative w-full h-full flex items-center justify-center">
           {packProfiles.map((profile, index) => (
             <motion.div
               key={profile.id}
@@ -72,7 +72,7 @@ const MatchPage = () => {
               initial={{
                 opacity: 0,
                 scale: 0.5,
-                top: isMobile ? "80%" : "65%",
+                top: "50%",
                 y: "-50%",
                 rotateY: 180,
                 x: 0,
@@ -81,7 +81,7 @@ const MatchPage = () => {
               animate={{
                 opacity: 1,
                 scale: 1,
-                top: isMobile ? "80%" : "65%",
+                top: "50%",
                 y: "-50%",
                 rotateY: 0,
                 x: isMobile ? `${(index - 2) * 15}px` : `${(index - 2) * 40}px`,
@@ -95,7 +95,7 @@ const MatchPage = () => {
               style={{ zIndex: packProfiles.length - index }}
             >
               <div
-                className="relative w-full h-[420px] sm:h-[480px] md:h-[520px] rounded-xl p-[10px] shadow-2xl overflow-hidden"
+                className="relative w-full h-[420px] sm:h-[480px] md:h-[520px] rounded-xl p-[10px] shadow-xl overflow-hidden"
                 style={{ background: getRarityGradient(profile.rarity) }}
               >
                 <div
@@ -160,7 +160,7 @@ const MatchPage = () => {
         <>
           {shouldFetchBoosters ? (
             <>
-              <div className="text-primary-foreground mb-4">Chargement des profils...</div>
+              <Loader />
               <ProfileGenerator
                 count={5}
                 onProfilesLoaded={handleProfilesLoadedFromGenerator}

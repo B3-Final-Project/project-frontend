@@ -1,7 +1,3 @@
-import { clsx } from "clsx";
-import { motion } from 'framer-motion';
-import { Calendar, MapPin } from 'lucide-react';
-import Image from "next/image";
 import { useEffect, useRef, useState } from 'react';
 
 interface UserCard {
@@ -23,16 +19,16 @@ const PackOpener = ({ onPackOpened, profiles = [] }: PackOpenerProps) => {
   const [isOpening, setIsOpening] = useState(false);
   const [holdProgress, setHoldProgress] = useState(0);
   const [isHolding, setIsHolding] = useState(false);
-  const [isModalOpen, setIsModalOpen] = useState(false);
+
 
   const circleRef = useRef<HTMLDivElement>(null);
   const isHoldingRef = useRef(false);
-  const holdTimerRef = useRef<NodeJS.Timeout | null>(null);
+
   const animationFrameRef = useRef<number | null>(null);
 
   const startHoldAnimation = () => {
     let startTime = Date.now();
-    const duration = 2000; // 2 seconds to complete
+    const duration = 1500;
 
     const animate = () => {
       if (!isHoldingRef.current) {
@@ -108,9 +104,6 @@ const PackOpener = ({ onPackOpened, profiles = [] }: PackOpenerProps) => {
       if (animationFrameRef.current) {
         cancelAnimationFrame(animationFrameRef.current);
       }
-      if (holdTimerRef.current) {
-        clearTimeout(holdTimerRef.current);
-      }
     };
   }, []);
 
@@ -135,73 +128,13 @@ const PackOpener = ({ onPackOpened, profiles = [] }: PackOpenerProps) => {
     }, 1000);
   };
 
-  const handleCardClick = (_profile: UserCard) => {
-    setIsModalOpen(true);
-  };
 
   return (
-    <>
-      <div
-        className={clsx(
-          'pokemon-pack-3d relative mb-8 cursor-pointer select-none',
-          isHolding ? 'holding' : '',
-          isOpening ? 'opening' : ''
-        )}
-      >
-        {profiles && profiles.length > 0 && (
-          <div className="profiles-grid grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mt-8">
-            {profiles.map((profile) => (
-              <motion.div
-                key={profile.id}
-                className="profile-card cursor-pointer bg-gradient-to-br from-pink-500 to-purple-600 rounded-xl p-1 shadow-lg"
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.98 }}
-                onClick={() => handleCardClick(profile)}
-                style={{
-                  width: 'calc(100% - 1rem)',
-                  maxWidth: '350px',
-                  margin: '0 auto'
-                }}
-              >
-                <div className="card-inner bg-white rounded-lg p-4 h-full flex flex-col">
-                  {profile.image && (
-                    <div className="relative profile-image mb-3 rounded-lg overflow-hidden">
-                      <Image fill={true} src={profile.image} alt={profile.name} className="w-full h-40 object-cover" />
-                    </div>
-                  )}
-                  <div className="flex justify-between items-center mb-3">
-                    <div className="rounded-full bg-gradient-to-r from-pink-500 to-purple-600 text-primary-foreground px-3 py-1 text-xs  shadow-md flex items-center gap-1">
-                      <Calendar className="w-3 h-3" />
-                      {profile.age} ans
-                    </div>
-                    <div className="rounded-full bg-gradient-to-r from-pink-500 to-purple-600 text-primary-foreground px-3 py-1 text-xs  shadow-md flex items-center gap-1">
-                      <MapPin className="w-3 h-3" />
-                      {profile.location}
-                    </div>
-                  </div>
-                  <h3 className="mb-2 text-background">{profile.name}</h3>
-                  <motion.button
-                    className="mt-3 w-full py-2 rounded-lg bg-gradient-to-r from-pink-500 to-purple-600 text-primary-foreground text-sm "
-                    whileHover={{ scale: 1.03 }}
-                    whileTap={{ scale: 0.97 }}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleCardClick(profile);
-                    }}
-                  >
-                    Voir le profil
-                  </motion.button>
-                </div>
-              </motion.div>
-            ))}
-          </div>
-        )}
-
-      </div>
+    <div className="flex flex-col items-center justify-center w-full relative">
 
       <div
         ref={circleRef}
-        className="w-[200px] h-[200px] mb-[75px] rounded-full bg-primary/20 flex items-center justify-center cursor-pointer shadow-lg select-none"
+        className="w-[200px] h-[200px] rounded-full bg-primary/20 flex items-center justify-center cursor-pointer shadow-lg select-none fixed mb-[75px]"
         onPointerDown={handlePointerDown}
         onPointerUp={handlePointerUp}
         onPointerCancel={handlePointerCancel}
@@ -216,7 +149,7 @@ const PackOpener = ({ onPackOpened, profiles = [] }: PackOpenerProps) => {
           </div>
         </div>
       </div>
-    </>
+    </div>
   );
 };
 

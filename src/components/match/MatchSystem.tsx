@@ -11,12 +11,12 @@ import ControlButtons from './ControlButtons';
 
 import { ProfileCardType } from "@/components/match/ProfileGenerator";
 import { useMatchActions } from '@/hooks/react-query/matches';
+import { Loader } from 'lucide-react';
 import MatchAnimation from './MatchAnimation';
 import MatchCounters from './MatchCounters';
 import MatchListModal from './MatchListModal';
 import NonMatchListModal from './NonMatchListModal';
 import ProfileCard from './ProfileCard';
-import RejectAnimation from './RejectAnimation';
 
 type MatchSystemProps = {
   profiles: ProfileCardType[];
@@ -42,6 +42,7 @@ export default function MatchSystem({ profiles }: MatchSystemProps) {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const [isLoading, setIsLoading] = useState(true);
+  const [isProcessing, setIsProcessing] = useState(false);
   const [packStatus, setPackStatus] = useState({
     canOpen: true,
     remainingPacks: MAX_PACKS_PER_WINDOW,
@@ -135,28 +136,38 @@ export default function MatchSystem({ profiles }: MatchSystemProps) {
 
 
   const handleMatch = (profile: ProfileCardType) => {
+    if (isProcessing) return; // Evite les clics multiples
+    setIsProcessing(true);
+
     likeMatch(profile.id);
 
     setMatchedProfile(profile);
     setShowMatchAnimation(true);
     const updatedMatches = [...matches, profile];
     setMatches(updatedMatches);
+
     setTimeout(() => {
       setShowMatchAnimation(false);
       setMatchedProfile(null);
       moveToNextCard();
+      setIsProcessing(false); // Réactive les boutons
     }, 1500);
   };
 
   const handleReject = (profile: ProfileCardType) => {
+    if (isProcessing) return; // Evite les clics multiples
+    setIsProcessing(true);
+
     passMatch(profile.id);
 
     setShowRejectAnimation(true);
     const updatedNonMatches = [...nonMatches, profile];
     setNonMatches(updatedNonMatches);
+
     setTimeout(() => {
       setShowRejectAnimation(false);
       moveToNextCard();
+      setIsProcessing(false); // Réactive les boutons
     }, 1000);
   };
 
@@ -205,7 +216,7 @@ export default function MatchSystem({ profiles }: MatchSystemProps) {
   return (
     <div className="relative min-h-screen w-full overflow-hidden">
       <div className="container mx-auto px-4 py-6 sm:py-10 relative z-10 flex flex-col items-center w-full h-screen">
-        <div className="h-12 sm:h-16 relative w-full">
+        {/* <div className="h-12 sm:h-16 relative w-full">
           <AnimatePresence>
             {showRejectAnimation && (
               <div className="absolute top-1/2 left-0 right-0 flex justify-center z-50 -translate-y-1/2">
@@ -213,7 +224,7 @@ export default function MatchSystem({ profiles }: MatchSystemProps) {
               </div>
             )}
           </AnimatePresence>
-        </div>
+        </div> */}
         <MatchCounters
           matchesCount={matches.length}
           nonMatchesCount={nonMatches.length}
@@ -239,10 +250,7 @@ export default function MatchSystem({ profiles }: MatchSystemProps) {
               openModal={openModal}
             />
           ) : (
-            <div className="flex flex-col items-center justify-center h-full">
-              <p className="text-gray-500 text-lg">Tous les profils ont été vus.</p>
-              <p className="text-gray-500">Redirection vers la page des boosters...</p>
-            </div>
+            <Loader />
           )}
         </div>
         {currentProfile && (

@@ -17,7 +17,7 @@ export default function MatchCounters({
   setShowNonMatchList
 }: MatchCountersProps) {
   return (
-    <div className="flex justify-between w-full max-w-xs sm:max-w-sm md:max-w-md">
+    <div className="flex justify-between w-full max-w-xs sm:max-w-sm md:max-w-md ">
       <motion.div
         className="flex items-center gap-2 bg-white/10 backdrop-blur-md p-2 rounded-full cursor-pointer"
         whileHover={{ scale: 1.05 }}
