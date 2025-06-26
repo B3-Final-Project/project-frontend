@@ -1,10 +1,11 @@
 import { removeImage, sendImage } from "@/lib/utils";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import { ProfileRouter } from "@/lib/routes/profiles";
 import { UpdateProfileDto } from "@/lib/routes/profiles/dto/update-profile.dto";
 import { toast } from "@/hooks/use-toast";
 import { useRouter } from "next/navigation";
+import { GetProfileResponse } from "@/lib/routes/profiles/response/get-profile.response";
 
 // Fetch a single profile
 export function useProfileQuery(enabled: boolean = true) {
@@ -16,11 +17,46 @@ export function useProfileQuery(enabled: boolean = true) {
   });
 }
 
-// Fetch all profiles
+// Fetch a profile by ID
+export function useProfileByIdMutation(id: string) {
+  return useMutation(
+    {
+      mutationKey: ["profile", id],
+      mutationFn: async () => ProfileRouter.getProfileById(undefined, {id}),
+      onSuccess: (data: GetProfileResponse) => {
+        return data;
+      },
+      onError: (error: unknown) => {
+        console.error("Failed to fetch profile by ID", error);
+        toast({
+          title: "Profile not found",
+          description: "The requested profile could not be found.",
+          variant: "destructive",
+        });
+      },
+    }
+  )
+}
+
+// Fetch all profiles with infinite scrolling
 export function useAllProfilesQuery() {
-  return useQuery({
+  return useInfiniteQuery({
     queryKey: ["profiles"],
-    queryFn: () => ProfileRouter.getAllProfiles(),
+    queryFn: async ({ pageParam = 0 }) => {
+      return ProfileRouter.getAllProfiles({
+        offset: pageParam,
+        limit: 10
+      });
+    },
+    getNextPageParam: (lastPage, allPages) => {
+      // If the last page has fewer items than the limit, we've reached the end
+      if (lastPage.profiles.length < 10) {
+        return undefined;
+      }
+      // Return the next offset
+      return allPages.length * 10;
+    },
+    initialPageParam: 0,
   });
 }
 
