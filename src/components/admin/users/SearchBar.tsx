@@ -1,33 +1,44 @@
-'use client'
-import { Download, Search } from "lucide-react"
-import { useState } from "react"
+import { Download } from "lucide-react"
+import { Button } from "@/components/ui/button"
 
 function SearchBar() {
-  const [searchTerm, setSearchTerm] = useState('')
+  const handleExport = () => {
+    const timestamp = new Date().toISOString().split('T')[0];
+    const filename = `users-export-${timestamp}.csv`;
+
+    // Create CSV headers
+    const headers = ['User ID', 'Name', 'Surname', 'Email', 'Status', 'Report Count', 'Created At'];
+    const csvContent = headers.join(',') + '\n';
+
+    // Create a blob and download link
+    const blob = new Blob([csvContent], { type: 'text/csv' });
+    const url = window.URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = filename;
+    link.click();
+    window.URL.revokeObjectURL(url);
+  };
+
   return (
     <div className="space-y-6">
-    <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
-      <div className="flex flex-col md:flex-row gap-4">
-        <div className="flex-1 relative">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
-          <input
-            type="text"
-            placeholder="Search users by name..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-          />
+      {/* Header Actions */}
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div>
+          <h1 className="text-2xl font-bold text-gray-900">User Management</h1>
+          <p className="text-gray-600">Manage users, view profiles, and handle reports</p>
         </div>
-        <div className="flex gap-2">
-          <button className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
-            <Download size={18} />
-            Export
-          </button>
-        </div>
+        <Button
+          onClick={handleExport}
+          className="flex items-center gap-2"
+          variant="outline"
+        >
+          <Download size={18} />
+          Export Data
+        </Button>
       </div>
     </div>
-  </div>
   )
 }
 
-export default SearchBar; 
+export default SearchBar;
