@@ -298,6 +298,7 @@ export default function MatchSystem({ profiles }: MatchSystemProps) {
           description={selectedCard.description}
           isOpen={isModalOpen}
           onClose={closeModal}
+          images={selectedCard.images || ['/vintage.png', '/vintage.png', '/vintage.png']}
           image_url={selectedCard.image_url}
           rarity={selectedCard.rarity}
           interests={selectedCard.interests?.map(interest => interest.name)} // Map to array of names

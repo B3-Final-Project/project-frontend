@@ -92,6 +92,7 @@ export function ProfileHeader() {
           age={query.data.user.age}
           location={typeof query.data.user.location === 'string' ? query.data.user.location : query.data.profile.city || 'Paris'}
           description={query.data.profile.interests?.map(interest => interest.description).join(', ') || "Découvrez mes centres d'intérêt !"}
+          images={query.data.profile.images || ['/vintage.png', '/vintage.png', '/vintage.png']}
           image_url={(query.data.profile.images && query.data.profile.images.length > 0 && query.data.profile.images[0]) || '/vintage.png'}
           interests={query.data.profile.interests?.map(interest => interest.description)}
           languages={query.data.profile.languages}
