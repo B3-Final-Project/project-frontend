@@ -22,6 +22,8 @@ const MatchPage = () => {
   const [packProfiles, setPackProfiles] = useState<ProfileCardType[]>([]);
   const [showMatchSystem, setShowMatchSystem] = useState(false);
   const [showCardAnimation, setShowCardAnimation] = useState(false);
+  const [cardsExitAnimation, setCardsExitAnimation] = useState(false);
+  const [matchSystemEntrance, setMatchSystemEntrance] = useState(false);
   const isMobile = useIsMobile();
   const [shouldFetchBoosters, setShouldFetchBoosters] = useState(false);
   const [isVerified, setIsVerified] = useState(false);
@@ -42,8 +44,16 @@ const MatchPage = () => {
     setShouldFetchBoosters(false);
 
     setTimeout(() => {
-      setShowMatchSystem(true);
-      setShowCardAnimation(false);
+      setCardsExitAnimation(true);
+
+      setTimeout(() => {
+        setMatchSystemEntrance(true);
+        setShowMatchSystem(true);
+
+        setTimeout(() => {
+          setShowCardAnimation(false);
+        }, 300);
+      }, 250);
     }, 3000);
   };
 
@@ -58,11 +68,22 @@ const MatchPage = () => {
 
     <div className="w-full h-full flex items-center justify-center">
       {showMatchSystem ? (
-        <div className="w-full h-full">
+        <motion.div
+          className="w-full h-full"
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{
+            opacity: matchSystemEntrance ? 1 : 0,
+            scale: matchSystemEntrance ? 1 : 0.9,
+          }}
+          transition={{
+            duration: 0.5,
+            ease: "easeInOut"
+          }}
+        >
           <MatchSystem
             profiles={packProfiles}
           />
-        </div>
+        </motion.div>
       ) : showCardAnimation ? (
         <div className="relative w-full h-full flex items-center justify-center">
           {packProfiles.map((profile, index) => (
@@ -79,18 +100,24 @@ const MatchPage = () => {
                 zIndex: packProfiles.length - index
               }}
               animate={{
-                opacity: 1,
-                scale: 1,
+                opacity: cardsExitAnimation ? 0 : 1,
+                scale: cardsExitAnimation ? 0.9 : 1,
                 top: "50%",
                 y: "-50%",
-                rotateY: 0,
+                rotateY: cardsExitAnimation ? 10 : 0,
                 x: isMobile ? `${(index - 2) * 15}px` : `${(index - 2) * 40}px`,
-                transition: {
-                  delay: index * 0.2 + 0.5,
-                  type: "spring",
-                  stiffness: 300,
-                  damping: 20
-                }
+                transition: cardsExitAnimation
+                  ? {
+                    duration: 0.3,
+                    ease: "easeOut",
+                    delay: 0.05 * (packProfiles.length - index - 1)
+                  }
+                  : {
+                    delay: index * 0.2 + 0.5,
+                    type: "spring",
+                    stiffness: 300,
+                    damping: 20
+                  }
               }}
               style={{ zIndex: packProfiles.length - index }}
             >
@@ -121,8 +148,8 @@ const MatchPage = () => {
                         </div>
                       )}
                     </div>
-                    <div className="text-primary-foreground">
-                      <h2 className=" drop-shadow-md mb-1">{profile.name}</h2>
+                    <div className="text-background">
+                      <h2 className="text-background drop-shadow-md mb-1">{profile.name}</h2>
                       <div className="flex flex-wrap gap-2 pt-1">
                         {profile.languages && profile.languages.length > 0 && (
                           <div className="flex items-center gap-1 text-sm bg-white/10 text-primary-foreground px-2 py-1 rounded-full">
