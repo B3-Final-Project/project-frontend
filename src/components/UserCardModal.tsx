@@ -12,49 +12,32 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useReportUserMutation } from "@/hooks/react-query/admin";
+import {
+  ProfileCardType
+} from "@/lib/routes/profiles/dto/profile-card-type.dto";
 
 interface UserCardModalProps {
-  readonly name: string;
-  readonly age?: number;
-  readonly location?: string;
+  user: ProfileCardType
   readonly isOpen: boolean;
-  readonly onCloseAction: () => void;
-  readonly rarity?: RarityEnum;
-  readonly image_url?: string;
-  readonly interests?: Interest[];
-  readonly languages?: string[];
-  readonly zodiac?: string;
-  readonly smoking?: string;
-  readonly drinking?: string;
-  readonly profileId?: string; // Add profileId for reporting
+  onCloseAction(): void;
 }
 
 export function UserCardModal({
-  name,
-  age,
-  location,
   isOpen,
   onCloseAction,
-  rarity,
-  image_url,
-  interests,
-  languages,
-  zodiac,
-  smoking,
-  drinking,
-  profileId,
+  user
 }: Readonly<UserCardModalProps>) {
   const [isFlipped, setIsFlipped] = useState(false);
   const [isReportModalOpen, setIsReportModalOpen] = useState(false);
   const [reportReason, setReportReason] = useState("");
   const [reportCategory, setReportCategory] = useState("");
   const modalRef = useRef<HTMLDivElement>(null);
-  
+
   const reportMutation = useReportUserMutation();
 
   const reportCategories = [
     "Inappropriate content",
-    "Fake profile", 
+    "Fake profile",
     "Harassment",
     "Spam",
     "Underage user",
@@ -62,13 +45,13 @@ export function UserCardModal({
   ];
 
   const handleReportSubmit = () => {
-    if (!profileId) return;
-    
+    if (!user.id) return;
+
     const fullReason = reportCategory ? `${reportCategory}: ${reportReason.trim()}` : reportReason.trim();
     if (fullReason) {
-      reportMutation.mutate({ 
-        userId: profileId, 
-        reason: fullReason 
+      reportMutation.mutate({
+        userId: user.id,
+        reason: fullReason
       });
       setReportReason("");
       setReportCategory("");
@@ -164,33 +147,33 @@ export function UserCardModal({
             {/* Front side of the card */}
             <div
               className="w-full h-full rounded-xl p-[10px] absolute backface-hidden shadow-2xl overflow-hidden"
-              style={{ background: getRarityGradient(rarity) }}
+              style={{ background: getRarityGradient(user.rarity) }}
             >
               <div
                 className="w-full h-full rounded-lg overflow-hidden"            style={{
-              backgroundImage: `url(${image_url ?? '/vintage.png'})`,
+              backgroundImage: `url(${user.image_url ?? '/vintage.png'})`,
               backgroundSize: "cover",
               backgroundPosition: "center",
             }}
               >
                 <div className="w-full h-full flex flex-col justify-between bg-gradient-to-t from-black/70 via-transparent to-transparent p-3">
                   <div className="flex justify-between items-start">
-                    {age && (
+                    {user.age && (
                       <div className="flex items-center gap-1 text-sm bg-white/10 text-white px-2 py-1 rounded-full">
                         <User size={16} className="text-blue-300" />
-                        {age} ans
+                        {user.age} ans
                       </div>
                     )}
                     {location && (
                       <div className="flex items-center gap-1 text-sm bg-white/10 text-white px-2 py-1 rounded-full">
                         <MapPin size={16} className="text-red-400" />
-                        {location}
+                        {user.location}
                       </div>
                     )}
                   </div>
-                  
+
                   {/* Report Button */}
-                  {profileId && (
+                  {user.id && (
                     <div className="flex justify-end">
                       <button
                         onClick={(e) => {
@@ -204,32 +187,32 @@ export function UserCardModal({
                       </button>
                     </div>
                   )}
-                  
+
                   <div className="text-white">
-                    <h2 className="text-xl font-bold drop-shadow-md mb-1">{name}</h2>
+                    <h2 className="text-xl font-bold drop-shadow-md mb-1">{user.name}</h2>
                     <div className="flex flex-wrap gap-2 pt-1">
-                      {languages && languages.length > 0 && (
+                      {user.languages && user.languages.length > 0 && (
                         <div className="flex items-center gap-1 text-sm bg-white/10 text-white px-2 py-1 rounded-full">
                           <Languages size={16} className="text-yellow-300" />
-                          {languages.slice(0, 2).join(', ')}
+                          {user.languages.slice(0, 2).join(', ')}
                         </div>
                       )}
-                      {zodiac && (
+                      {user.zodiac && (
                         <div className="flex items-center gap-1 text-sm bg-white/10 text-white px-2 py-1 rounded-full">
                           <Moon size={16} className="text-cyan-300" />
-                          {zodiac}
+                          {user.zodiac}
                         </div>
                       )}
-                      {smoking && (
+                      {user.smoking && (
                         <div className="flex items-center gap-1 text-sm bg-white/10 text-white px-2 py-1 rounded-full">
                           <Cigarette size={16} className="text-red-300" />
-                          {smoking}
+                          {user.smoking}
                         </div>
                       )}
-                      {drinking && (
+                      {user.drinking && (
                         <div className="flex items-center gap-1 text-sm bg-white/10 text-white px-2 py-1 rounded-full">
                           <Wine size={16} className="text-purple-300" />
-                          {drinking}
+                          {user.drinking}
                         </div>
                       )}
                     </div>
@@ -241,7 +224,7 @@ export function UserCardModal({
             {/* Back side of the card */}
             <div
               className="w-full h-full rounded-xl p-[10px] absolute backface-hidden rotate-y-180 shadow-2xl overflow-hidden"
-              style={{ background: getRarityGradient(rarity) }}
+              style={{ background: getRarityGradient(user.rarity) }}
             >
               <div className="w-full h-full rounded-lg bg-gradient-to-b from-black/90 to-black/70 flex flex-col justify-center p-7 text-white">
                 <div className="flex items-center gap-1 sm:gap-2 mb-3 sm:mb-4">
@@ -249,9 +232,9 @@ export function UserCardModal({
                   <h3 className="text-xl sm:text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-500">Interests</h3>
                 </div>
                 <div className="mb-3 text-gray-200 leading-relaxed overflow-auto max-h-[300px] custom-scrollbar">
-                  {interests && interests.length > 0 && (
+                  {user.interests && user.interests.length > 0 && (
                     <div className="flex flex-wrap gap-1 mt-1">
-                      {interests.map((interest) => (
+                      {user.interests.map((interest) => (
                         <span
                           key={interest.id}
                           className="bg-white/10 text-white px-2 py-1 rounded-full text-sm"
@@ -273,12 +256,12 @@ export function UserCardModal({
           </motion.div>
         </motion.div>
       </motion.div>
-      
+
       {/* Report Modal */}
       <Dialog open={isReportModalOpen} onOpenChange={setIsReportModalOpen}>
         <DialogContent className="max-w-md">
           <DialogHeader>
-            <DialogTitle>Report User: {name}</DialogTitle>
+            <DialogTitle>Report User: {user.name}</DialogTitle>
           </DialogHeader>
           <div className="space-y-4 p-4">
             <div>

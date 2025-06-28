@@ -3,11 +3,11 @@
 import { AlertTriangle, Ban, Eye, ShieldCheck } from "lucide-react";
 import { useBanUserMutation, useUnbanUserMutation } from "@/hooks/react-query/admin";
 
-import { AdminUserProfileModal } from "./AdminUserProfileModal";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ColumnDef } from '@tanstack/react-table'
 import { UserManagementDto } from "@/lib/routes/admin/dto/user-management.dto";
+import { UserProfileModalLoader } from "./UserProfileModalLoader";
 import { useState } from "react";
 
 export const UserManagementCollumns: ColumnDef<UserManagementDto>[] = [
@@ -124,7 +124,7 @@ function UserActionsCell({ user }: { readonly user: UserManagementDto }) {
         )}
       </Button>
 
-      <AdminUserProfileModal
+      <UserProfileModalLoader
         user={user}
         isOpen={showProfileModal}
         onClose={() => setShowProfileModal(false)}

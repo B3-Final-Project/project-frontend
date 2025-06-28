@@ -280,19 +280,9 @@ export default function MatchSystem({ profiles }: MatchSystemProps) {
       </div>
       {selectedCard && (
         <UserCardModal
-          name={selectedCard.name}
-          age={selectedCard.age}
-          location={selectedCard.location}
+          user={selectedCard}
           isOpen={isModalOpen}
           onCloseAction={closeModal}
-          image_url={selectedCard.image_url}
-          rarity={selectedCard.rarity}
-          interests={selectedCard.interests}
-          languages={selectedCard.languages}
-          zodiac={selectedCard.zodiac}
-          smoking={selectedCard.smoking}
-          drinking={selectedCard.drinking}
-          profileId={selectedCard.id}
         />
       )}
     </div>
