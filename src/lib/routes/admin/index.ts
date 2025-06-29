@@ -22,7 +22,7 @@ export class AdminRouter {
 
   // Report a user
   public static readonly reportUser = createFetcher<AdminActionResponse, ReportDto>(
-    RESTServerRoute.REST_ADMIN_REPORT_USER,
+    RESTServerRoute.REST_USER_REPORTS,
     "POST"
   );
 }
