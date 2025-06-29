@@ -1,7 +1,6 @@
-import { GetProfileResponse } from "@/lib/routes/profiles/response/get-profile.response";
 import { RESTServerRoute } from "@/lib/routes/server";
 import { createFetcher } from "@/lib/utils";
-import { ReportDto, ReportReason } from "./dto/report.dto";
+import { ReportDto } from "./dto/report.dto";
 
 export interface AdminActionResponse {
   success: boolean;
@@ -19,12 +18,6 @@ export class AdminRouter {
   public static readonly unbanUser = createFetcher<AdminActionResponse>(
     RESTServerRoute.REST_ADMIN_UNBAN_USER,
     "POST"
-  );
-
-  // Get user profile for admin view
-  public static readonly getUserProfile = createFetcher<GetProfileResponse>(
-    RESTServerRoute.REST_ADMIN_USER_PROFILE,
-    "GET"
   );
 
   // Report a user
