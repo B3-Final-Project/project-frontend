@@ -25,4 +25,10 @@ export class AdminRouter {
     RESTServerRoute.REST_ADMIN_USER_PROFILE,
     "GET"
   );
+
+  // Report a user
+  public static readonly reportUser = createFetcher<AdminActionResponse, {reason: string}>(
+    RESTServerRoute.REST_ADMIN_REPORT_USER,
+    "POST"
+  );
 }

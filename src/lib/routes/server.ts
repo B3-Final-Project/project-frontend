@@ -18,4 +18,5 @@ export enum RESTServerRoute {
   REST_ADMIN_BAN_USER = 'profiles/:userId/ban',
   REST_ADMIN_UNBAN_USER = 'profiles/:userId/unban',
   REST_ADMIN_USER_PROFILE = 'profiles/:userId/profile',
+  REST_ADMIN_REPORT_USER = 'profiles/:profileId/report',
 }

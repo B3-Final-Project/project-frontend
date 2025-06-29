@@ -1,20 +1,11 @@
 "use client";
 
+import { Cigarette, Info, Languages, MapPin, Moon, User, Wine } from 'lucide-react';
+import { useCallback, useEffect, useRef, useState } from "react";
+import { ProfileCardType } from "@/lib/routes/profiles/dto/profile-card-type.dto";
+import { ReportUserModal } from "./ReportUserModal";
 import { getRarityGradient } from '@/utils/rarityHelper';
 import { motion } from 'framer-motion';
-import { Cigarette, Info, Languages, MapPin, Moon, User, Wine, Flag } from 'lucide-react';
-import { useCallback, useEffect, useRef, useState } from "react";
-import { Interest } from "@/lib/routes/profiles/interfaces/interest.interface";
-import { RarityEnum } from "@/lib/routes/booster/dto/rarity.enum";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { useReportUserMutation } from "@/hooks/react-query/admin";
-import {
-  ProfileCardType
-} from "@/lib/routes/profiles/dto/profile-card-type.dto";
 
 interface UserCardModalProps {
   user: ProfileCardType
@@ -29,57 +20,27 @@ export function UserCardModal({
 }: Readonly<UserCardModalProps>) {
   const [isFlipped, setIsFlipped] = useState(false);
   const [isReportModalOpen, setIsReportModalOpen] = useState(false);
-  const [reportReason, setReportReason] = useState("");
-  const [reportCategory, setReportCategory] = useState("");
   const modalRef = useRef<HTMLDivElement>(null);
 
-  const reportMutation = useReportUserMutation();
-
-  const reportCategories = [
-    "Inappropriate content",
-    "Fake profile",
-    "Harassment",
-    "Spam",
-    "Underage user",
-    "Other"
-  ];
-
-  const handleReportSubmit = () => {
-    if (!user.id) return;
-
-    const fullReason = reportCategory ? `${reportCategory}: ${reportReason.trim()}` : reportReason.trim();
-    if (fullReason) {
-      reportMutation.mutate({
-        userId: user.id,
-        reason: fullReason
-      });
-      setReportReason("");
-      setReportCategory("");
-      setIsReportModalOpen(false);
-    }
-  };
-
   const handleCardFlip = () => {
-    setIsFlipped(!isFlipped);
+    if (isReportModalOpen) return;
+    setIsFlipped((f) => !f);
   };
 
-
-  const handleClickOutside = useCallback((e: Event)=> {
+  const handleClickOutside = useCallback((e: Event) => {
+    if (isReportModalOpen) return;
     if (modalRef.current && !modalRef.current.contains(e.target as Node)) {
       onCloseAction();
-      setIsFlipped(false)
+      setIsFlipped(false);
     }
-  }, [onCloseAction])
+  }, [isReportModalOpen, onCloseAction]);
 
   useEffect(() => {
     if (isOpen) {
-      document.addEventListener("mousedown", handleClickOutside);
-    } else {
-      document.removeEventListener("mousedown", handleClickOutside);
+      document.addEventListener("mousedown", handleClickOutside, true);
     }
-
     return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("mousedown", handleClickOutside, true);
     };
   }, [handleClickOutside, isOpen]);
 
@@ -164,29 +125,19 @@ export function UserCardModal({
                         {user.age} ans
                       </div>
                     )}
-                    {location && (
+                    {/* Report Modal */}
+                    <ReportUserModal
+                      open={isReportModalOpen}
+                      setIsOpen={setIsReportModalOpen}
+                      user={user}
+                    />
+                    {user.location && (
                       <div className="flex items-center gap-1 text-sm bg-white/10 text-white px-2 py-1 rounded-full">
                         <MapPin size={16} className="text-red-400" />
                         {user.location}
                       </div>
                     )}
                   </div>
-
-                  {/* Report Button */}
-                  {user.id && (
-                    <div className="flex justify-end">
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setIsReportModalOpen(true);
-                        }}
-                        className="flex items-center gap-1 text-sm bg-red-500/80 hover:bg-red-600/90 text-white px-2 py-1 rounded-full transition-colors shadow-lg"
-                      >
-                        <Flag size={14} />
-                        Report
-                      </button>
-                    </div>
-                  )}
 
                   <div className="text-white">
                     <h2 className="text-xl font-bold drop-shadow-md mb-1">{user.name}</h2>
@@ -257,61 +208,7 @@ export function UserCardModal({
         </motion.div>
       </motion.div>
 
-      {/* Report Modal */}
-      <Dialog open={isReportModalOpen} onOpenChange={setIsReportModalOpen}>
-        <DialogContent className="max-w-md">
-          <DialogHeader>
-            <DialogTitle>Report User: {user.name}</DialogTitle>
-          </DialogHeader>
-          <div className="space-y-4 p-4">
-            <div>
-              <Label htmlFor="report-category">Report Category</Label>
-              <Select value={reportCategory} onValueChange={setReportCategory}>
-                <SelectTrigger className="mt-2">
-                  <SelectValue placeholder="Select a category" />
-                </SelectTrigger>
-                <SelectContent>
-                  {reportCategories.map((category) => (
-                    <SelectItem key={category} value={category}>
-                      {category}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-            <div>
-              <Label htmlFor="report-reason">Additional Details</Label>
-              <Textarea
-                id="report-reason"
-                placeholder="Please provide additional details about the report..."
-                value={reportReason}
-                onChange={(e) => setReportReason(e.target.value)}
-                rows={4}
-                className="mt-2"
-              />
-            </div>
-            <div className="flex gap-2 justify-end">
-              <Button
-                variant="outline"
-                onClick={() => {
-                  setIsReportModalOpen(false);
-                  setReportReason("");
-                  setReportCategory("");
-                }}
-              >
-                Cancel
-              </Button>
-              <Button
-                onClick={handleReportSubmit}
-                disabled={!reportCategory || reportMutation.isPending}
-                className="bg-red-600 hover:bg-red-700"
-              >
-                {reportMutation.isPending ? "Submitting..." : "Submit Report"}
-              </Button>
-            </div>
-          </div>
-        </DialogContent>
-      </Dialog>
+
     </motion.div>
   );
 }

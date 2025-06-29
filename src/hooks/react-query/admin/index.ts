@@ -66,21 +66,16 @@ export function useAdminUserProfileQuery(userId: string, enabled: boolean = true
 }
 
 // Hook to report a user (placeholder for future API implementation)
-export function useReportUserMutation() {
+export function useReportUserMutation(profileID: string) {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async ({ userId, reason }: { userId: string; reason: string }) => {
-      // Placeholder implementation - in a real app, this would call an API endpoint
-      // For now, we'll just simulate a successful report
-      await new Promise((resolve) => setTimeout(resolve, 1000)); // Simulate API delay
-      return { message: "Report submitted successfully", userId, reason };
-    },
+    mutationFn:async (data: {reason: string}) => AdminRouter.reportUser(data, { profileID: profileID}),
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ["profiles"] });
       toast({
         title: "Report submitted",
-        description: `Report for user has been submitted successfully. Reason: ${data.reason}`,
+        description: `Report for user has been submitted successfully. Reason: ${data.message}`,
       });
     },
     onError: (error) => {
