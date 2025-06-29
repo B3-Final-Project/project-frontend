@@ -56,7 +56,7 @@ export function ProfileAvatar() {
           </button>
         </div>
       )}
-      {userCard && userCard && (
+      {userCard && (
         <UserCardModal
           isOpen={isUserCardModalOpen}
           onCloseAction={handleCloseUserCardModal}

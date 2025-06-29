@@ -40,7 +40,7 @@ function SearchBar({ userData, onSearch, searchTerm = '', isSearching = false }:
 
       // Create CSV headers
       const headers = ['User ID', 'Profile ID', 'Name', 'Surname', 'Status', 'Report Count', 'Created At'];
-      
+
       // Convert user data to CSV rows
       const csvRows = userData.map(user => [
         user.userId,
@@ -94,13 +94,13 @@ function SearchBar({ userData, onSearch, searchTerm = '', isSearching = false }:
           onClick={handleExport}
           className="flex items-center gap-2"
           variant="outline"
-          disabled={isExporting || !userData || userData.length === 0}
+          disabled={isExporting ?? !userData ?? userData.length === 0}
         >
           <Download size={18} />
           {isExporting ? 'Exporting...' : 'Export Data'}
         </Button>
       </div>
-      
+
       {/* Search Bar */}
       <div className="flex items-center gap-2 max-w-md">
         <div className="relative flex-1">

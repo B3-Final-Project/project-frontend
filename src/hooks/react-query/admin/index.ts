@@ -16,7 +16,7 @@ export function useBanUserMutation() {
       queryClient.invalidateQueries({ queryKey: ["profiles"] });
       toast({
         title: "User banned",
-        description: data.message || "User has been banned successfully.",
+        description: data.message ?? "User has been banned successfully.",
       });
     },
     onError: (error) => {
@@ -42,7 +42,7 @@ export function useUnbanUserMutation() {
       queryClient.invalidateQueries({ queryKey: ["profiles"] });
       toast({
         title: "User unbanned",
-        description: data.message || "User has been unbanned successfully.",
+        description: data.message ?? "User has been unbanned successfully.",
       });
     },
     onError: (error) => {

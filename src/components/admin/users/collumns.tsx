@@ -114,7 +114,7 @@ function UserActionsCell({ user }: { readonly user: UserManagementDto }) {
         variant={user.isBanned ? "default" : "destructive"}
         size="sm"
         onClick={handleBanToggle}
-        disabled={banUserMutation.isPending || unbanUserMutation.isPending}
+        disabled={banUserMutation.isPending ?? unbanUserMutation.isPending}
         className="h-8 px-2"
       >
         {user.isBanned ? (
