@@ -19,4 +19,17 @@ export enum RESTServerRoute {
   REST_ADMIN_UNBAN_USER = 'profiles/:userId/unban',
   REST_ADMIN_USER_PROFILE = 'profiles/:userId/profile',
   REST_ADMIN_REPORT_USER = 'profiles/:profileId/report',
+  // Stats routes
+  REST_STATS_APP = 'stats/app',
+  REST_STATS_BOOSTERS = 'stats/boosters',
+  REST_STATS_DETAILED = 'stats/detailed',
+  REST_STATS_USERS_COUNT = 'stats/users/count',
+  REST_STATS_MATCHES_COUNT = 'stats/matches/count',
+  REST_STATS_PASSES_COUNT = 'stats/passes/count',
+  REST_STATS_LIKES_COUNT = 'stats/likes/count',
+  REST_STATS_BOOSTERS_USAGE_TOTAL = 'stats/boosters/usage/total',
+  REST_STATS_DEMOGRAPHICS = 'stats/demographics',
+  REST_STATS_ENGAGEMENT = 'stats/engagement',
+  REST_STATS_ACTIVITY = 'stats/activity',
+  REST_STATS_COMPREHENSIVE = 'stats/comprehensive',
 }

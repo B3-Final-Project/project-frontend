@@ -14,6 +14,7 @@ const relationshipTypeBg: Record<RelationshipTypeEnum, string> = {
   [RelationshipTypeEnum.MARRIAGE]: "bg-gradient-to-br from-yellow-200 via-yellow-400 to-yellow-600",
   [RelationshipTypeEnum.FRIENDSHIP]: "bg-gradient-to-br from-green-300 via-green-400 to-green-600",
   [RelationshipTypeEnum.UNSURE]: "bg-gradient-to-br from-gray-300 via-purple-300 to-purple-500",
+  [RelationshipTypeEnum.ANY]: "bg-gradient-to-br from-gray-200 to-gray-400",
 }
 
 export function BoosterPack({ pack }: BoosterPackProps) {
