@@ -8,15 +8,17 @@ import { getRarityGradient } from '@/utils/rarityHelper';
 import { motion } from 'framer-motion';
 
 interface UserCardModalProps {
-  user: ProfileCardType
+  readonly user: ProfileCardType
   readonly isOpen: boolean;
   onCloseAction(): void;
+  readonly isConnectedUser?: boolean;
 }
 
 export function UserCardModal({
   isOpen,
   onCloseAction,
-  user
+  user,
+  isConnectedUser = false
 }: Readonly<UserCardModalProps>) {
   const [isFlipped, setIsFlipped] = useState(false);
   const [isReportModalOpen, setIsReportModalOpen] = useState(false);
@@ -125,12 +127,12 @@ export function UserCardModal({
                         {user.age} ans
                       </div>
                     )}
-                    {/* Report Modal */}
+                    {isConnectedUser &&
                     <ReportUserModal
                       open={isReportModalOpen}
                       setIsOpen={setIsReportModalOpen}
                       user={user}
-                    />
+                    />}
                     {user.location && (
                       <div className="flex items-center gap-1 text-sm bg-white/10 text-white px-2 py-1 rounded-full">
                         <MapPin size={16} className="text-red-400" />

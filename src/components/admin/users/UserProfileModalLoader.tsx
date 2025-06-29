@@ -45,6 +45,7 @@ export function UserProfileModalLoader({ user, isOpen, onClose }: UserProfileMod
       user={profileCard}
       isOpen={isOpen}
       onCloseAction={onClose}
+      isConnectedUser={true}
     />
   );
 }
