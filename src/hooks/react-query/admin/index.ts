@@ -1,7 +1,8 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 import { AdminRouter } from "@/lib/routes/admin";
 import { toast } from "@/hooks/use-toast";
+import { ReportDto } from "@/lib/routes/admin/dto/report.dto";
 
 // Hook to ban a user
 export function useBanUserMutation() {
@@ -55,22 +56,12 @@ export function useUnbanUserMutation() {
   });
 }
 
-// Hook to get user profile for admin view
-export function useAdminUserProfileQuery(userId: string, enabled: boolean = true) {
-  return useQuery({
-    queryKey: ["admin", "user-profile", userId],
-    queryFn: () => AdminRouter.getUserProfile(undefined, { userId }),
-    enabled: enabled && !!userId,
-    retry: false,
-  });
-}
-
 // Hook to report a user (placeholder for future API implementation)
 export function useReportUserMutation(profileID: string) {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn:async (data: {reason: string}) => AdminRouter.reportUser(data, { profileID: profileID}),
+    mutationFn: async (data: ReportDto) => AdminRouter.reportUser(data, { profileId: profileID}),
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ["profiles"] });
       toast({

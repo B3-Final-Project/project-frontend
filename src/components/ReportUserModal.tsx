@@ -1,13 +1,26 @@
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 import { Button } from "@/components/ui/button";
+import { Flag } from "lucide-react";
 import { Label } from "@/components/ui/label";
 import { ProfileCardType } from "@/lib/routes/profiles/dto/profile-card-type.dto";
+import { ReportReason } from "@/lib/routes/admin/dto/report.dto";
 import { Textarea } from "@/components/ui/textarea";
+import { formatReportEnum } from "@/lib/utils/enum-utils";
 import { useReportUserMutation } from "@/hooks/react-query/admin";
 import { useState } from "react";
-import { Flag } from "lucide-react";
 
 interface ReportUserModalProps {
   readonly open: boolean;
@@ -15,34 +28,30 @@ interface ReportUserModalProps {
   readonly user: ProfileCardType;
 }
 
-export function ReportUserModal({ open, setIsOpen, user }: Readonly<ReportUserModalProps>) {
+export function ReportUserModal({
+  open,
+  setIsOpen,
+  user,
+}: Readonly<ReportUserModalProps>) {
   const [reportReason, setReportReason] = useState("");
-  const [reportCategory, setReportCategory] = useState("");
+  const [reportCategory, setReportCategory] = useState<ReportReason>(
+    ReportReason.OTHER,
+  );
   const reportMutation = useReportUserMutation(user.id);
-
-  const reportCategories = [
-    "Inappropriate content",
-    "Fake profile",
-    "Harassment",
-    "Spam",
-    "Underage user",
-    "Other"
-  ];
 
   const handleReportSubmit = () => {
     if (!user.id) return;
-    const fullReason = reportCategory ? `${reportCategory}: ${reportReason.trim()}` : reportReason.trim();
-    if (fullReason) {
-      reportMutation.mutate({ reason: fullReason });
+    if (reportCategory) {
+      reportMutation.mutate({ reason: reportCategory, message: reportReason });
       setReportReason("");
-      setReportCategory("");
+      setReportCategory(ReportReason.OTHER);
       setIsOpen(false);
     }
   };
 
   const handleCancel = () => {
     setReportReason("");
-    setReportCategory("");
+    setReportCategory(ReportReason.OTHER);
     setIsOpen(false);
   };
 
@@ -63,58 +72,60 @@ export function ReportUserModal({ open, setIsOpen, user }: Readonly<ReportUserMo
           </button>
         </div>
       )}
-    <Dialog open={open} onOpenChange={setIsOpen}>
-      <DialogContent className="max-w-md">
-        <DialogHeader>
-          <DialogTitle>Report User: {user.name}</DialogTitle>
-        </DialogHeader>
-        <div className="space-y-4 p-4">
-          <div>
-            <Label htmlFor="report-category">Report Category</Label>
-            <Select value={reportCategory} onValueChange={(value) => {
-              setReportCategory(value);
-            }}>
-              <SelectTrigger className="mt-2">
-                <SelectValue placeholder="Select a category" />
-              </SelectTrigger>
-              <SelectContent>
-                {reportCategories.map((category) => (
-                  <SelectItem key={category} value={category}>
-                    {category}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+      <Dialog open={open} onOpenChange={setIsOpen}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Report User: {user.name}</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 p-4">
+            <div>
+              <Label htmlFor="report-category">Report Category</Label>
+              <Select
+                value={reportCategory.toString()}
+                onValueChange={(value) => {
+                  setReportCategory(Number(value) as ReportReason);
+                }}
+              >
+                <SelectTrigger className="mt-2">
+                  <SelectValue placeholder="Select a category" />
+                </SelectTrigger>
+                <SelectContent>
+                  {Object.values(ReportReason)
+                    .filter((v) => typeof v === "number")
+                    .map((v) => (
+                      <SelectItem key={v} value={v.toString()}>
+                        {formatReportEnum(v as ReportReason)}
+                      </SelectItem>
+                    ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <Label htmlFor="report-reason">Additional Details</Label>
+              <Textarea
+                id="report-reason"
+                placeholder="Please provide additional details about the report..."
+                value={reportReason}
+                onChange={(e) => setReportReason(e.target.value)}
+                rows={4}
+                className="mt-2"
+              />
+            </div>
+            <div className="flex gap-2 justify-end">
+              <Button variant="outline" onClick={handleCancel}>
+                Cancel
+              </Button>
+              <Button
+                onClick={handleReportSubmit}
+                disabled={!reportCategory || reportMutation.isPending}
+                className="bg-red-600 hover:bg-red-700"
+              >
+                {reportMutation.isPending ? "Submitting..." : "Submit Report"}
+              </Button>
+            </div>
           </div>
-          <div>
-            <Label htmlFor="report-reason">Additional Details</Label>
-            <Textarea
-              id="report-reason"
-              placeholder="Please provide additional details about the report..."
-              value={reportReason}
-              onChange={(e) => setReportReason(e.target.value)}
-              rows={4}
-              className="mt-2"
-            />
-          </div>
-          <div className="flex gap-2 justify-end">
-            <Button
-              variant="outline"
-              onClick={handleCancel}
-            >
-              Cancel
-            </Button>
-            <Button
-              onClick={handleReportSubmit}
-              disabled={!reportCategory || reportMutation.isPending}
-              className="bg-red-600 hover:bg-red-700"
-            >
-              {reportMutation.isPending ? "Submitting..." : "Submit Report"}
-            </Button>
-          </div>
-        </div>
-      </DialogContent>
-    </Dialog>
+        </DialogContent>
+      </Dialog>
     </>
   );
 }

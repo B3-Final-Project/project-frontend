@@ -9,6 +9,7 @@ import {
   ZodiacEnum
 } from "@/lib/routes/profiles/enums";
 import { RarityEnum } from "@/lib/routes/booster/dto/rarity.enum";
+import { ReportReason } from "../routes/admin/dto/report.dto";
 
 export function formatGenderEnum(value: number | string): string {
   if (typeof value === 'string') {
@@ -167,11 +168,7 @@ export function formatEnumByField(value: number | string, fieldName: string): st
   }
 }
 
-export function formatRarityEnum(value: number | string): string {
-  if (typeof value === 'string') {
-    value = Number(value);
-  }
-
+export function formatRarityEnum(value: RarityEnum): string {
   switch(value) {
     case RarityEnum.COMMON: return 'Common';
     case RarityEnum.UNCOMMON: return 'Uncommon';
@@ -180,6 +177,19 @@ export function formatRarityEnum(value: number | string): string {
     case RarityEnum.LEGENDARY: return 'Legendary';
     default: return 'Common'; // Default to Common if no match
   }
+}
+
+export function formatReportEnum(value: ReportReason): string {
+  switch (value) {
+    case ReportReason.SPAM: return 'Spam'
+    case ReportReason.HARASSMENT: return 'Harassment';
+    case ReportReason.FAKE_PROFILE: return 'Fake Profile';
+    case ReportReason.INAPPROPRIATE_CONTENT: return 'Inappropriate Content';
+    case ReportReason.UNDERAGE: return 'Underage';
+    case ReportReason.OTHER: return 'Other';
+  }
+  // Default case if no match found
+  return 'Other';
 }
 
 function formatGenericEnum(value: string | number): string {

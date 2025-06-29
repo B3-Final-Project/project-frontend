@@ -1,6 +1,7 @@
 import { GetProfileResponse } from "@/lib/routes/profiles/response/get-profile.response";
 import { RESTServerRoute } from "@/lib/routes/server";
 import { createFetcher } from "@/lib/utils";
+import { ReportDto, ReportReason } from "./dto/report.dto";
 
 export interface AdminActionResponse {
   success: boolean;
@@ -27,7 +28,7 @@ export class AdminRouter {
   );
 
   // Report a user
-  public static readonly reportUser = createFetcher<AdminActionResponse, {reason: string}>(
+  public static readonly reportUser = createFetcher<AdminActionResponse, ReportDto>(
     RESTServerRoute.REST_ADMIN_REPORT_USER,
     "POST"
   );
