@@ -34,6 +34,22 @@ export const createFetcher = <T = unknown, B = undefined>(
   };
 };
 
+export const createPaginatedFetcher = <T = unknown>(
+  path: string,
+  method: "GET" | "POST" | "PUT" | "DELETE" | "PATCH" = "GET"
+) => {
+  return async (queryParams?: Record<string, string | number>): Promise<T> => {
+    const config = {
+      method,
+      url: path,
+      params: queryParams,
+    };
+
+    const response = await authenticatedAxios<T>(config);
+    return response.data;
+  };
+};
+
 export const sendImage = async ({formData, index}: {formData: unknown, index: number}) => authenticatedAxios.put(RESTServerRoute.REST_PROFILES_IMAGES + `/${index}`, formData, {
   headers: {
     "Content-Type": "multipart/form-data",

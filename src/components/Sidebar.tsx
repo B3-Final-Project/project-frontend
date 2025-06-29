@@ -8,7 +8,9 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-} from '@/components/ui/sidebar';
+  SidebarMenuSub,
+  SidebarMenuSubItem,
+} from "@/components/ui/sidebar";
 
 import { Button } from "@/components/ui/button";
 import { FaRegUser } from "react-icons/fa";
@@ -16,7 +18,7 @@ import { Home } from 'lucide-react';
 import Image from "next/image";
 import { IoSettingsOutline } from "react-icons/io5";
 import Link from 'next/link';
-import {Quantico} from "next/font/google";
+import { Quantico } from "next/font/google";
 import { SignInButton } from "@/components/auth/SignInButton";
 import { clsx } from "clsx";
 import { useAuth } from "react-oidc-context";
@@ -28,22 +30,22 @@ const quantico = Quantico({
 });
 
 export function SidebarComponent() {
-  const auth = useAuth()
-  const router = useRouter()
+  const auth = useAuth();
+  const router = useRouter();
   const items = [
     { title: "Home", url: '/', icon: Home },
     { title: "Messages", url: '/messages', icon: FiMessageSquare },
     { canUse: true, title: "Open a Booster", url: '/boosters' },
     { title: "Profile", url: '/profile', icon: FaRegUser },
     { title: "Settings", url: '/register', icon: IoSettingsOutline },
-  ]
-  const groups = auth.user?.profile['cognito:groups'] as string[]
+  ];
+  const groups = auth.user?.profile['cognito:groups'] as string[];
   const isAdmin = groups?.includes('admin') ?? false;
 
   const signOutAction = async () => {
-    await auth.removeUser()
-    router.replace('/')
-  }
+    await auth.removeUser();
+    router.replace('/');
+  };
 
   return (
     <>
@@ -52,7 +54,7 @@ export function SidebarComponent() {
         <Sidebar className={'md:w-16 lg:w-48'}>
           <SidebarContent>
             <SidebarGroup>
-              <div className={'relative mx-auto h-[43px] lg:h-[156px] w-full flex items-center '}>
+              <div className={'relative mx-auto h-[43px] lg:h-[156px] w-full flex items-center'}>
                 <Image src="/logo.png" fill={true} alt="logo" />
               </div>
               <h2 className={clsx('hidden text-xl mx-auto lg:block', quantico.className)}>HOLOMATCH</h2>
@@ -82,12 +84,32 @@ export function SidebarComponent() {
                     </SidebarMenuItem>
                   );
                 })}
-                {isAdmin && <SidebarMenuButton asChild>
-                  <Link href={'/admin'}>
-                    <FiShield style={{ width: '1.5rem', height: '1.5rem' }} size={40} />
-                    <span className="hidden lg:block">Admin Dashboard</span>
-                  </Link>
-                </SidebarMenuButton>}
+                {isAdmin && (
+                  <SidebarMenuItem>
+                    <SidebarMenuButton asChild>
+                      <Link href={'/admin?dashboard'}>
+                        <FiShield style={{ width: '1.5rem', height: '1.5rem' }} size={40} />
+                        <span className="hidden lg:block">Admin Dashboard</span>
+                      </Link>
+                    </SidebarMenuButton>
+                    <SidebarMenuSub>
+                      <SidebarMenuSubItem>
+                        <SidebarMenuButton asChild>
+                          <Link href="/admin?dashboard">
+                            <span className="hidden lg:block">Statistics</span>
+                          </Link>
+                        </SidebarMenuButton>
+                      </SidebarMenuSubItem>
+                      <SidebarMenuSubItem>
+                        <SidebarMenuButton asChild>
+                          <Link href="/admin?users">
+                            <span className="hidden lg:block">Users</span>
+                          </Link>
+                        </SidebarMenuButton>
+                      </SidebarMenuSubItem>
+                    </SidebarMenuSub>
+                  </SidebarMenuItem>
+                )}
               </SidebarMenu>
               {auth.user && <Button onClick={() => signOutAction()}>Logout</Button>}
             </SidebarGroup>
@@ -100,18 +122,19 @@ export function SidebarComponent() {
         <div className="flex justify-around w-full">
           {items.map((item) => {
             const IconComponent = item.icon as React.ElementType<{ size: number }>;
-            return <Link
-              key={item.url}
-              href={item.url}
-              className="flex flex-col items-center justify-center p-3"
-            >
-              {item.icon ? <IconComponent size={20} /> : <Image src="/logo.svg" width={20} height={20} alt="logo" />}
-            </Link>
-          })
-          }
+            return (
+              <Link
+                key={item.url}
+                href={item.url}
+                className="flex flex-col items-center justify-center p-3"
+              >
+                {item.icon ? <IconComponent size={20} /> : <Image src="/logo.svg" width={20} height={20} alt="logo" />}
+              </Link>
+            );
+          })}
           <SignInButton />
         </div>
       </nav>
     </>
-  )
+  );
 }

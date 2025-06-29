@@ -132,7 +132,6 @@ const PackOpener = ({ onPackOpened, profiles = [] }: PackOpenerProps) => {
                             </div>
                           </div>
                           <h3 className="text-lg font-bold mb-2">{profile.name}</h3>
-                          <p className="text-sm text-gray-600 line-clamp-3 flex-grow">{profile.description}</p>
                           <motion.button
                             className="mt-3 w-full py-2 rounded-lg bg-gradient-to-r from-pink-500 to-purple-600 text-white text-sm font-bold"
                             whileHover={{ scale: 1.03 }}

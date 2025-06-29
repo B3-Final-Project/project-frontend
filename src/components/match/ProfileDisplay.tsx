@@ -42,7 +42,6 @@ const ProfileDisplay = ({ profiles, onFinish }: ProfileDisplayProps) => {
                 </div>
                 <h3 className="text-xl font-semibold text-white">{profile.name}</h3>
                 <p className="text-sm text-gray-300">{profile.age} ans • {profile.location}</p>
-                <p className="mt-2 text-sm text-gray-400 text-center line-clamp-3">{profile.description}</p>
               </div>
             </motion.div>
           ))}
