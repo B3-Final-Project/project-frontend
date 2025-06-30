@@ -5,5 +5,5 @@ export interface UserManagementResponseDto{
     profiles: UserManagementDto[];
     totalCount: number;
   };
-  _links: Record<string, any>;
+  _links: Record<string, unknown>;
 }

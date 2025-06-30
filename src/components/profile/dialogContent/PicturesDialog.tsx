@@ -118,6 +118,7 @@ export function PicturesDialog() {
     return (
       <div className="aspect-square relative rounded-lg overflow-hidden border-2 border-dashed border-gray-300 hover:border-blue-400 transition-colors group">
         <input
+          //@ts-expect-error - ref is not assignable to input element
           ref={el => inputRefs.current[index] = el}
           id={`profile-image-input-${index}`}
           type="file"
