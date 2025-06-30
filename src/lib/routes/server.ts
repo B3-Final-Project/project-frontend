@@ -1,25 +1,30 @@
 export enum RESTServerRoute {
+  // SETTINGS ROUTES
   REST_AUTH_SETTINGS = 'settings/auth',
-  REST_PROFILES = 'profiles',
+  // PROFILE ROUTES
+  REST_PROFILES_ALL = 'profiles/all',
   REST_PROFILE = 'profiles/:id',
-  REST_PROFILE_MATCHES = 'profiles/matches',
+  REST_PROFILES = 'profiles',
+  REST_PROFILES_IMAGES = 'profiles/image',
+  // PROFILE IMAGES ROUTES
+  REST_PROFILE_IMAGES = 'profiles/:profileId/images',
+  REST_PROFILE_IMAGE = 'profiles/:profileId/images/:index',
+  // USER ROUTES
+  REST_ADMIN_BANS = 'users/:userId/bans',
+  // REPORT ROUTES
+  REST_USER_REPORTS = '/reports',
+  // BOOSTER ROUTES
   REST_BOOSTER = 'booster',
   REST_TEN_BOOSTERS = 'booster/10',
   REST_AVAILABLE_PACKS = 'booster/list',
-  REST_PROFILES_IMAGES = 'profiles/image',
+  // MATCHES ROUTES
   REST_MATCHES = 'matches',
   REST_MATCHES_PENDING = 'matches/pending',
   REST_MATCHES_SENT = 'matches/sent',
   REST_MATCHES_DETAILS = 'matches/details/:id',
   REST_MATCHES_LIKE = 'matches/like/:id',
   REST_MATCHES_PASS = 'matches/pass/:id',
-  // Admin routes
-  REST_PROFILES_ALL = 'profiles/all',
-  REST_ADMIN_BAN_USER = 'profiles/:userId/ban',
-  REST_ADMIN_UNBAN_USER = 'profiles/:userId/unban',
-  REST_ADMIN_USER_PROFILE = 'profiles/:userId/profile',
-  REST_ADMIN_REPORT_USER = 'profiles/:profileId/report',
-  // Stats routes
+  // STATS ROUTES
   REST_STATS_APP = 'stats/app',
   REST_STATS_BOOSTERS = 'stats/boosters',
   REST_STATS_DETAILED = 'stats/detailed',

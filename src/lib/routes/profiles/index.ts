@@ -1,8 +1,4 @@
 import { createFetcher, createPaginatedFetcher } from "@/lib/utils";
-
-import {
-  GetProfileMatchResponse
-} from "@/lib/routes/profiles/response/get-profile-match.response";
 import {
   GetProfileResponse
 } from "@/lib/routes/profiles/response/get-profile.response";
@@ -24,5 +20,4 @@ export class ProfileRouter {
   public static readonly getProfile = createFetcher<GetProfileResponse>(RESTServerRoute.REST_PROFILES, "GET");
   public static readonly getProfileById = createFetcher<GetProfileResponse>(RESTServerRoute.REST_PROFILE, "GET");
   public static readonly getAllProfiles = createPaginatedFetcher<UserManagementResponseDto>(RESTServerRoute.REST_PROFILES_ALL, "GET");
-  public static readonly getProfileMatches = createFetcher<GetProfileMatchResponse>(RESTServerRoute.REST_PROFILE_MATCHES, "GET")
 }

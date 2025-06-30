@@ -37,12 +37,12 @@ export function ReportUserModal({
   const [reportCategory, setReportCategory] = useState<ReportReason>(
     ReportReason.OTHER,
   );
-  const reportMutation = useReportUserMutation(user.id);
+  const reportMutation = useReportUserMutation();
 
   const handleReportSubmit = () => {
     if (!user.id) return;
     if (reportCategory) {
-      reportMutation.mutate({ reason: reportCategory, message: reportReason });
+      reportMutation.mutate({ reportedProfileId: parseInt(user.id), reason: reportCategory, details: reportReason });
       setReportReason("");
       setReportCategory(ReportReason.OTHER);
       setIsOpen(false);

@@ -57,11 +57,11 @@ export function useUnbanUserMutation() {
 }
 
 // Hook to report a user (placeholder for future API implementation)
-export function useReportUserMutation(profileID: string) {
+export function useReportUserMutation() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (data: ReportDto) => AdminRouter.reportUser(data, { profileId: profileID}),
+    mutationFn: async (data: ReportDto) => AdminRouter.reportUser(data),
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ["profiles"] });
       toast({

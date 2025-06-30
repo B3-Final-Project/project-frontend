@@ -1,6 +1,7 @@
 export interface ReportDto {
   reason: ReportReason;
-  message: string
+  details: string
+  reportedProfileId: number;
 }
 
 export enum ReportReason {

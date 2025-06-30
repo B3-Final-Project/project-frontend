@@ -1,17 +1,11 @@
 "use client";
 
-import {
-  DialogContent,
-  DialogDescription,
-  DialogTitle
-} from "@/components/ui/dialog";
-import { useState, useCallback, useMemo } from "react";
+import { DialogContent, DialogDescription, DialogTitle } from "@/components/ui/dialog";
+import { useCallback, useMemo, useRef, useState } from "react";
+import { useImageMutations, useProfileQuery } from "@/hooks/react-query/profiles";
 import Image from "next/image";
 import { toast } from "@/hooks/use-toast";
-import {
-  useImageMutations,
-  useProfileQuery
-} from "@/hooks/react-query/profiles";
+import { Info } from "lucide-react";
 
 const MAX_IMAGES = 6;
 const ACCEPTED_IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
@@ -19,28 +13,30 @@ const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
 
 export function PicturesDialog() {
   const { data, isLoading } = useProfileQuery();
+  const [removingIndex, setRemovingIndex] = useState<number | null>(null);
+  const [uploadingIndex, setUploadingIndex] = useState<number | null>(null);
+  const { uploadImage, removeImage, isUploading, isRemoving } = useImageMutations();
+
+  const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
+
   const profile = data?.profile;
 
-  // Get current images directly from profile data, no local state sync needed
-  const currentImages = useMemo(() =>
-      profile?.images ?? Array(MAX_IMAGES).fill(null),
-    [profile?.images]
-  );
-
-  const [uploadingIndex, setUploadingIndex] = useState<number | null>(null);
-  const [removingIndex, setRemovingIndex] = useState<number | null>(null);
-
-  const { uploadImage, removeImage, isUploading, isRemoving } = useImageMutations();
+  const currentImages = useMemo(() => {
+    const images = profile?.images ?? [];
+    const paddedImages: (string | null)[] = images.slice(0, MAX_IMAGES);
+    while (paddedImages.length < MAX_IMAGES) {
+      paddedImages.push(null);
+    }
+    return paddedImages;
+  }, [profile?.images]);
 
   const validateFile = useCallback((file: File): string | null => {
     if (!ACCEPTED_IMAGE_TYPES.includes(file.type)) {
       return "Please select a valid image file (JPEG, PNG, or WebP).";
     }
-
     if (file.size > MAX_FILE_SIZE) {
       return "File size must be less than 10MB.";
     }
-
     return null;
   }, []);
 
@@ -53,46 +49,45 @@ export function PicturesDialog() {
 
     const validationError = validateFile(file);
     if (validationError) {
-      toast({
-        title: "Invalid file",
-        description: validationError,
-        variant: "destructive",
-      });
+      toast({ title: "Invalid file", description: validationError, variant: "destructive" });
       return;
     }
 
     setUploadingIndex(index);
 
-    uploadImage(
-      { file, index },
-      {
-        onSettled: () => setUploadingIndex(null),
-      }
-    );
+    uploadImage({
+      profileId: profile.id,
+      file,
+      index
+    }, {
+      onSuccess: () => toast({ title: "Image uploaded" }),
+      onError: () => toast({ title: "Upload failed", variant: "destructive" }),
+      onSettled: () => setUploadingIndex(null),
+    });
 
-    // Reset the input value to allow re-uploading the same file
     e.target.value = '';
-  }, [validateFile, uploadImage, profile?.id]);
+  }, [validateFile, uploadImage, profile]);
 
   const handleImageUpload = useCallback((index: number) => {
-    const input = document.getElementById(
-      `profile-image-input-${index}`
-    ) as HTMLInputElement;
-    input?.click();
+    inputRefs.current[index]?.click();
   }, []);
 
   const handleRemoveImage = useCallback((index: number) => {
     if (!profile?.id) return;
+    const imageObj = currentImages[index];
+    if (!imageObj) return;
 
     setRemovingIndex(index);
 
     removeImage(
-      {index},
+      { profileId: profile.id, index },
       {
+        onSuccess: () => toast({ title: "Image removed" }),
+        onError: () => toast({ title: "Remove failed", variant: "destructive" }),
         onSettled: () => setRemovingIndex(null),
       }
     );
-  }, [removeImage, profile?.id]);
+  }, [removeImage, profile?.id, currentImages]);
 
   if (isLoading) {
     return (
@@ -105,6 +100,15 @@ export function PicturesDialog() {
     );
   }
 
+  if (!profile) {
+    return (
+      <DialogContent>
+        <DialogTitle>Error</DialogTitle>
+        <DialogDescription>Profile not found. Please try again later.</DialogDescription>
+      </DialogContent>
+    );
+  }
+
   const ImageSlot = ({ index }: { index: number }) => {
     const imageUrl = currentImages[index];
     const isCurrentlyUploading = uploadingIndex === index;
@@ -112,9 +116,10 @@ export function PicturesDialog() {
     const isDisabled = isCurrentlyUploading || isCurrentlyRemoving || isUploading || isRemoving;
 
     return (
-      <div className="aspect-square relative rounded-lg overflow-hidden border-2 border-dashed border-gray-300">
-        {/* Hidden file input */}
+      <div className="aspect-square relative rounded-lg overflow-hidden border-2 border-dashed border-gray-300 hover:border-blue-400 transition-colors group">
         <input
+          //@ts-expect-error - ref is not assignable to input element
+          ref={el => inputRefs.current[index] = el}
           id={`profile-image-input-${index}`}
           type="file"
           accept={ACCEPTED_IMAGE_TYPES.join(',')}
@@ -132,15 +137,14 @@ export function PicturesDialog() {
               fill
               sizes="(max-width: 768px) 50vw, 33vw"
             />
-
-            {/* Loading overlay for removing */}
-            {isCurrentlyRemoving && (
+            {(isCurrentlyRemoving || isCurrentlyUploading) && (
               <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
                 <div className="animate-spin rounded-full h-6 w-6 border-2 border-white border-t-transparent"></div>
+                {isCurrentlyUploading && (
+                  <span className="ml-2 text-white text-xs">Uploading...</span>
+                )}
               </div>
             )}
-
-            {/* Remove button - visible on hover */}
             <button
               type="button"
               className="absolute top-2 right-2 bg-red-500 hover:bg-red-600 text-white rounded-full w-8 h-8 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity shadow-lg disabled:opacity-50"
@@ -148,10 +152,8 @@ export function PicturesDialog() {
               disabled={isDisabled}
               aria-label={`Remove image ${index + 1}`}
             >
-              ×
+              <span aria-hidden="true">&times;</span>
             </button>
-
-            {/* Replace button - visible on hover */}
             <button
               type="button"
               className="absolute bottom-2 right-2 bg-blue-500 hover:bg-blue-600 text-white rounded px-2 py-1 text-xs opacity-0 group-hover:opacity-100 transition-opacity shadow-lg disabled:opacity-50"
@@ -193,22 +195,23 @@ export function PicturesDialog() {
         Add up to {MAX_IMAGES} photos to your profile. The first photo will be your main profile picture.
       </DialogDescription>
 
-      {/* Grid of upload slots */}
       <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-6">
         {Array.from({ length: MAX_IMAGES }, (_, index) => (
           <ImageSlot key={index} index={index} />
         ))}
       </div>
 
-      {/* Tips section */}
-      <div className="bg-blue-50 p-4 rounded-lg">
-        <p className="text-sm font-medium text-blue-900 mb-2">Photo Tips:</p>
-        <ul className="text-sm text-blue-800 space-y-1">
-          <li>• Clear photos of your face perform better</li>
-          <li>• Add photos showing your interests and personality</li>
-          <li>• Photos with friends can be great, but make sure it&#39;s clear which person is you</li>
-          <li>• Use high-quality images (JPEG, PNG, or WebP format)</li>
-        </ul>
+      <div className="bg-blue-50 p-4 rounded-lg flex gap-2 items-start">
+        <Info className="text-blue-400 w-5 h-5 mt-0.5" />
+        <div>
+          <p className="text-sm font-medium text-blue-900 mb-2">Photo Tips:</p>
+          <ul className="text-sm text-blue-800 space-y-1">
+            <li>• Clear photos of your face perform better</li>
+            <li>• Add photos showing your interests and personality</li>
+            <li>• Photos with friends can be great, but make sure it&#39;s clear which person is you</li>
+            <li>• Use high-quality images (JPEG, PNG, or WebP format)</li>
+          </ul>
+        </div>
       </div>
     </DialogContent>
   );
