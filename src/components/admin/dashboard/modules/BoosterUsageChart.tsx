@@ -2,7 +2,7 @@
 
 import { Bar, BarChart, CartesianGrid, Tooltip, XAxis, YAxis } from 'recharts';
 
-import { ChartCard } from '../shared/ChartCard';
+import { ChartCard } from '@/components/admin/dashboard/shared/ChartCard';
 import { useComprehensiveStatsQuery } from "@/hooks/react-query/stats";
 
 export function BoosterUsageChart() {
