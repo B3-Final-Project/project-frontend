@@ -1,6 +1,6 @@
 'use client'
-import { SignInButton } from "@/components/auth/SignInButton";
-import { Button } from "@/components/ui/button";
+
+import { FiMessageSquare, FiShield } from "react-icons/fi";
 import {
   Sidebar,
   SidebarContent,
@@ -9,15 +9,17 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from '@/components/ui/sidebar';
+
+import { Button } from "@/components/ui/button";
+import { FaRegUser } from "react-icons/fa";
 import { Home } from 'lucide-react';
 import Image from "next/image";
-import Link from 'next/link';
-import { FaRegUser } from "react-icons/fa";
-import { FiMessageSquare } from "react-icons/fi";
 import { IoSettingsOutline } from "react-icons/io5";
-import { useAuth } from "react-oidc-context";
+import Link from 'next/link';
 import {Quantico} from "next/font/google";
+import { SignInButton } from "@/components/auth/SignInButton";
 import { clsx } from "clsx";
+import { useAuth } from "react-oidc-context";
 import { useRouter } from "next/navigation";
 
 const quantico = Quantico({
@@ -35,6 +37,8 @@ export function SidebarComponent() {
     { title: "Profile", url: '/profile', icon: FaRegUser },
     { title: "Settings", url: '/register', icon: IoSettingsOutline },
   ]
+  const groups = auth.user?.profile['cognito:groups'] as string[]
+  const isAdmin = groups?.includes('admin') ?? false;
 
   const signOutAction = async () => {
     await auth.removeUser()
@@ -78,6 +82,12 @@ export function SidebarComponent() {
                     </SidebarMenuItem>
                   );
                 })}
+                {isAdmin && <SidebarMenuButton asChild>
+                  <Link href={'/admin'}>
+                    <FiShield style={{ width: '1.5rem', height: '1.5rem' }} size={40} />
+                    <span className="hidden lg:block">Admin Dashboard</span>
+                  </Link>
+                </SidebarMenuButton>}
               </SidebarMenu>
               {auth.user && <Button onClick={() => signOutAction()}>Logout</Button>}
             </SidebarGroup>

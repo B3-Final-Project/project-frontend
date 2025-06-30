@@ -3,6 +3,7 @@
 import { usePathname, useRouter } from 'next/navigation';
 
 import { FullScreenLoading } from '@/components/FullScreenLoading';
+import { useAuth } from 'react-oidc-context';
 import { useEffect } from 'react';
 import { useProfileQuery } from '@/hooks/react-query/profiles';
 
@@ -13,7 +14,10 @@ interface ProfileGuardProps {
 export function ProfileGuard({ children }: ProfileGuardProps) {
   const router = useRouter();
   const pathname = usePathname();
-  const query = useProfileQuery();
+  const auth = useAuth();
+  
+  // Only call useProfileQuery if user is authenticated
+  const query = useProfileQuery(auth.user != null);
 
   // Define allowed routes for users without a profile
   const allowedRoutes = [
@@ -30,6 +34,11 @@ export function ProfileGuard({ children }: ProfileGuardProps) {
   });
 
   useEffect(() => {
+    // Only proceed if user is authenticated
+    if (!auth.user) {
+      return;
+    }
+
     // Only redirect if:
     // 1. Query has completed successfully
     // 2. No profile exists
@@ -44,7 +53,12 @@ export function ProfileGuard({ children }: ProfileGuardProps) {
       console.log('Redirecting to profile creation - no profile found');
       router.push('/profile/create/welcome');
     }
-  }, [query.isSuccess, query.data?.profile, pathname, isAllowedRoute, router]);
+  }, [query.isSuccess, query.data?.profile, pathname, isAllowedRoute, router, auth.user]);
+
+  // If user is not authenticated, render children (let HomePage handle auth flow)
+  if (!auth.user) {
+    return <>{children}</>;
+  }
 
   // Show loading while query is in progress
   if (query.isLoading) {
