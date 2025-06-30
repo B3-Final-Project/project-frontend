@@ -1,9 +1,10 @@
 "use client";
 
 import { createContext, useContext, useEffect, useState, ReactNode } from "react";
+import { io, Socket } from "socket.io-client";
 
 interface SocketContextType {
-  socket: WebSocket | null;
+  socket: Socket | null;
   isConnected: boolean;
 }
 
@@ -18,32 +19,47 @@ interface SocketProviderProps {
 }
 
 export function SocketProvider({ children, token }: SocketProviderProps) {
-  const [socket, setSocket] = useState<WebSocket | null>(null);
+  const [socket, setSocket] = useState<Socket | null>(null);
   const [isConnected, setIsConnected] = useState(false);
 
   useEffect(() => {
-    if (!token) return;
+    if (!token) {
+      console.log('❌ Pas de token, connexion WebSocket impossible');
+      return;
+    }
 
-    // Créer la connexion WebSocket avec le token d'authentification
-    const ws = new WebSocket(`${process.env.NEXT_PUBLIC_WS_URL || 'ws://localhost:3001'}?token=${token}`);
+    console.log('🔌 Tentative de connexion WebSocket avec token:', token.substring(0, 20) + '...');
 
-    ws.onopen = () => {
+    const socketInstance = io(`${process.env.NEXT_PUBLIC_WS_URL || 'http://localhost:8080'}/messages`, {
+      auth: { token },
+      transports: ['websocket', 'polling'],
+      autoConnect: true,
+    });
+
+    socketInstance.on('connect', () => {
+      console.log('✅ Socket.IO connecté ! ID:', socketInstance.id);
       setIsConnected(true);
-    };
-
-    ws.onclose = () => {
+    });
+    
+    socketInstance.on('disconnect', (reason) => {
+      console.log('❌ Socket.IO déconnecté. Raison:', reason);
       setIsConnected(false);
-    };
-
-    ws.onerror = (error) => {
-      console.error('WebSocket error:', error);
+    });
+    
+    socketInstance.on('connect_error', (error) => {
+      console.error('❌ Erreur de connexion Socket.IO:', error);
       setIsConnected(false);
-    };
+    });
 
-    setSocket(ws);
+    socketInstance.on('error', (error) => {
+      console.error('❌ Erreur Socket.IO:', error);
+    });
+
+    setSocket(socketInstance);
 
     return () => {
-      ws.close();
+      console.log('🔌 Déconnexion WebSocket');
+      socketInstance.disconnect();
     };
   }, [token]);
 
@@ -60,4 +76,4 @@ export const useSocket = () => {
     throw new Error('useSocket must be used within a SocketProvider');
   }
   return context;
-}; 
+};

@@ -2,18 +2,20 @@
 
 import { motion } from 'framer-motion';
 import { Info, MapPin, User } from 'lucide-react';
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 
 interface UserCardModalProps {
   readonly name?: string;
   readonly age?: number;
   readonly location?: string;
   readonly description?: string;
+  readonly isOpen: boolean;
+  readonly onClose: () => void;
 }
 
-export function UserCardModal({ name, age, location, description }: UserCardModalProps) {
+export function UserCardModal({ name, age, location, description, isOpen, onClose }: UserCardModalProps) {
   const [isFlipped, setIsFlipped] = useState(false);
-  const [open, setOpen] = useState(false);
+  const modalRef = useRef<HTMLDivElement>(null);
 
   const handleCardFlip = () => {
     setIsFlipped(!isFlipped);
@@ -27,8 +29,12 @@ export function UserCardModal({ name, age, location, description }: UserCardModa
   };
 
   useEffect(() => {
-    if (!open) {
+    if (!isOpen) {
       setIsFlipped(false);
+    }
+
+    if (isOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
     }
 
     return () => {

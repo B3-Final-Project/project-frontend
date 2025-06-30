@@ -1,5 +1,5 @@
 import { use } from 'react';
-import ConversationDetail from '@/components/messages/ConversationDetail';
+import ConversationPage from '@/components/messages/ConversationPage';
 
 interface ConversationPageProps {
     params: Promise<{
@@ -7,9 +7,9 @@ interface ConversationPageProps {
     }>;
 }
 
-export default function ConversationPage({ params }: ConversationPageProps) {
+export default function ConversationPageWrapper({ params }: ConversationPageProps) {
     const resolvedParams = use(params);
-    const conversationId = parseInt(resolvedParams.id);
+    const conversationId = resolvedParams.id;
 
-    return <ConversationDetail conversationId={conversationId} />;
+    return <ConversationPage initialConversationId={conversationId} />;
 } 
