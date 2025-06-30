@@ -9,7 +9,6 @@ export interface ProfileCardType {
   images?: string[];
   age?: number;
   location?: string;
-  description: string;
   work?: string;
   languages?: string[];
   smoking?: string;

@@ -7,6 +7,9 @@ import {
   formatSmokingEnum,
   formatZodiacEnum
 } from "@/lib/utils/enum-utils";
+import {
+  GetProfileResponse
+} from "@/lib/routes/profiles/response/get-profile.response";
 
 export const mapBoosterToProfileCardType = (booster: UserCard): ProfileCardType => {
   // Gérer l'image principale
@@ -29,7 +32,6 @@ export const mapBoosterToProfileCardType = (booster: UserCard): ProfileCardType 
     age: booster.age,
     location: booster.city ?? 'Non précisé',
     work: booster.work ?? '',
-    description: booster.work ?? `Découvre ${booster.name ?? 'cette personne'} !`,
     languages: booster.languages ?? [],
     smoking: formatSmokingEnum(booster.smoking ?? ''),
     drinking:  formatDrinkingEnum(booster.drinking ?? ''),
@@ -39,3 +41,31 @@ export const mapBoosterToProfileCardType = (booster: UserCard): ProfileCardType 
     isRevealed: true,
   };
 };
+
+export const mapUserProfileToProfileCardType = (userProfile: GetProfileResponse): ProfileCardType => {
+  // Gérer l'image principale
+  let mainImage = '/vintage.png';
+  if (userProfile.profile.images && userProfile.profile.images.length > 0 && userProfile.profile.images[0]) {
+    mainImage = userProfile.profile.images[0];
+  }
+
+  // Filtrer les images null ou vides
+  const validImages = userProfile.profile.images?.filter(img => img) as string[] ?? [];
+
+  return {
+    id: userProfile.profile.id.toString(),
+    name: userProfile.user.name ?? 'Utilisateur Holomatch',
+    surname: userProfile.user.surname,
+    image_url: mainImage,
+    images: validImages,
+    age: userProfile.user.age,
+    location: userProfile.profile.city ?? 'Non précisé',
+    work: userProfile.profile.work ?? '',
+    languages: userProfile.profile.languages ?? [],
+    smoking: formatSmokingEnum(userProfile.profile.smoking ?? ''),
+    drinking: formatDrinkingEnum(userProfile.profile.drinking ?? ''),
+    zodiac: formatZodiacEnum(userProfile.profile.zodiac ?? ''),
+    interests: userProfile.profile.interests,
+    isRevealed: true,
+  };
+}

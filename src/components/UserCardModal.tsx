@@ -1,66 +1,48 @@
 "use client";
 
-import { getRarityGradient } from '@/utils/rarityHelper';
-import { motion } from 'framer-motion';
 import { Cigarette, Info, Languages, MapPin, Moon, User, Wine } from 'lucide-react';
 import { useCallback, useEffect, useRef, useState } from "react";
-import { Interest } from "@/lib/routes/profiles/interfaces/interest.interface";
-import { RarityEnum } from "@/lib/routes/booster/dto/rarity.enum";
+import { ProfileCardType } from "@/lib/routes/profiles/dto/profile-card-type.dto";
+import { ReportUserModal } from "./ReportUserModal";
+import { getRarityGradient } from '@/utils/rarityHelper';
+import { motion } from 'framer-motion';
 
 interface UserCardModalProps {
-  name: string;
-  age?: number;
-  location?: string;
-  description?: string;
-  isOpen: boolean;
-  onCloseAction: () => void;
-  rarity?: RarityEnum;
-  image_url?: string;
-  interests?: Interest[];
-  languages?: string[];
-  zodiac?: string;
-  smoking?: string;
-  drinking?: string;
+  readonly user: ProfileCardType
+  readonly isOpen: boolean;
+  onCloseAction(): void;
+  readonly isConnectedUser?: boolean;
 }
 
 export function UserCardModal({
-  name,
-  age,
-  location,
   isOpen,
   onCloseAction,
-  rarity,
-  image_url,
-  interests,
-  languages,
-  zodiac,
-  smoking,
-  drinking,
-}: UserCardModalProps) {
+  user,
+  isConnectedUser = false
+}: Readonly<UserCardModalProps>) {
   const [isFlipped, setIsFlipped] = useState(false);
+  const [isReportModalOpen, setIsReportModalOpen] = useState(false);
   const modalRef = useRef<HTMLDivElement>(null);
 
   const handleCardFlip = () => {
-    setIsFlipped(!isFlipped);
+    if (isReportModalOpen) return;
+    setIsFlipped((f) => !f);
   };
 
-
-  const handleClickOutside = useCallback((e: Event)=> {
+  const handleClickOutside = useCallback((e: Event) => {
+    if (isReportModalOpen) return;
     if (modalRef.current && !modalRef.current.contains(e.target as Node)) {
       onCloseAction();
-      setIsFlipped(false)
+      setIsFlipped(false);
     }
-  }, [onCloseAction])
+  }, [isReportModalOpen, onCloseAction]);
 
   useEffect(() => {
     if (isOpen) {
-      document.addEventListener("mousedown", handleClickOutside);
-    } else {
-      document.removeEventListener("mousedown", handleClickOutside);
+      document.addEventListener("mousedown", handleClickOutside, true);
     }
-
     return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("mousedown", handleClickOutside, true);
     };
   }, [handleClickOutside, isOpen]);
 
@@ -128,56 +110,62 @@ export function UserCardModal({
             {/* Front side of the card */}
             <div
               className="w-full h-full rounded-xl p-[10px] absolute backface-hidden shadow-2xl overflow-hidden"
-              style={{ background: getRarityGradient(rarity) }}
+              style={{ background: getRarityGradient(user.rarity) }}
             >
               <div
-                className="w-full h-full rounded-lg overflow-hidden"
-                style={{
-                  backgroundImage: `url(${image_url || '/vintage.png'})`,
-                  backgroundSize: "cover",
-                  backgroundPosition: "center",
-                }}
+                className="w-full h-full rounded-lg overflow-hidden"            style={{
+              backgroundImage: `url(${user.image_url ?? '/vintage.png'})`,
+              backgroundSize: "cover",
+              backgroundPosition: "center",
+            }}
               >
                 <div className="w-full h-full flex flex-col justify-between bg-gradient-to-t from-black/70 via-transparent to-transparent p-3">
                   <div className="flex justify-between items-start">
-                    {age && (
+                    {user.age && (
                       <div className="flex items-center gap-1 text-sm bg-white/10 text-white px-2 py-1 rounded-full">
                         <User size={16} className="text-blue-300" />
-                        {age} ans
+                        {user.age} ans
                       </div>
                     )}
-                    {location && (
+                    {isConnectedUser &&
+                    <ReportUserModal
+                      open={isReportModalOpen}
+                      setIsOpen={setIsReportModalOpen}
+                      user={user}
+                    />}
+                    {user.location && (
                       <div className="flex items-center gap-1 text-sm bg-white/10 text-white px-2 py-1 rounded-full">
                         <MapPin size={16} className="text-red-400" />
-                        {location}
+                        {user.location}
                       </div>
                     )}
                   </div>
+
                   <div className="text-white">
-                    <h2 className="text-xl font-bold drop-shadow-md mb-1">{name}</h2>
+                    <h2 className="text-xl font-bold drop-shadow-md mb-1">{user.name}</h2>
                     <div className="flex flex-wrap gap-2 pt-1">
-                      {languages && languages.length > 0 && (
+                      {user.languages && user.languages.length > 0 && (
                         <div className="flex items-center gap-1 text-sm bg-white/10 text-white px-2 py-1 rounded-full">
                           <Languages size={16} className="text-yellow-300" />
-                          {languages.slice(0, 2).join(', ')}
+                          {user.languages.slice(0, 2).join(', ')}
                         </div>
                       )}
-                      {zodiac && (
+                      {user.zodiac && (
                         <div className="flex items-center gap-1 text-sm bg-white/10 text-white px-2 py-1 rounded-full">
                           <Moon size={16} className="text-cyan-300" />
-                          {zodiac}
+                          {user.zodiac}
                         </div>
                       )}
-                      {smoking && (
+                      {user.smoking && (
                         <div className="flex items-center gap-1 text-sm bg-white/10 text-white px-2 py-1 rounded-full">
                           <Cigarette size={16} className="text-red-300" />
-                          {smoking}
+                          {user.smoking}
                         </div>
                       )}
-                      {drinking && (
+                      {user.drinking && (
                         <div className="flex items-center gap-1 text-sm bg-white/10 text-white px-2 py-1 rounded-full">
                           <Wine size={16} className="text-purple-300" />
-                          {drinking}
+                          {user.drinking}
                         </div>
                       )}
                     </div>
@@ -189,7 +177,7 @@ export function UserCardModal({
             {/* Back side of the card */}
             <div
               className="w-full h-full rounded-xl p-[10px] absolute backface-hidden rotate-y-180 shadow-2xl overflow-hidden"
-              style={{ background: getRarityGradient(rarity) }}
+              style={{ background: getRarityGradient(user.rarity) }}
             >
               <div className="w-full h-full rounded-lg bg-gradient-to-b from-black/90 to-black/70 flex flex-col justify-center p-7 text-white">
                 <div className="flex items-center gap-1 sm:gap-2 mb-3 sm:mb-4">
@@ -197,11 +185,11 @@ export function UserCardModal({
                   <h3 className="text-xl sm:text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-500">Interests</h3>
                 </div>
                 <div className="mb-3 text-gray-200 leading-relaxed overflow-auto max-h-[300px] custom-scrollbar">
-                  {interests && interests.length > 0 && (
+                  {user.interests && user.interests.length > 0 && (
                     <div className="flex flex-wrap gap-1 mt-1">
-                      {interests.map((interest, index) => (
+                      {user.interests.map((interest) => (
                         <span
-                          key={index}
+                          key={interest.id}
                           className="bg-white/10 text-white px-2 py-1 rounded-full text-sm"
                         >
                           {interest.prompt}:
@@ -221,6 +209,8 @@ export function UserCardModal({
           </motion.div>
         </motion.div>
       </motion.div>
+
+
     </motion.div>
   );
 }
