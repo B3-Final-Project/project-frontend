@@ -1,4 +1,3 @@
-import { removeImage, sendImage } from "@/lib/utils";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import { ProfileRouter } from "@/lib/routes/profiles";
