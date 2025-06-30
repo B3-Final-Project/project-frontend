@@ -1,4 +1,4 @@
-'use client'
+"use client";
 
 import { FiMessageSquare, FiShield } from "react-icons/fi";
 import {
