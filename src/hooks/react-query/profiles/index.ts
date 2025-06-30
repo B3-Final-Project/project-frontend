@@ -88,40 +88,13 @@ export function useAllProfilesQuery(
     },
     getNextPageParam: (lastPage, allPages) => {
       // If the last page has fewer items than the limit, we've reached the end
-      if (lastPage.profiles.length < 10) {
+      if (lastPage.data.profiles.length < 10) {
         return undefined;
       }
       // Return the next offset
       return allPages.length * 10;
     },
     initialPageParam: 0,
-  });
-}
-
-// Update a profile
-export function useUpdateProfileMutation() {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: async (data: UpdateProfileDto) => {
-      return ProfileRouter.updateProfile(data);
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["profiles"] });
-      toast({
-        title: "Profile saved",
-        description: "Your profile profiles have been saved successfully.",
-      });
-    },
-    onError: (error) => {
-      console.error("Failed to update profile", error);
-      toast({
-        title: "Couldn't save your profil",
-        description:
-          "Please try again or contact support if the issue persists.",
-        variant: "destructive",
-      });
-    },
   });
 }
 

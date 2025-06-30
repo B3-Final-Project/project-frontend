@@ -29,8 +29,8 @@ export const createFetcher = <T = unknown, B = undefined>(
       ...(body && method !== "GET" ? { data: body } : {}),
     };
 
-    const response = await authenticatedAxios<T>(config);
-    return response.data;
+    const response = await authenticatedAxios<{data: T}>(config);
+    return response.data.data;
   };
 };
 
