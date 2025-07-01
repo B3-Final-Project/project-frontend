@@ -410,22 +410,19 @@ export default function ConversationPage({ initialConversationId }: Conversation
                     className="fixed inset-0 bg-opacity-50 flex items-center justify-center z-50 p-4"
                     aria-modal="true"
                     aria-labelledby="delete-dialog-title"
+                    onKeyDown={handlePopupKeyDown}
                 >
-                    <div 
-                        className="fixed inset-0 bg-black bg-opacity-50"
+                    <button 
+                        type="button"
+                        className="fixed inset-0 bg-black bg-opacity-50 border-0 cursor-default"
                         onClick={!isDeleting ? cancelDeleteConversation : undefined}
                         onKeyDown={!isDeleting ? (e) => e.key === 'Escape' && cancelDeleteConversation() : undefined}
-                        role="button"
-                        tabIndex={0}
                         aria-label="Fermer la modal"
                     />
                     <div 
                         ref={modalRef}
-                        role="dialog"
                         className="relative bg-white border border-gray-200 rounded-xl shadow-2xl max-w-md w-full p-6 animate-in fade-in-0 zoom-in-95 duration-200" 
                         onClick={e => e.stopPropagation()}
-                        onKeyDown={handlePopupKeyDown}
-                        tabIndex={0}
                     >
                         <div className="flex items-center gap-3 mb-4">
                             <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center">
