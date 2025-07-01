@@ -1,4 +1,3 @@
-'use client'
 import { ProfileDialogContent } from "@/components/profile/ProfileDialogContent";
 import { ProfileHeader } from "@/components/profile/ProfileHeader";
 import { ProfileAvatar } from "@/components/profile/ProfileAvatar";

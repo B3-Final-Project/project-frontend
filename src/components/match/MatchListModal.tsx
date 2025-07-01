@@ -2,17 +2,19 @@
 
 import { motion } from 'framer-motion';
 import { Heart, X } from 'lucide-react';
-import { ProfileCardType } from './MatchSystem';
 import ProfileGrid from './ProfileGrid';
+import {
+  ProfileCardType
+} from "@/lib/routes/profiles/dto/profile-card-type.dto";
 
 type MatchListModalProps = {
-  showMatchList: boolean;
-  setShowMatchList: (show: boolean) => void;
   matches: ProfileCardType[];
-  openModal: (profile: ProfileCardType) => void;
+  showMatchList: boolean;
+  setShowMatchList(show: boolean): void;
+  openModal(profile: ProfileCardType): void;
 };
 
-export default function MatchListModal({ showMatchList, setShowMatchList, matches, openModal }: MatchListModalProps) {
+export default function MatchListModal({ matches, showMatchList, setShowMatchList, openModal }: MatchListModalProps) {
   if (!showMatchList) return <></>;
 
   return (
@@ -44,7 +46,7 @@ export default function MatchListModal({ showMatchList, setShowMatchList, matche
 
           {matches.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-8 text-center">
-              <p className="text-gray-400 mb-2">Vous n'avez pas encore de matches</p>
+              <p className="text-gray-400 mb-2">Vous n&#39;avez pas encore de matches</p>
               <p className="text-gray-500 text-sm">Continuez à swiper pour trouver des matches!</p>
             </div>
           ) : (

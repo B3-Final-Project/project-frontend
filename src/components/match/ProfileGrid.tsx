@@ -2,11 +2,14 @@
 
 import { motion } from 'framer-motion';
 import { User } from 'lucide-react';
-import { ProfileCardType } from './MatchSystem';
+import Image from "next/image";
+import {
+  ProfileCardType
+} from "@/lib/routes/profiles/dto/profile-card-type.dto";
 
 type ProfileGridProps = {
   profiles: ProfileCardType[];
-  openModal: (profile: ProfileCardType) => void;
+  openModal(profile: ProfileCardType): void;
   isGrayscale?: boolean;
 };
 
@@ -21,8 +24,9 @@ export default function ProfileGrid({ profiles, openModal, isGrayscale = false }
         >
           <div className="bg-black/50 backdrop-blur-sm rounded-lg overflow-hidden">
             <div className={`aspect-square overflow-hidden relative ${isGrayscale ? 'grayscale' : ''}`}>
-              <img
-                src={profile.image}
+              <Image
+                src={profile.image_url}
+                fill={true}
                 alt={profile.name}
                 className="w-full h-full object-cover"
               />

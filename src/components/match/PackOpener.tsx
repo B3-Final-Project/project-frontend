@@ -1,27 +1,22 @@
 import { motion } from 'framer-motion';
 import { Calendar, MapPin } from 'lucide-react';
 import { useRef, useState } from 'react';
-
-interface UserCard {
-  id: string;
-  name: string;
-  image?: string;
-  age?: number;
-  location?: string;
-  description?: string;
-  isRevealed?: boolean;
-}
+import { clsx } from "clsx";
+import Image from "next/image";
+import { Button } from "@/components/ui/button";
+import {
+  ProfileCardType
+} from "@/lib/routes/profiles/dto/profile-card-type.dto";
 
 interface PackOpenerProps {
-  onPackOpened: (selectedCard?: UserCard) => void;
-  profiles?: UserCard[];
+  onPackOpened: (selectedCard?: ProfileCardType) => void;
+  profiles?: ProfileCardType[];
 }
 
 const PackOpener = ({ onPackOpened, profiles = [] }: PackOpenerProps) => {
   const [isOpening, setIsOpening] = useState(false);
   const [dragProgress, setDragProgress] = useState(0);
   const [isDragging, setIsDragging] = useState(false);
-  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const buttonRef = useRef<HTMLDivElement>(null);
   const dragStartXRef = useRef(0);
@@ -100,20 +95,11 @@ const PackOpener = ({ onPackOpened, profiles = [] }: PackOpenerProps) => {
     }, 1000);
   };
 
-  const handleCardClick = (profile: UserCard) => {
-    setIsModalOpen(true);
-  };
-
-  const closeModal = () => {
-    setIsModalOpen(false);
-  };
-
   return (
     <div className="pack-button-container">
-      <>
         <div className="flex justify-center mb-8">
           <div className="pack-button-container">
-            <div className={`pokemon-pack-3d ${isDragging ? 'dragging' : ''} ${isOpening ? 'opening' : ''}`}>
+            <div className={clsx('pokemon-pack-3d', isDragging ?? 'dragging', isOpening ?? 'opening')}>
               <div className="pack-front">
                 {profiles && profiles.length > 0 && (
                   <div className="profiles-grid grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mt-8">
@@ -123,7 +109,6 @@ const PackOpener = ({ onPackOpened, profiles = [] }: PackOpenerProps) => {
                         className="profile-card cursor-pointer bg-gradient-to-br from-pink-500 to-purple-600 rounded-xl p-1 shadow-lg"
                         whileHover={{ scale: 1.05 }}
                         whileTap={{ scale: 0.98 }}
-                        onClick={() => handleCardClick(profile)}
                         style={{
                           width: 'calc(100% - 1rem)',
                           maxWidth: '350px',
@@ -131,9 +116,9 @@ const PackOpener = ({ onPackOpened, profiles = [] }: PackOpenerProps) => {
                         }}
                       >
                         <div className="card-inner bg-white rounded-lg p-4 h-full flex flex-col">
-                          {profile.image && (
-                            <div className="profile-image mb-3 rounded-lg overflow-hidden">
-                              <img src={profile.image} alt={profile.name} className="w-full h-40 object-cover" />
+                          {profile.image_url && (
+                            <div className="relative profile-image mb-3 rounded-lg overflow-hidden">
+                              <Image fill={true} src={profile.image_url} alt={profile.name} className="w-full h-40 object-cover" />
                             </div>
                           )}
                           <div className="flex justify-between items-center mb-3">
@@ -147,14 +132,12 @@ const PackOpener = ({ onPackOpened, profiles = [] }: PackOpenerProps) => {
                             </div>
                           </div>
                           <h3 className="text-lg font-bold mb-2">{profile.name}</h3>
-                          <p className="text-sm text-gray-600 line-clamp-3 flex-grow">{profile.description}</p>
                           <motion.button
                             className="mt-3 w-full py-2 rounded-lg bg-gradient-to-r from-pink-500 to-purple-600 text-white text-sm font-bold"
                             whileHover={{ scale: 1.03 }}
                             whileTap={{ scale: 0.97 }}
                             onClick={(e) => {
                               e.stopPropagation();
-                              handleCardClick(profile);
                             }}
                           >
                             Voir le profil
@@ -164,13 +147,14 @@ const PackOpener = ({ onPackOpened, profiles = [] }: PackOpenerProps) => {
                     ))}
                   </div>
                 )}
-                <img src="/logo.svg" alt="Pokemon Pack" className="pack-image" />
+                <Image fill={true} src="/logo.svg" alt="Pokemon Pack" className="pack-image" />
                 <div className="pack-shine"></div>
               </div>
             </div>
 
-            <button
-              ref={buttonRef}
+            <Button
+              //@ts-expect-error if null buttonRef becomes undefined so we can use it
+              ref={buttonRef ?? undefined}
               className="open-pack-button"
               onPointerDown={handlePointerDown}
               onPointerMove={handlePointerMove}
@@ -194,7 +178,7 @@ const PackOpener = ({ onPackOpened, profiles = [] }: PackOpenerProps) => {
                 </span>
                 <span className="button-text">Ouvrir le Pack</span>
               </div>
-            </button>
+            </Button>
           </div>
         </div>
 
@@ -212,9 +196,6 @@ const PackOpener = ({ onPackOpened, profiles = [] }: PackOpenerProps) => {
             Progression: {Math.round(dragProgress)}%
           </div>
         </div>
-      </>
-
-
     </div>
   );
 };

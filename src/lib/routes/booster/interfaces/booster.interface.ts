@@ -1,41 +1,29 @@
-import {
-  DrinkingEnum,
-  OrientationEnum,
-  PoliticsEnum,
-  RelationshipTypeEnum,
-  ReligionEnum,
-  SmokingEnum,
-  ZodiacEnum
-} from "@/lib/routes/preferences/enums";
-import { Interest } from "@/lib/routes/preferences/interfaces/interface";
+import { Interest } from "@/lib/routes/profiles/interfaces/interest.interface";
+import { RarityEnum } from "@/lib/routes/booster/dto/rarity.enum";
 
-export interface BoosterUserProfile {
-  id: string;
+export interface UserCard {
+  id: number;
   name?: string;
   surname?: string;
   age?: number;
-}
-
-export interface Booster {
-  id: number;
   city?: string;
   work?: string;
   languages?: string[];
   min_age?: number;
   max_age?: number;
   max_distance?: number;
-  orientation?: OrientationEnum;
-  relationship_type?: RelationshipTypeEnum;
-  smoking?: SmokingEnum;
-  drinking?: DrinkingEnum;
-  religion?: ReligionEnum;
-  politics?: PoliticsEnum;
-  zodiac?: ZodiacEnum;
+  orientation?: number;
+  relationship_type?: number;
+  smoking?: number;
+  drinking?: number;
+  religion?: number;
+  politics?: number;
+  zodiac?: number;
   images?: (string | null)[];
   avatarUrl?: string;
   interests?: Interest[];
-  userProfile: BoosterUserProfile;
-  created_at: Date;
-  updated_at: Date;
+  created_at?: Date; // Rendu optionnel car peut être absent
+  updated_at?: Date; // Rendu optionnel car peut être absent
+  rarity?: RarityEnum
 }
 

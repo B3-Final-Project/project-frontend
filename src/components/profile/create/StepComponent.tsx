@@ -1,12 +1,14 @@
 'use client';
-import { useParams } from "next/navigation";
-import { StartComponent } from "@/components/profile/create/steps/StartComponent";
-import { PersonalInfoComponent } from "@/components/profile/create/steps/PersonalInfoComponent";
-import { LocationWorkComponent } from "@/components/profile/create/steps/LocationWorkComponent";
-import { PreferencesComponent } from "@/components/profile/create/steps/PreferencesComponent";
+
+import { InterestsComponent } from "@/components/profile/create/steps/InterestsComponent";
 import { LifestyleComponent } from "@/components/profile/create/steps/LifestyleComponent";
-import { ReviewComponent } from "@/components/profile/create/steps/ReviewComponent";
 import Link from "next/link";
+import { LocationWorkComponent } from "@/components/profile/create/steps/LocationWorkComponent";
+import { PersonalInfoComponent } from "@/components/profile/create/steps/PersonalInfoComponent";
+import { PreferencesComponent } from "@/components/profile/create/steps/PreferencesComponent";
+import { ReviewComponent } from "@/components/profile/create/steps/ReviewComponent";
+import { StartComponent } from "@/components/profile/create/steps/StartComponent";
+import { useParams } from "next/navigation";
 
 export const PROFILE_STEPS = [
   'welcome',
@@ -14,6 +16,7 @@ export const PROFILE_STEPS = [
   'location-work',
   'preferences',
   'lifestyle',
+  'interests',
   'review'
 ];
 
@@ -47,6 +50,11 @@ export function StepComponent() {
       param: 'lifestyle',
       description: 'Your lifestyle profiles',
       component: <LifestyleComponent />
+    },
+    {
+      param: 'interests',
+      description: 'Share your interests',
+      component: <InterestsComponent />
     },
     {
       param: 'review',

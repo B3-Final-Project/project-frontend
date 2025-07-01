@@ -1,16 +1,36 @@
 'use client'
-import { UserCardModal } from "@/components/profile/UserCardModal";
-import Image from 'next/image'
+
+import { useEffect, useState } from "react";
+import { FullScreenLoading } from "../FullScreenLoading";
+import Image from 'next/image';
+import { UserCardModal } from "@/components/UserCardModal";
 import { useProfileQuery } from "@/hooks/react-query/profiles";
+import {
+  mapUserProfileToProfileCardType
+} from "@/lib/utils/card-utils";
+import {
+  ProfileCardType
+} from "@/lib/routes/profiles/dto/profile-card-type.dto";
 
 export function ProfileAvatar() {
-  const query = useProfileQuery()
+  const [isUserCardModalOpen, setIsUserCardModalOpen] = useState(false);
+  const [userCard, setUserCard] = useState<ProfileCardType>();
+  const query = useProfileQuery();
 
-  if (query.isLoading){
-    return <div>Loading...</div>
+  useEffect(() => {
+    if (query.data){
+    setUserCard(mapUserProfileToProfileCardType(query.data));
+    }
+  }, [query.data]);
+
+  const handleOpenUserCardModal = () => setIsUserCardModalOpen(true);
+  const handleCloseUserCardModal = () => setIsUserCardModalOpen(false);
+
+  if (query.isLoading) {
+    return <FullScreenLoading />
   }
 
-  if (query.isError){
+  if (query.isError) {
     return <div>{JSON.stringify(query.error)}</div>
   }
 
@@ -18,7 +38,7 @@ export function ProfileAvatar() {
     <>
       <div className="w-[100px] h-[100px] border-4 border-background bg-red-500 rounded-full flex items-center justify-center -translate-y-1/2 overflow-hidden">
         <Image
-          src="/vintage.png"
+          src={userCard?.image_url ?? '/vintage.png'}
           alt="Profile"
           width={200}
           height={200}
@@ -26,17 +46,23 @@ export function ProfileAvatar() {
         />
       </div>
 
-      {query.data?.profile &&
-      <div className={'flex justify-between gap-40'}>
-        <h3 className="text-2xl font-bold">{query.data?.user.name}</h3>
+      {userCard?.name && (
+        <div className={'flex justify-between items-center gap-4'}>
+          <button
+            className="text-2xl font-bold cursor-pointer bg-transparent border-none p-0 text-inherit"
+            onClick={handleOpenUserCardModal}
+          >
+            {userCard.name}
+          </button>
+        </div>
+      )}
+      {userCard && (
         <UserCardModal
-          name={query.data?.user.name}
-          age={query.data?.user.age}
-          location={query.data?.user.location}
-          // using the first interest as a placeholder
-          description={query.data?.profile.interests?.map((interest) => interest.description).toString() ?? "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna} aliqua."}
+          isOpen={isUserCardModalOpen}
+          onCloseAction={handleCloseUserCardModal}
+          user={userCard}
         />
-      </div>}
+      )}
     </>
   );
 }

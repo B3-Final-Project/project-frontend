@@ -1,5 +1,8 @@
-import { ProfileCardType } from './MatchSystem';
 import { motion } from 'framer-motion';
+import Image from 'next/image';
+import {
+  ProfileCardType
+} from "@/lib/routes/profiles/dto/profile-card-type.dto";
 
 interface ProfileDisplayProps {
   profiles: ProfileCardType[];
@@ -10,7 +13,7 @@ const ProfileDisplay = ({ profiles, onFinish }: ProfileDisplayProps) => {
   return (
     <div className="w-full">
       <div className="flex flex-col items-center gap-4">
-        <motion.h2 
+        <motion.h2
           className="text-2xl font-bold text-white"
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -18,7 +21,8 @@ const ProfileDisplay = ({ profiles, onFinish }: ProfileDisplayProps) => {
         >
           Vos profils sont prêts !
         </motion.h2>
-        
+
+
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 w-full max-w-4xl">
           {profiles.map((profile, index) => (
             <motion.div
@@ -30,20 +34,20 @@ const ProfileDisplay = ({ profiles, onFinish }: ProfileDisplayProps) => {
             >
               <div className="flex flex-col items-center">
                 <div className="w-24 h-24 rounded-full bg-gradient-to-br from-pink-500 to-purple-600 mb-3 overflow-hidden">
-                  <img 
-                    src={profile.image || '/img.png'} 
-                    alt={profile.name} 
+                  <Image
+                    src={profile.image_url || '/img.png'}
+                    alt={profile.name}
                     className="w-full h-full object-cover"
                   />
                 </div>
                 <h3 className="text-xl font-semibold text-white">{profile.name}</h3>
                 <p className="text-sm text-gray-300">{profile.age} ans • {profile.location}</p>
-                <p className="mt-2 text-sm text-gray-400 text-center line-clamp-3">{profile.description}</p>
               </div>
             </motion.div>
           ))}
         </div>
-        
+
+
         <motion.button
           className="mt-6 px-6 py-3 bg-gradient-to-r from-pink-500 to-purple-600 rounded-full text-white font-semibold shadow-lg"
           onClick={onFinish}

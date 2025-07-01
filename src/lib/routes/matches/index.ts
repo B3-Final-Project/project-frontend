@@ -1,41 +1,46 @@
-import { authenticatedAxios } from '../../auth-axios';
-import { User } from '../profiles/interfaces/user.interface';
+import { createFetcher } from "@/lib/utils";
+import { RESTServerRoute } from "@/lib/routes/server";
+import {
+  GetMatchesResponse,
+  GetPendingMatchesResponse,
+  GetSentMatchesResponse
+} from "./response/get-matches.response";
+import { MatchActionResponse } from "./response/match-action.response";
 
-export const matchesApi = {
-  // Récupérer tous les matches (utilisateurs avec qui on peut discuter)
-  getMatches: async (): Promise<User[]> => {
-    const response = await authenticatedAxios.get('/matches');
-    return response.data;
-  },
+export class MatchRouter {
+  // Get all matches
+  public static readonly getMatches = createFetcher<GetMatchesResponse>(
+    RESTServerRoute.REST_MATCHES,
+    "GET"
+  );
 
-  // Récupérer les matches récents
-  getRecentMatches: async (): Promise<User[]> => {
-    const response = await authenticatedAxios.get('/matches/recent');
-    return response.data;
-  },
+  // Get pending matches (matches waiting for user's response)
+  public static readonly getPendingMatches = createFetcher<GetPendingMatchesResponse>(
+    RESTServerRoute.REST_MATCHES_PENDING,
+    "GET"
+  );
 
-  // Pour l'instant, on utilise getAllProfiles comme fallback
-  getAllUsers: async (): Promise<User[]> => {
-    const response = await authenticatedAxios.get('/profiles/all');
-    // Transformer les données du backend en format User
-    const backendData = response.data;
-    
-    // Si c'est déjà un tableau, le retourner tel quel
-    if (Array.isArray(backendData)) {
-      return backendData;
-    }
-    
-    // Si c'est un objet avec une propriété qui contient le tableau
-    if (backendData && typeof backendData === 'object') {
-      // Chercher une propriété qui pourrait contenir le tableau
-      const possibleArrayProps = Object.values(backendData).filter(val => Array.isArray(val));
-      if (possibleArrayProps.length > 0) {
-        return possibleArrayProps[0];
-      }
-    }
-    
-    // Fallback: retourner un tableau vide
-    console.warn('Format de données inattendu pour /profiles/all:', backendData);
-    return [];
-  },
-}; 
+  // Get sent matches (matches user has liked/passed)
+  public static readonly getSentMatches = createFetcher<GetSentMatchesResponse>(
+    RESTServerRoute.REST_MATCHES_SENT,
+    "GET"
+  );
+
+  // Get detailed information about a specific match
+  public static readonly getMatchDetails = createFetcher<GetMatchesResponse>(
+    RESTServerRoute.REST_MATCHES_DETAILS,
+    "GET"
+  );
+
+  // Like a match
+  public static readonly likeMatch = createFetcher<MatchActionResponse>(
+    RESTServerRoute.REST_MATCHES_LIKE,
+    "POST"
+  );
+
+  // Pass on a match
+  public static readonly passMatch = createFetcher(
+    RESTServerRoute.REST_MATCHES_PASS,
+    "POST"
+  );
+}
