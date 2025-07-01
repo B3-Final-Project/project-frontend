@@ -1,19 +1,23 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { UserCardModal } from "@/components/UserCardModal";
-import { useProfileQuery } from "@/hooks/react-query/profiles";
-import { Settings } from "lucide-react";
-import { useState } from "react";
 import { Loader } from "../Loader";
+import { Settings } from "lucide-react";
+import { SettingsDialog } from "@/components/SettingsDialog";
+import { UserCardModal } from "@/components/UserCardModal";
 import { mapUserProfileToProfileCardType } from "@/lib/utils/card-utils";
+import { useProfileQuery } from "@/hooks/react-query/profiles";
+import { useState } from "react";
 
 export function ProfileHeader() {
-  const [isUserCardModalOpen, setUserCardModalOpen] = useState(false);
+  const [isUserCardModalOpen, setIsUserCardModalOpen] = useState(false);
+  const [isSettingsDialogOpen, setIsSettingsDialogOpen] = useState(false);
   const query = useProfileQuery();
 
-  const handleOpenUserCardModal = () => setUserCardModalOpen(true);
-  const handleCloseUserCardModal = () => setUserCardModalOpen(false);
+  const handleOpenUserCardModal = () => setIsUserCardModalOpen(true);
+  const handleCloseUserCardModal = () => setIsUserCardModalOpen(false);
+  const handleOpenSettingsDialog = () => setIsSettingsDialogOpen(true);
+  const handleCloseSettingsDialog = () => setIsSettingsDialogOpen(false);
 
   if (query.isLoading) {
     return <Loader />;
@@ -25,7 +29,14 @@ export function ProfileHeader() {
 
   return (
     <div className="flex justify-between items-center px-5 py-8 w-full md:max-w-[750px] md:mx-auto">
-      <Settings />
+      <Button
+        onClick={handleOpenSettingsDialog}
+        variant="ghost"
+        size="icon"
+        className="hover:bg-accent"
+      >
+        <Settings className="h-5 w-5" />
+      </Button>
 
       {query.data?.profile && (
         <Button
@@ -45,6 +56,11 @@ export function ProfileHeader() {
           user={mapUserProfileToProfileCardType(query.data)}
         />
       )}
+
+      <SettingsDialog
+        isOpen={isSettingsDialogOpen}
+        onClose={handleCloseSettingsDialog}
+      />
     </div>
   );
 }
