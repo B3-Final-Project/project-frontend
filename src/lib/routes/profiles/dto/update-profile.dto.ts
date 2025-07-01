@@ -3,7 +3,7 @@ import {
   LifestyleInfo,
   LocationWorkInfo,
   PersonalInfo,
-  PreferenceInfo
+  PreferenceInfo,
 } from "@/hooks/useProfileCreation";
 
 export interface UpdateProfileDto {

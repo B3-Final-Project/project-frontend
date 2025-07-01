@@ -23,7 +23,8 @@ export function useBanUserMutation() {
       console.error("Failed to ban user", error);
       toast({
         title: "Failed to ban user",
-        description: "Please try again or contact support if the issue persists.",
+        description:
+          "Please try again or contact support if the issue persists.",
         variant: "destructive",
       });
     },
@@ -49,7 +50,8 @@ export function useUnbanUserMutation() {
       console.error("Failed to unban user", error);
       toast({
         title: "Failed to unban user",
-        description: "Please try again or contact support if the issue persists.",
+        description:
+          "Please try again or contact support if the issue persists.",
         variant: "destructive",
       });
     },
@@ -73,7 +75,8 @@ export function useReportUserMutation() {
       console.error("Failed to report user", error);
       toast({
         title: "Failed to submit report",
-        description: "Please try again or contact support if the issue persists.",
+        description:
+          "Please try again or contact support if the issue persists.",
         variant: "destructive",
       });
     },

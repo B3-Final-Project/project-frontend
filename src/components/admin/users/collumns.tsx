@@ -1,32 +1,37 @@
 "use client";
 
 import { AlertTriangle, Ban, Eye, ShieldCheck } from "lucide-react";
-import { useBanUserMutation, useUnbanUserMutation } from "@/hooks/react-query/admin";
+import {
+  useBanUserMutation,
+  useUnbanUserMutation,
+} from "@/hooks/react-query/admin";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { ColumnDef } from '@tanstack/react-table'
+import { ColumnDef } from "@tanstack/react-table";
 import { UserManagementDto } from "@/lib/routes/admin/dto/user-management.dto";
 import { UserProfileModalLoader } from "./UserProfileModalLoader";
 import { useState } from "react";
 
 export const UserManagementCollumns: ColumnDef<UserManagementDto>[] = [
   {
-    accessorKey: 'name',
-    header: 'Name',
+    accessorKey: "name",
+    header: "Name",
     cell: ({ row }) => {
       const user = row.original;
       return (
         <div className="flex flex-col">
-          <span className="font-medium">{user.name} {user.surname}</span>
+          <span className="font-medium">
+            {user.name} {user.surname}
+          </span>
           <span className="text-xs text-gray-500">ID: {user.userId}</span>
         </div>
       );
     },
   },
   {
-    accessorKey: 'reportCount',
-    header: 'Reports',
+    accessorKey: "reportCount",
+    header: "Reports",
     cell: ({ row }) => {
       const count = row.original.reportCount;
       let variant: "destructive" | "secondary" | "outline" = "outline";
@@ -48,8 +53,8 @@ export const UserManagementCollumns: ColumnDef<UserManagementDto>[] = [
     },
   },
   {
-    accessorKey: 'isBanned',
-    header: 'Status',
+    accessorKey: "isBanned",
+    header: "Status",
     cell: ({ row }) => {
       const isBanned = row.original.isBanned;
       return (
@@ -63,8 +68,8 @@ export const UserManagementCollumns: ColumnDef<UserManagementDto>[] = [
     },
   },
   {
-    accessorKey: 'createdAt',
-    header: 'Joined',
+    accessorKey: "createdAt",
+    header: "Joined",
     cell: ({ row }) => {
       const date = row.original.createdAt;
       return date ? (
@@ -77,8 +82,8 @@ export const UserManagementCollumns: ColumnDef<UserManagementDto>[] = [
     },
   },
   {
-    id: 'actions',
-    header: 'Actions',
+    id: "actions",
+    header: "Actions",
     cell: ({ row }) => {
       const user = row.original;
       return <UserActionsCell user={user} />;

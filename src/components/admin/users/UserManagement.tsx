@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 
 import { Button } from "@/components/ui/button";
-import { DataTable } from "./data-table"
+import { DataTable } from "./data-table";
 import SearchBar from "@/components/admin/users/SearchBar";
 import { SortControls } from "@/components/admin/users/SortControls";
 import { UserManagementCollumns } from "./collumns";
@@ -9,10 +9,12 @@ import { UserManagementDto } from "@/lib/routes/admin/dto/user-management.dto";
 import { useAllProfilesQuery } from "@/hooks/react-query/profiles";
 
 function UserManagement() {
-  const [sortBy, setSortBy] = useState<'reportCount' | 'createdAt' | undefined>();
-  const [sortOrder, setSortOrder] = useState<'ASC' | 'DESC' | undefined>();
-  const [searchTerm, setSearchTerm] = useState<string>('');
-  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState<string>('');
+  const [sortBy, setSortBy] = useState<
+    "reportCount" | "createdAt" | undefined
+  >();
+  const [sortOrder, setSortOrder] = useState<"ASC" | "DESC" | undefined>();
+  const [searchTerm, setSearchTerm] = useState<string>("");
+  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState<string>("");
 
   // Debounce search term for API calls
   useEffect(() => {
@@ -28,7 +30,10 @@ function UserManagement() {
 
   const query = useAllProfilesQuery(sortBy, sortOrder, debouncedSearchTerm);
 
-  const handleSortChange = (newSortBy: 'reportCount' | 'createdAt', newSortOrder: 'ASC' | 'DESC') => {
+  const handleSortChange = (
+    newSortBy: "reportCount" | "createdAt",
+    newSortOrder: "ASC" | "DESC",
+  ) => {
     setSortBy(newSortBy);
     setSortOrder(newSortOrder);
   };
@@ -55,8 +60,12 @@ function UserManagement() {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
         <div className="text-center">
-          <h2 className="text-xl font-semibold text-gray-900 mb-2">Error Loading Users</h2>
-          <p className="text-gray-600">{query.error?.message ?? 'An unexpected error occurred'}</p>
+          <h2 className="text-xl font-semibold text-gray-900 mb-2">
+            Error Loading Users
+          </h2>
+          <p className="text-gray-600">
+            {query.error?.message ?? "An unexpected error occurred"}
+          </p>
         </div>
       </div>
     );
@@ -78,7 +87,7 @@ function UserManagement() {
         />
       </div>
       <div className="space-y-4">
-        <DataTable columns={UserManagementCollumns} data={allUsers}/>
+        <DataTable columns={UserManagementCollumns} data={allUsers} />
 
         {/* Load More Button */}
         {query.hasNextPage && (
@@ -102,7 +111,7 @@ function UserManagement() {
         )}
       </div>
     </div>
-  )
+  );
 }
 
-export default UserManagement
+export default UserManagement;

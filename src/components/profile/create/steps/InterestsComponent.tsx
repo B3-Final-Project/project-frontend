@@ -1,6 +1,9 @@
-'use client';
+"use client";
 
-import { SharedInterestsForm, validateInterestsForm } from "@/components/profile/shared/SharedInterestsForm";
+import {
+  SharedInterestsForm,
+  validateInterestsForm,
+} from "@/components/profile/shared/SharedInterestsForm";
 
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -10,7 +13,8 @@ import { useProfileCreation } from "@/providers/ProfileCreationProvider";
 import { useState } from "react";
 
 export function InterestsComponent() {
-  const { interestInfo, setInterestInfo, goToNextStep, goToPreviousStep } = useProfileCreation();
+  const { interestInfo, setInterestInfo, goToNextStep, goToPreviousStep } =
+    useProfileCreation();
   const { step } = useParams<{ step: string }>();
   const [errors, setErrors] = useState<Record<string, string>>({});
 

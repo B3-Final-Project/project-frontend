@@ -20,7 +20,7 @@ interface GenericProfileDialogProps<T> {
   renderFormContent(
     formData: T,
     handleInputChange: (fieldName: string, value: string | number) => void,
-    setFormData: React.Dispatch<React.SetStateAction<T>>
+    setFormData: React.Dispatch<React.SetStateAction<T>>,
   ): ReactNode;
 }
 
@@ -32,7 +32,8 @@ export function GenericProfileDialog<T>({
   renderFormContent,
 }: GenericProfileDialogProps<T>) {
   const { data, isLoading } = useProfileQuery();
-  const updateProfile = useUpdatePartialProfileMutation<Partial<UpdateProfileDto>>();
+  const updateProfile =
+    useUpdatePartialProfileMutation<Partial<UpdateProfileDto>>();
   const profile = data?.profile;
   const user = data?.user;
 
@@ -45,15 +46,15 @@ export function GenericProfileDialog<T>({
   }, [profile, user, extractFormDataFromProfile]);
 
   const handleInputChange = (fieldName: string, value: string | number) => {
-    setFormData(prevData => ({ ...prevData, [fieldName]: value }));
+    setFormData((prevData) => ({ ...prevData, [fieldName]: value }));
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!profile || !user) return;
-    const payload = buildUpdatePayload(formData)
+    const payload = buildUpdatePayload(formData);
 
-    updateProfile.mutate(payload)
+    updateProfile.mutate(payload);
   };
 
   if (isLoading) return <div>Loading...</div>;
@@ -65,7 +66,11 @@ export function GenericProfileDialog<T>({
         <div className="space-y-4">
           {renderFormContent(formData, handleInputChange, setFormData)}
 
-          <Button type="submit" className="w-full" disabled={updateProfile.isPending}>
+          <Button
+            type="submit"
+            className="w-full"
+            disabled={updateProfile.isPending}
+          >
             {updateProfile.isPending ? "Saving..." : "Save Changes"}
           </Button>
         </div>

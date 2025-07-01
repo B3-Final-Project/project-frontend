@@ -46,6 +46,9 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       <Comp
         className={cn(buttonVariants({ variant, size, className }))}
         ref={ref}
+        style={{
+          boxShadow: "0px -4px 4px 0px rgba(255, 255, 255, 0.25) inset",
+        }}
         {...props}
       />
     );

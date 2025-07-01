@@ -10,9 +10,7 @@ import { ReligionEnum } from "@/lib/routes/profiles/enums/religion.enum";
 import { SmokingEnum } from "@/lib/routes/profiles/enums/smoking.enum";
 import { ZodiacEnum } from "@/lib/routes/profiles/enums/zodiac.enum";
 import { useAuth } from "react-oidc-context";
-import {
-  useCreateProfileMutation,
-} from "@/hooks/react-query/profiles";
+import { useCreateProfileMutation } from "@/hooks/react-query/profiles";
 import { useRouter } from "next/navigation";
 
 export interface InterestItem {
@@ -70,7 +68,9 @@ export interface ProfileCreationApi {
   goToPreviousStep: (currentStep: string, steps: string[]) => void;
 }
 
-export const useProfileCreation = (basePath: string = "/profile"): ProfileCreationApi => {
+export const useProfileCreation = (
+  basePath: string = "/profile",
+): ProfileCreationApi => {
   const router = useRouter();
   const { user } = useAuth();
   const userId = user?.profile?.sub;
@@ -97,7 +97,7 @@ export const useProfileCreation = (basePath: string = "/profile"): ProfileCreati
   const [lifestyleInfo, setLifestyleInfo] = useState<LifestyleInfo>({});
 
   const [interestInfo, setInterestInfo] = useState<InterestInfo>({
-    interests: []
+    interests: [],
   });
 
   const saveProfile = useCallback(async () => {

@@ -1,8 +1,6 @@
 "use client";
 
-import {
-  DialogContentChoices
-} from "@/components/profile/ProfileDialogContent";
+import { DialogContentChoices } from "@/components/profile/ProfileDialogContent";
 import { LifestyleDialog } from "./dialogContent/LifestyleDialog";
 import { LocationWorkDialog } from "./dialogContent/LocationWorkDialog";
 import { PersonalInfoDialog } from "./dialogContent/PersonalInfoDialog";

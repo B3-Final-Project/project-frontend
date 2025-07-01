@@ -1,8 +1,8 @@
 "use client";
 
-import { Bar, BarChart, CartesianGrid, Tooltip, XAxis, YAxis } from 'recharts';
+import { Bar, BarChart, CartesianGrid, Tooltip, XAxis, YAxis } from "recharts";
 
-import { ChartCard } from '@/components/admin/dashboard/shared/ChartCard';
+import { ChartCard } from "@/components/admin/dashboard/shared/ChartCard";
 import { useComprehensiveStatsQuery } from "@/hooks/react-query/stats";
 
 export function BoosterUsageChart() {
@@ -10,10 +10,10 @@ export function BoosterUsageChart() {
 
   if (!comprehensiveStats) return null;
 
-  const boosterData = comprehensiveStats.boosterStats.map(booster => ({
+  const boosterData = comprehensiveStats.boosterStats.map((booster) => ({
     name: booster.boosterName,
     opened: booster.timesOpened,
-    type: booster.boosterType
+    type: booster.boosterType,
   }));
 
   return (

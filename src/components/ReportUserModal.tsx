@@ -42,7 +42,11 @@ export function ReportUserModal({
   const handleReportSubmit = () => {
     if (!user.id) return;
     if (reportCategory) {
-      reportMutation.mutate({ reportedProfileId: parseInt(user.id), reason: reportCategory, details: reportReason });
+      reportMutation.mutate({
+        reportedProfileId: parseInt(user.id),
+        reason: reportCategory,
+        details: reportReason,
+      });
       setReportReason("");
       setReportCategory(ReportReason.OTHER);
       setIsOpen(false);

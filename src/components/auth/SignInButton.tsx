@@ -1,11 +1,11 @@
-'use client'
+"use client";
 
 import { Button } from "@/components/ui/button";
 import { useAuth } from "react-oidc-context";
 import { useAuthConfigReady } from "@/hooks/useAuthConfigReady";
 import { useRouter } from "next/navigation";
 
-export function SignInButton(){
+export function SignInButton() {
   const { isReady, isLoading, config } = useAuthConfigReady();
   const auth = useAuth();
   const router = useRouter();
@@ -33,7 +33,7 @@ export function SignInButton(){
     const cognitoDomain = config.hostedDomain;
 
     if (!clientId || !logoutUri || !cognitoDomain) {
-      console.error('Missing Cognito environment variables');
+      console.error("Missing Cognito environment variables");
       return;
     }
 

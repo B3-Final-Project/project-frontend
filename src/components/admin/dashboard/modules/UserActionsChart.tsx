@@ -1,6 +1,6 @@
 "use client";
 
-import { Cell, Pie, PieChart, Tooltip } from 'recharts';
+import { Cell, Pie, PieChart, Tooltip } from "recharts";
 
 import { useComprehensiveStatsQuery } from "@/hooks/react-query/stats";
 import { formatPercentageLabel } from "@/lib/utils/stats-utils";
@@ -12,9 +12,21 @@ export function UserActionsChart() {
   if (!comprehensiveStats) return null;
 
   const matchData = [
-    { name: 'Likes', value: comprehensiveStats.appStats.totalLikes, color: '#00C49F' },
-    { name: 'Passes', value: comprehensiveStats.appStats.totalPasses, color: '#FF8042' },
-    { name: 'Matches', value: comprehensiveStats.appStats.totalMatches, color: '#0088FE' },
+    {
+      name: "Likes",
+      value: comprehensiveStats.appStats.totalLikes,
+      color: "#00C49F",
+    },
+    {
+      name: "Passes",
+      value: comprehensiveStats.appStats.totalPasses,
+      color: "#FF8042",
+    },
+    {
+      name: "Matches",
+      value: comprehensiveStats.appStats.totalMatches,
+      color: "#0088FE",
+    },
   ];
 
   return (
@@ -37,7 +49,7 @@ export function UserActionsChart() {
             <Cell key={`match-${entry.name}`} fill={entry.color} />
           ))}
         </Pie>
-        <Tooltip formatter={(value) => [value.toLocaleString(), 'Count']} />
+        <Tooltip formatter={(value) => [value.toLocaleString(), "Count"]} />
       </PieChart>
     </ChartCard>
   );

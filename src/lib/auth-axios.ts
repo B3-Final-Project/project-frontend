@@ -12,13 +12,13 @@ const authenticatedAxios = axios.create({
 
 // Helper function to extract token from sessionStorage - more robust version
 const getTokenFromSession = (): string | null => {
-  if (typeof window === 'undefined') return null;
+  if (typeof window === "undefined") return null;
 
   try {
     // Scan all sessionStorage keys for any oidc.user entry
     const keys = Object.keys(sessionStorage);
     for (const key of keys) {
-      if (key.startsWith('oidc.user:')) {
+      if (key.startsWith("oidc.user:")) {
         const userJson = sessionStorage.getItem(key);
         if (userJson) {
           const user: User = JSON.parse(userJson);
@@ -29,7 +29,7 @@ const getTokenFromSession = (): string | null => {
       }
     }
   } catch (error) {
-    console.warn('Failed to parse OIDC user data:', error);
+    console.warn("Failed to parse OIDC user data:", error);
   }
 
   return null;
@@ -47,7 +47,8 @@ authenticatedAxios.interceptors.request.use(
     }
     return config;
   },
-  (error) => Promise.reject(error instanceof Error ? error : new Error(String(error)))
+  (error) =>
+    Promise.reject(error instanceof Error ? error : new Error(String(error))),
 );
 
 // Response interceptor to handle auth errors
@@ -55,10 +56,12 @@ authenticatedAxios.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response?.status === 401) {
-      console.warn('Authentication failed, user may need to log in again');
+      console.warn("Authentication failed, user may need to log in again");
     }
-    return Promise.reject(error instanceof Error ? error : new Error(String(error)));
-  }
+    return Promise.reject(
+      error instanceof Error ? error : new Error(String(error)),
+    );
+  },
 );
 
 export { authenticatedAxios };

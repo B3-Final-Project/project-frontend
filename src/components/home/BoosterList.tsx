@@ -11,7 +11,7 @@ export default function BoosterList() {
 
   return (
     <div className="flex flex-col w-full ">
-      <h1 className="text-2xl font-bold mb-4">Available Booster Packs</h1>
+      <h1 className=" mb-4">Available Booster Packs</h1>
 
       <ul className="flex flex-wrap gap-4 w-full px-4 md:px-0">
         {packs?.map((pack: BoosterPackDto) => (

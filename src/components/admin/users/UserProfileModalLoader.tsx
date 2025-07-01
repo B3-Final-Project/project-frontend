@@ -3,11 +3,9 @@
 import { useProfileByIdMutation } from "@/hooks/react-query/profiles";
 import { UserCardModal } from "@/components/UserCardModal";
 import { UserManagementDto } from "@/lib/routes/admin/dto/user-management.dto";
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { mapUserProfileToProfileCardType } from "@/lib/utils/card-utils";
-import {
-  ProfileCardType
-} from "@/lib/routes/profiles/dto/profile-card-type.dto";
+import { ProfileCardType } from "@/lib/routes/profiles/dto/profile-card-type.dto";
 
 interface UserProfileModalLoaderProps {
   readonly user: UserManagementDto;
@@ -15,7 +13,11 @@ interface UserProfileModalLoaderProps {
   onClose(): void;
 }
 
-export function UserProfileModalLoader({ user, isOpen, onClose }: UserProfileModalLoaderProps) {
+export function UserProfileModalLoader({
+  user,
+  isOpen,
+  onClose,
+}: UserProfileModalLoaderProps) {
   const { mutate, data } = useProfileByIdMutation(user.userId);
   const [fetched, setFetched] = useState(false);
   const [profileCard, setProfileCard] = useState<ProfileCardType>();
@@ -36,11 +38,10 @@ export function UserProfileModalLoader({ user, isOpen, onClose }: UserProfileMod
     }
   }, [data]);
 
-
   if (!profileCard) {
     return null; // or a loading spinner
   }
-    return (
+  return (
     <UserCardModal
       user={profileCard}
       isOpen={isOpen}
