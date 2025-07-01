@@ -28,6 +28,7 @@ export default function ConversationPage({ initialConversationId }: Conversation
     const router = useRouter();
     const messagesEndRef = useRef<HTMLDivElement>(null);
     const lastMarkedConversation = useRef<string | null>(null);
+    const modalRef = useRef<HTMLDivElement>(null);
 
     // Hooks pour les sockets et les données
     const {
@@ -175,7 +176,7 @@ export default function ConversationPage({ initialConversationId }: Conversation
         }
     };
 
-    // Gestion de la fermeture de la popup avec Échap
+    // Gestion de la fermeture de la popup avec Échap et focus
     useEffect(() => {
         const handleEscape = (e: KeyboardEvent) => {
             if (e.key === 'Escape' && showDeleteConfirm && !isDeleting) {
@@ -187,6 +188,11 @@ export default function ConversationPage({ initialConversationId }: Conversation
             document.addEventListener('keydown', handleEscape);
             // Empêcher le scroll du body
             document.body.style.overflow = 'hidden';
+            
+            // Focus sur la modal quand elle s'ouvre
+            setTimeout(() => {
+                modalRef.current?.focus();
+            }, 100);
         }
 
         return () => {
@@ -402,16 +408,25 @@ export default function ConversationPage({ initialConversationId }: Conversation
                 <dialog 
                     open
                     className="fixed inset-0 bg-opacity-50 flex items-center justify-center z-50 p-4"
-                    onKeyDown={handlePopupKeyDown}
                     aria-modal="true"
                     aria-labelledby="delete-dialog-title"
                 >
                     <div 
-                        className="fixed inset-0"
+                        className="fixed inset-0 bg-black bg-opacity-50"
                         onClick={!isDeleting ? cancelDeleteConversation : undefined}
-                        aria-hidden="true"
+                        onKeyDown={!isDeleting ? (e) => e.key === 'Escape' && cancelDeleteConversation() : undefined}
+                        role="button"
+                        tabIndex={0}
+                        aria-label="Fermer la modal"
                     />
-                    <form method="dialog" className="relative bg-white border border-gray-200 rounded-xl shadow-2xl max-w-md w-full p-6 animate-in fade-in-0 zoom-in-95 duration-200" onClick={e => e.stopPropagation()}>
+                    <div 
+                        ref={modalRef}
+                        role="dialog"
+                        className="relative bg-white border border-gray-200 rounded-xl shadow-2xl max-w-md w-full p-6 animate-in fade-in-0 zoom-in-95 duration-200" 
+                        onClick={e => e.stopPropagation()}
+                        onKeyDown={handlePopupKeyDown}
+                        tabIndex={0}
+                    >
                         <div className="flex items-center gap-3 mb-4">
                             <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center">
                                 <IoTrash className="w-6 h-6 text-red-600" />
@@ -454,7 +469,7 @@ export default function ConversationPage({ initialConversationId }: Conversation
                                 )}
                             </button>
                         </div>
-                    </form>
+                    </div>
                 </dialog>
             )}
         </div>

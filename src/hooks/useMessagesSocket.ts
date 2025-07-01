@@ -19,6 +19,255 @@ interface OnlineUser {
 // Set global pour tracker les messages déjà traités
 const processedMessages = new Set<string>();
 
+// Fonctions utilitaires pour la gestion des tokens
+const getCurrentUserIdFromToken = (): string | null => {
+  const token = localStorage.getItem('auth_token');
+  if (!token) return null;
+  
+  try {
+    const payload = JSON.parse(atob(token.split('.')[1]));
+    return payload.sub ?? payload.username;
+  } catch (error) {
+    console.error('❌ Erreur lors du décodage du token:', error);
+    return null;
+  }
+};
+
+// Fonctions utilitaires pour les mises à jour des données
+const createUpdateMessagesData = (queryClient: any) => {
+  return (conversationId: string, correctedMessage: Message) => {
+    queryClient.setQueryData(['messages', conversationId], (oldData: Message[] | undefined) => {
+      if (!oldData) return [correctedMessage];
+      
+      const existingMessage = oldData.find(m => m.id === correctedMessage.id);
+      if (existingMessage) {
+        console.log('⚠️ Message déjà dans la liste, ignoré:', correctedMessage.id);
+        return oldData;
+      }
+      
+      return [...oldData, correctedMessage];
+    });
+  };
+};
+
+const createUpdateConversationsData = (queryClient: any) => {
+  return (conversationId: string, correctedMessage: Message, isMe: boolean) => {
+    queryClient.setQueryData(['conversations'], (oldData: Conversation[] | undefined) => {
+      if (!oldData) return [];
+      
+      return oldData.map(conv => {
+        if (conv.id === conversationId) {
+          return {
+            ...conv,
+            lastMessage: correctedMessage,
+            unread: conv.unread + (isMe ? 0 : 1),
+            lastActive: correctedMessage.timestamp,
+          };
+        }
+        return conv;
+      });
+    });
+  };
+};
+
+const createUpdateConversationsForRead = (queryClient: any) => {
+  return (conversationId: string) => {
+    queryClient.setQueryData(['conversations'], (oldData: Conversation[] | undefined) => {
+      if (!oldData) return [];
+      
+      return oldData.map(conv => {
+        if (conv.id === conversationId) {
+          return {
+            ...conv,
+            unread: 0,
+          };
+        }
+        return conv;
+      });
+    });
+  };
+};
+
+const createUpdateMessagesForRead = (queryClient: any) => {
+  return (conversationId: string) => {
+    queryClient.setQueryData(['messages', conversationId], (oldData: Message[] | undefined) => {
+      if (!oldData) return [];
+      
+      return oldData.map(message => ({
+        ...message,
+        isRead: message.isMe ? message.isRead : true,
+      }));
+    });
+  };
+};
+
+const createUpdateConversationsForUnread = (queryClient: any) => {
+  return (conversationId: string, messageCount: number) => {
+    queryClient.setQueryData(['conversations'], (oldData: Conversation[] | undefined) => {
+      if (!oldData) return [];
+      
+      return oldData.map(conv => {
+        if (conv.id === conversationId) {
+          console.log(`📈 Mise à jour du compteur pour la conversation ${conversationId}: ${conv.unread} + ${messageCount}`);
+          return {
+            ...conv,
+            unread: conv.unread + messageCount,
+          };
+        }
+        return conv;
+      });
+    });
+  };
+};
+
+const createRemoveConversation = (queryClient: any) => {
+  return (conversationId: string) => {
+    queryClient.setQueryData(['conversations'], (oldData: Conversation[] | undefined) => {
+      if (!oldData) return [];
+      return oldData.filter(conv => conv.id !== conversationId);
+    });
+  };
+};
+
+// Fonction pour gérer les messages traités
+const handleProcessedMessage = (messageId: string | undefined) => {
+  if (!messageId) return false;
+  
+  if (processedMessages.has(messageId)) {
+    console.log('⚠️ Message déjà présent, ignoré:', messageId);
+    return true;
+  }
+  
+  processedMessages.add(messageId);
+  
+  // Limiter la taille du Set pour éviter les fuites mémoire
+  if (processedMessages.size > 1000) {
+    const firstKey = processedMessages.values().next().value;
+    if (firstKey) {
+      processedMessages.delete(firstKey);
+    }
+  }
+  
+  return false;
+};
+
+// Création des handlers
+const createMessageHandlers = (queryClient: any, toast: any) => {
+  const updateMessagesData = createUpdateMessagesData(queryClient);
+  const updateConversationsData = createUpdateConversationsData(queryClient);
+  const updateConversationsForRead = createUpdateConversationsForRead(queryClient);
+  const updateMessagesForRead = createUpdateMessagesForRead(queryClient);
+  const updateConversationsForUnread = createUpdateConversationsForUnread(queryClient);
+  const removeConversation = createRemoveConversation(queryClient);
+
+  return {
+    handleNewMessage: (message: Message) => {
+      console.log('🔄 Nouveau message reçu via WebSocket:', message);
+      
+      if (handleProcessedMessage(message.id)) {
+        return;
+      }
+      
+      console.log('✅ Message ajouté à la conversation:', message.id ?? 'ID manquant');
+      
+      const currentUserId = getCurrentUserIdFromToken();
+      const isMe = Boolean(currentUserId && message.sender_id === currentUserId);
+      
+      const correctedMessage = {
+        ...message,
+        isMe
+      };
+      
+      updateMessagesData(message.conversationId, correctedMessage);
+      updateConversationsData(message.conversationId, correctedMessage, isMe);
+      
+      queryClient.invalidateQueries({ queryKey: ['messages', message.conversationId] });
+      queryClient.invalidateQueries({ queryKey: ['conversations'] });
+    },
+
+    handleNewConversation: (conversation: Conversation) => {
+      queryClient.setQueryData(['conversations'], (oldData: Conversation[] | undefined) => {
+        if (!oldData) return [conversation];
+        if (oldData.some(conv => conv.id === conversation.id)) {
+          return oldData;
+        }
+        return [conversation, ...oldData];
+      });
+    },
+
+    handleMessagesRead: (data: { conversationId: string; readBy: string; timestamp: Date }) => {
+      updateMessagesForRead(data.conversationId);
+      updateConversationsForRead(data.conversationId);
+    },
+
+    handleUserTyping: (data: { userId: string; conversationId: string; isTyping: boolean }) => {
+      return (prev: Map<string, Set<string>>) => {
+        const newMap = new Map(prev);
+        
+        if (data.isTyping) {
+          const users = new Set(newMap.get(data.conversationId) ?? []);
+          users.add(data.userId);
+          newMap.set(data.conversationId, users);
+        } else {
+          const users = new Set(newMap.get(data.conversationId) ?? []);
+          users.delete(data.userId);
+          if (users.size === 0) {
+            newMap.delete(data.conversationId);
+          } else {
+            newMap.set(data.conversationId, users);
+          }
+        }
+        
+        return newMap;
+      };
+    },
+
+    handleUserOnline: (data: { userId: string }) => {
+      console.log('🟢 Utilisateur en ligne:', data.userId);
+      return (prev: Set<string>) => new Set([...prev, data.userId]);
+    },
+
+    handleUserOffline: (data: { userId: string }) => {
+      console.log('🔴 Utilisateur hors ligne:', data.userId);
+      return (prev: Set<string>) => {
+        const newSet = new Set(prev);
+        newSet.delete(data.userId);
+        return newSet;
+      };
+    },
+
+    handleOnlineUsers: (data: { users: string[] }) => {
+      console.log('📋 Liste des utilisateurs en ligne reçue:', data.users);
+      const uniqueUsers = Array.from(new Set(data.users));
+      return new Set(uniqueUsers);
+    },
+
+    handleUnreadMessage: (data: { conversationId: string; messageCount: number; timestamp: Date }) => {
+      console.log('🔔 Notification de message non lu reçue:', data);
+      
+      updateConversationsForUnread(data.conversationId, data.messageCount);
+      queryClient.invalidateQueries({ queryKey: ['conversations'] });
+    },
+
+    handleConversationDeleted: (data: { conversationId: string; deletedBy: string; timestamp: Date }) => {
+      console.log('🗑 Conversation supprimée:', data.conversationId);
+      
+      const currentUserId = getCurrentUserIdFromToken();
+      
+      if (currentUserId && data.deletedBy !== currentUserId) {
+        toast({
+          title: "Conversation supprimée",
+          description: "L'autre utilisateur a supprimé cette conversation.",
+          variant: "destructive",
+        });
+      }
+      
+      removeConversation(data.conversationId);
+      queryClient.invalidateQueries({ queryKey: ['conversations'] });
+    }
+  };
+};
+
 export const useMessagesSocket = () => {
   const { socket, isConnected } = useSocket();
   const queryClient = useQueryClient();
@@ -28,17 +277,7 @@ export const useMessagesSocket = () => {
   const [onlineUsers, setOnlineUsers] = useState<Set<string>>(new Set());
   const [currentConversationId, setCurrentConversationId] = useState<string | null>(null);
   const listenersInitialized = useRef(false);
-  const handlersRef = useRef<{
-    handleNewMessage: (message: Message) => void;
-    handleNewConversation: (conversation: Conversation) => void;
-    handleMessagesRead: (data: { conversationId: string; readBy: string; timestamp: Date }) => void;
-    handleUserTyping: (data: { userId: string; conversationId: string; isTyping: boolean }) => void;
-    handleUserOnline: (data: { userId: string }) => void;
-    handleUserOffline: (data: { userId: string }) => void;
-    handleOnlineUsers: (data: { users: string[] }) => void;
-    handleUnreadMessage: (data: { conversationId: string; messageCount: number; timestamp: Date }) => void;
-    handleConversationDeleted: (data: { conversationId: string; deletedBy: string; timestamp: Date }) => void;
-  } | null>(null);
+  const handlersRef = useRef<any>(null);
 
   // Fonction pour envoyer un message via socket
   const sendMessage = useCallback((messageData: {
@@ -47,47 +286,46 @@ export const useMessagesSocket = () => {
   }) => {
     console.log('🔌 Tentative d\'envoi WebSocket:', { isConnected, socket: !!socket, messageData });
     
-    if (socket && isConnected) {
-      console.log('✅ Envoi WebSocket en cours...');
-      socket.emit('sendMessage', messageData);
-      
-      // Ajouter un listener pour confirmer l'envoi
-      socket.once('messageSent', (data) => {
-        console.log('✅ Message confirmé par le serveur WebSocket:', data);
-      });
-      
-      socket.once('error', (error) => {
-        console.error('❌ Erreur WebSocket lors de l\'envoi:', error);
-      });
-    } else {
+    if (!socket || !isConnected) {
       console.error('❌ Impossible d\'envoyer via WebSocket:', { 
         socket: !!socket, 
         isConnected, 
         messageData 
       });
+      return;
     }
+    
+    console.log('✅ Envoi WebSocket en cours...');
+    socket.emit('sendMessage', messageData);
+    
+    socket.once('messageSent', (data) => {
+      console.log('✅ Message confirmé par le serveur WebSocket:', data);
+    });
+    
+    socket.once('error', (error) => {
+      console.error('❌ Erreur WebSocket lors de l\'envoi:', error);
+    });
   }, [socket, isConnected]);
 
   // Fonction pour rejoindre une conversation
   const joinConversation = useCallback((conversationId: string) => {
-    if (socket && isConnected) {
-      // Quitter la conversation précédente si elle existe
-      if (currentConversationId) {
-        socket.emit('leaveConversation', currentConversationId);
-      }
-      
-      socket.emit('joinConversation', conversationId);
-      setCurrentConversationId(conversationId);
+    if (!socket || !isConnected) return;
+    
+    if (currentConversationId) {
+      socket.emit('leaveConversation', currentConversationId);
     }
+    
+    socket.emit('joinConversation', conversationId);
+    setCurrentConversationId(conversationId);
   }, [socket, isConnected, currentConversationId]);
 
   // Fonction pour quitter une conversation
   const leaveConversation = useCallback((conversationId: string) => {
-    if (socket && isConnected) {
-      socket.emit('leaveConversation', conversationId);
-      if (currentConversationId === conversationId) {
-        setCurrentConversationId(null);
-      }
+    if (!socket || !isConnected) return;
+    
+    socket.emit('leaveConversation', conversationId);
+    if (currentConversationId === conversationId) {
+      setCurrentConversationId(null);
     }
   }, [socket, isConnected, currentConversationId]);
 
@@ -136,265 +374,18 @@ export const useMessagesSocket = () => {
     console.log('🔌 Initialisation des listeners WebSocket...');
     listenersInitialized.current = true;
 
-    // Fonctions utilitaires pour les mises à jour
-    const updateMessagesData = (conversationId: string, correctedMessage: Message) => {
-      queryClient.setQueryData(['messages', conversationId], (oldData: Message[] | undefined) => {
-        if (!oldData) return [correctedMessage];
-        
-        const existingMessage = oldData.find(m => m.id === correctedMessage.id);
-        if (existingMessage) {
-          console.log('⚠️ Message déjà dans la liste, ignoré:', correctedMessage.id);
-          return oldData;
-        }
-        
-        return [...oldData, correctedMessage];
-      });
-    };
+    // Créer les handlers
+    const handlers = createMessageHandlers(queryClient, toast);
+    handlersRef.current = handlers;
 
-    const updateConversationsData = (conversationId: string, correctedMessage: Message, isMe: boolean) => {
-      queryClient.setQueryData(['conversations'], (oldData: Conversation[] | undefined) => {
-        if (!oldData) return [];
-        
-        return oldData.map(conv => {
-          if (conv.id === conversationId) {
-            return {
-              ...conv,
-              lastMessage: correctedMessage,
-              unread: conv.unread + (isMe ? 0 : 1),
-              lastActive: correctedMessage.timestamp,
-            };
-          }
-          return conv;
-        });
-      });
-    };
-
-    const updateConversationsForRead = (conversationId: string) => {
-      queryClient.setQueryData(['conversations'], (oldData: Conversation[] | undefined) => {
-        if (!oldData) return [];
-        
-        return oldData.map(conv => {
-          if (conv.id === conversationId) {
-            return {
-              ...conv,
-              unread: 0,
-            };
-          }
-          return conv;
-        });
-      });
-    };
-
-    const updateMessagesForRead = (conversationId: string) => {
-      queryClient.setQueryData(['messages', conversationId], (oldData: Message[] | undefined) => {
-        if (!oldData) return [];
-        
-        return oldData.map(message => ({
-          ...message,
-          isRead: message.isMe ? message.isRead : true,
-        }));
-      });
-    };
-
-    const updateConversationsForUnread = (conversationId: string, messageCount: number) => {
-      queryClient.setQueryData(['conversations'], (oldData: Conversation[] | undefined) => {
-        if (!oldData) return [];
-        
-        return oldData.map(conv => {
-          if (conv.id === conversationId) {
-            console.log(`📈 Mise à jour du compteur pour la conversation ${conversationId}: ${conv.unread} + ${messageCount}`);
-            return {
-              ...conv,
-              unread: conv.unread + messageCount,
-            };
-          }
-          return conv;
-        });
-      });
-    };
-
-    const removeConversation = (conversationId: string) => {
-      queryClient.setQueryData(['conversations'], (oldData: Conversation[] | undefined) => {
-        if (!oldData) return [];
-        return oldData.filter(conv => conv.id !== conversationId);
-      });
-    };
-
-    // Créer les handlers une seule fois
-    handlersRef.current = {
-      // Nouveau message reçu
-      handleNewMessage: (message: Message) => {
-        console.log('🔄 Nouveau message reçu via WebSocket:', message);
-        
-        // Vérifier si le message a déjà été traité
-        if (message.id && processedMessages.has(message.id)) {
-          console.log('⚠️ Message déjà présent, ignoré:', message.id);
-          return;
-        }
-        
-        // Marquer le message comme traité
-        if (message.id) {
-          processedMessages.add(message.id);
-          
-          // Limiter la taille du Set pour éviter les fuites mémoire
-          if (processedMessages.size > 1000) {
-            const firstKey = processedMessages.values().next().value;
-            if (firstKey) {
-              processedMessages.delete(firstKey);
-            }
-          }
-        }
-        
-        console.log('✅ Message ajouté à la conversation:', message.id ?? 'ID manquant');
-        
-        // Récupérer l'ID utilisateur actuel depuis le token
-        const token = localStorage.getItem('auth_token');
-        let currentUserId: string | null = null;
-        
-        if (token) {
-          try {
-            const payload = JSON.parse(atob(token.split('.')[1]));
-            currentUserId = payload.sub ?? payload.username;
-          } catch (error) {
-            console.error('❌ Erreur lors du décodage du token:', error);
-          }
-        }
-        
-        // Recalculer isMe en comparant avec l'utilisateur actuel
-        const isMe = Boolean(currentUserId && message.sender_id === currentUserId);
-        
-        // Créer le message avec isMe recalculé
-        const correctedMessage = {
-          ...message,
-          isMe
-        };
-        
-        // Mettre à jour les données
-        updateMessagesData(message.conversationId, correctedMessage);
-        updateConversationsData(message.conversationId, correctedMessage, isMe);
-        
-        // Invalider les requêtes pour forcer un refresh
-        queryClient.invalidateQueries({ queryKey: ['messages', message.conversationId] });
-        queryClient.invalidateQueries({ queryKey: ['conversations'] });
-      },
-
-      // Nouvelle conversation créée
-      handleNewConversation: (conversation: Conversation) => {
-        queryClient.setQueryData(['conversations'], (oldData: Conversation[] | undefined) => {
-          if (!oldData) return [conversation];
-          // Vérifier si la conversation existe déjà
-          if (oldData.some(conv => conv.id === conversation.id)) {
-            return oldData;
-          }
-          return [conversation, ...oldData];
-        });
-      },
-
-      // Messages marqués comme lus
-      handleMessagesRead: (data: { conversationId: string; readBy: string; timestamp: Date }) => {
-        updateMessagesForRead(data.conversationId);
-        updateConversationsForRead(data.conversationId);
-      },
-
-      // Utilisateur en train de taper
-      handleUserTyping: (data: { userId: string; conversationId: string; isTyping: boolean }) => {
-        setTypingUsers(prev => {
-          const newMap = new Map(prev);
-          
-          if (data.isTyping) {
-            const users = new Set(newMap.get(data.conversationId) ?? []);
-            users.add(data.userId);
-            newMap.set(data.conversationId, users);
-          } else {
-            const users = new Set(newMap.get(data.conversationId) ?? []);
-            users.delete(data.userId);
-            if (users.size === 0) {
-              newMap.delete(data.conversationId);
-            } else {
-              newMap.set(data.conversationId, users);
-            }
-          }
-          
-          return newMap;
-        });
-      },
-
-      // Utilisateur en ligne
-      handleUserOnline: (data: { userId: string }) => {
-        console.log('🟢 Utilisateur en ligne:', data.userId);
-        setOnlineUsers(prev => new Set([...prev, data.userId]));
-      },
-
-      // Utilisateur hors ligne
-      handleUserOffline: (data: { userId: string }) => {
-        console.log('🔴 Utilisateur hors ligne:', data.userId);
-        setOnlineUsers(prev => {
-          const newSet = new Set(prev);
-          newSet.delete(data.userId);
-          return newSet;
-        });
-      },
-
-      // Liste des utilisateurs en ligne
-      handleOnlineUsers: (data: { users: string[] }) => {
-        console.log('📋 Liste des utilisateurs en ligne reçue:', data.users);
-        // Filtrer les doublons explicitement
-        const uniqueUsers = Array.from(new Set(data.users));
-        setOnlineUsers(new Set(uniqueUsers));
-      },
-
-      // Message non lu
-      handleUnreadMessage: (data: { conversationId: string; messageCount: number; timestamp: Date }) => {
-        console.log('🔔 Notification de message non lu reçue:', data);
-        
-        updateConversationsForUnread(data.conversationId, data.messageCount);
-        
-        // Invalider les requêtes pour forcer un refresh
-        queryClient.invalidateQueries({ queryKey: ['conversations'] });
-      },
-
-      // Conversation supprimée
-      handleConversationDeleted: (data: { conversationId: string; deletedBy: string; timestamp: Date }) => {
-        console.log('🗑 Conversation supprimée:', data.conversationId);
-        
-        // Récupérer l'ID utilisateur actuel depuis le token
-        const token = localStorage.getItem('auth_token');
-        let currentUserId: string | null = null;
-        
-        if (token) {
-          try {
-            const payload = JSON.parse(atob(token.split('.')[1]));
-            currentUserId = payload.sub ?? payload.username;
-          } catch (error) {
-            console.error('❌ Erreur lors du décodage du token:', error);
-          }
-        }
-        
-        // Afficher une notification seulement si la conversation a été supprimée par l'autre utilisateur
-        if (currentUserId && data.deletedBy !== currentUserId) {
-          toast({
-            title: "Conversation supprimée",
-            description: "L'autre utilisateur a supprimé cette conversation.",
-            variant: "destructive",
-          });
-        }
-        
-        removeConversation(data.conversationId);
-        
-        // Invalider les requêtes pour forcer un refresh
-        queryClient.invalidateQueries({ queryKey: ['conversations'] });
-      }
-    };
-
-    // Écouter les événements avec les handlers stockés
-    const handlers = handlersRef.current;
+    // Écouter les événements
     socket.on('newMessage', handlers.handleNewMessage);
     socket.on('newConversation', handlers.handleNewConversation);
     socket.on('messagesRead', handlers.handleMessagesRead);
-    socket.on('userTyping', handlers.handleUserTyping);
-    socket.on('userOnline', handlers.handleUserOnline);
-    socket.on('userOffline', handlers.handleUserOffline);
-    socket.on('onlineUsers', handlers.handleOnlineUsers);
+    socket.on('userTyping', (data) => setTypingUsers(handlers.handleUserTyping(data)));
+    socket.on('userOnline', (data) => setOnlineUsers(handlers.handleUserOnline(data)));
+    socket.on('userOffline', (data) => setOnlineUsers(handlers.handleUserOffline(data)));
+    socket.on('onlineUsers', (data) => setOnlineUsers(handlers.handleOnlineUsers(data)));
     socket.on('unreadMessage', handlers.handleUnreadMessage);
     socket.on('conversationDeleted', handlers.handleConversationDeleted);
 
@@ -416,7 +407,7 @@ export const useMessagesSocket = () => {
       listenersInitialized.current = false;
       handlersRef.current = null;
     };
-  }, [socket]);
+  }, [socket, queryClient, toast]);
 
   // Effet pour réinitialiser le flag quand le socket change
   useEffect(() => {
@@ -429,7 +420,6 @@ export const useMessagesSocket = () => {
   const startTyping = useCallback((conversationId: string) => {
     handleTyping(conversationId, true);
     
-    // Arrêter l'indicateur de frappe après 3 secondes
     if (typingTimeoutRef.current) {
       clearTimeout(typingTimeoutRef.current);
     }
@@ -460,30 +450,17 @@ export const useMessagesSocket = () => {
   const getTypingUsers = useCallback((conversationId: string): string[] => {
     const typingUserIds = Array.from(typingUsers.get(conversationId) ?? []);
     
-    // Récupérer les données des conversations pour mapper les IDs vers les noms
     const conversations = queryClient.getQueryData(['conversations']) as Conversation[] | undefined;
     if (!conversations) return typingUserIds.map(() => 'Quelqu\'un');
     
     const conversation = conversations.find(c => c.id === conversationId);
     if (!conversation) return typingUserIds.map(() => 'Quelqu\'un');
     
-    // Récupérer l'ID utilisateur actuel depuis le token
-    const token = localStorage.getItem('auth_token');
-    let currentUserId: string | null = null;
+    const currentUserId = getCurrentUserIdFromToken();
     
-    if (token) {
-      try {
-        const payload = JSON.parse(atob(token.split('.')[1]));
-        currentUserId = payload.sub ?? payload.username;
-      } catch (error) {
-        console.error('❌ Erreur lors du décodage du token:', error);
-      }
-    }
-    
-    // Retourner les noms des utilisateurs qui tapent (exclure l'utilisateur actuel)
     return typingUserIds
-      .filter(userId => userId !== currentUserId) // Exclure l'utilisateur actuel
-      .map(() => conversation.name ?? 'Quelqu\'un'); // Utiliser le nom de la conversation
+      .filter(userId => userId !== currentUserId)
+      .map(() => conversation.name ?? 'Quelqu\'un');
   }, [typingUsers, queryClient]);
 
   // Vérifier si un utilisateur est en ligne
@@ -502,7 +479,6 @@ export const useMessagesSocket = () => {
   // Effet pour obtenir les utilisateurs en ligne quand on rejoint une conversation
   useEffect(() => {
     if (isConnected && currentConversationId) {
-      // Récupérer les utilisateurs en ligne quand on rejoint une conversation
       getOnlineUsers();
     }
   }, [isConnected, currentConversationId, getOnlineUsers]);
