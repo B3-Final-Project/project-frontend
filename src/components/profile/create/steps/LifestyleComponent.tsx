@@ -1,5 +1,5 @@
 // components/LifestyleComponent.tsx
-'use client';
+"use client";
 
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -16,14 +16,14 @@ import { SelectorComponent } from "@/components/profile/SelectorComponent";
 import { getEnumOptions } from "@/lib/utils/enum-utils";
 
 export function LifestyleComponent() {
-  const { lifestyleInfo, setLifestyleInfo, goToNextStep, goToPreviousStep } = useProfileCreation();
+  const { lifestyleInfo, setLifestyleInfo, goToNextStep, goToPreviousStep } =
+    useProfileCreation();
   const { step } = useParams<{ step: string }>();
   const [errors, setErrors] = useState<Record<string, string>>({});
 
-
   const handleChange = (field: string, value: string | number) => {
-    setLifestyleInfo(prev => ({ ...prev, [field]: value }));
-    if (errors[field]) setErrors(prev => ({ ...prev, [field]: '' }));
+    setLifestyleInfo((prev) => ({ ...prev, [field]: value }));
+    if (errors[field]) setErrors((prev) => ({ ...prev, [field]: "" }));
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -31,11 +31,11 @@ export function LifestyleComponent() {
     goToNextStep(step as string, PROFILE_STEPS);
   };
 
-  const smokingOptions = getEnumOptions(SmokingEnum)
-  const drinkingOptions = getEnumOptions(DrinkingEnum)
-  const religionOptions = getEnumOptions(ReligionEnum)
-  const politicsOptions = getEnumOptions(PoliticsEnum)
-  const zodiacOptions = getEnumOptions(ZodiacEnum)
+  const smokingOptions = getEnumOptions(SmokingEnum);
+  const drinkingOptions = getEnumOptions(DrinkingEnum);
+  const religionOptions = getEnumOptions(ReligionEnum);
+  const politicsOptions = getEnumOptions(PoliticsEnum);
+  const zodiacOptions = getEnumOptions(ZodiacEnum);
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
@@ -97,7 +97,11 @@ export function LifestyleComponent() {
       </div>
 
       <div className="flex justify-between pt-6">
-        <Button type="button" variant="outline" onClick={() => goToPreviousStep(step as string, PROFILE_STEPS)}>
+        <Button
+          type="button"
+          variant="outline"
+          onClick={() => goToPreviousStep(step as string, PROFILE_STEPS)}
+        >
           Back
         </Button>
         <Button type="submit">Next</Button>

@@ -1,19 +1,24 @@
 "use client";
 
-import { DrinkingEnum, PoliticsEnum, ReligionEnum, SmokingEnum, ZodiacEnum } from "@/lib/routes/profiles/enums";
+import {
+  DrinkingEnum,
+  PoliticsEnum,
+  ReligionEnum,
+  SmokingEnum,
+  ZodiacEnum,
+} from "@/lib/routes/profiles/enums";
 
 import { GenericProfileDialog } from "@/components/profile/dialogContent/GenericProfileDialog";
 import { LifestyleInfo } from "@/hooks/useProfileCreation";
 import { SelectorComponent } from "@/components/profile/SelectorComponent";
 import { getEnumOptions } from "@/lib/utils/enum-utils";
 
-
 // Define options outside component to prevent recreation on each render
-const smokingOptions = getEnumOptions(SmokingEnum)
-const drinkingOptions = getEnumOptions(DrinkingEnum)
-const religionOptions = getEnumOptions(ReligionEnum)
-const politicsOptions = getEnumOptions(PoliticsEnum)
-const zodiacOptions = getEnumOptions(ZodiacEnum)
+const smokingOptions = getEnumOptions(SmokingEnum);
+const drinkingOptions = getEnumOptions(DrinkingEnum);
+const religionOptions = getEnumOptions(ReligionEnum);
+const politicsOptions = getEnumOptions(PoliticsEnum);
+const zodiacOptions = getEnumOptions(ZodiacEnum);
 
 export function LifestyleDialog() {
   return (
@@ -24,17 +29,17 @@ export function LifestyleDialog() {
         drinking: undefined,
         religion: undefined,
         politics: undefined,
-        zodiac: undefined
+        zodiac: undefined,
       }}
       extractFormDataFromProfile={(profile) => ({
         smoking: profile.smoking,
         drinking: profile.drinking,
         religion: profile.religion,
         politics: profile.politics,
-        zodiac: profile.zodiac
+        zodiac: profile.zodiac,
       })}
       buildUpdatePayload={(formData) => ({
-        lifestyleInfo: formData
+        lifestyleInfo: formData,
       })}
       renderFormContent={(formData, handleInputChange) => (
         <>
@@ -56,7 +61,7 @@ export function LifestyleDialog() {
             placeholder="Select drinking preference"
           />
 
-           <SelectorComponent
+          <SelectorComponent
             value={formData.religion}
             fieldName="religion"
             options={religionOptions}
@@ -65,7 +70,7 @@ export function LifestyleDialog() {
             placeholder="Select religion"
           />
 
-         <SelectorComponent
+          <SelectorComponent
             value={formData.politics}
             fieldName="politics"
             options={politicsOptions}
@@ -74,7 +79,7 @@ export function LifestyleDialog() {
             placeholder="Select political view"
           />
 
-         <SelectorComponent
+          <SelectorComponent
             value={formData.zodiac}
             fieldName="zodiac"
             options={zodiacOptions}

@@ -11,18 +11,18 @@ export class AdminRouter {
   // Ban a user
   public static readonly banUser = createFetcher<AdminActionResponse>(
     RESTServerRoute.REST_ADMIN_BANS,
-    "POST"
+    "POST",
   );
 
   // Unban a user
   public static readonly unbanUser = createFetcher<AdminActionResponse>(
     RESTServerRoute.REST_ADMIN_BANS,
-    "DELETE"
+    "DELETE",
   );
 
   // Report a user
-  public static readonly reportUser = createFetcher<AdminActionResponse, ReportDto>(
-    RESTServerRoute.REST_USER_REPORTS,
-    "POST"
-  );
+  public static readonly reportUser = createFetcher<
+    AdminActionResponse,
+    ReportDto
+  >(RESTServerRoute.REST_USER_REPORTS, "POST");
 }

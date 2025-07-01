@@ -1,9 +1,10 @@
 import React from "react";
 import {
-  Card, CardContent,
+  Card,
+  CardContent,
   CardDescription,
   CardHeader,
-  CardTitle
+  CardTitle,
 } from "@/components/ui/card";
 import { ResponsiveContainer } from "recharts";
 
@@ -14,15 +15,17 @@ interface ChartCardProps {
 }
 
 export function ChartCard({ title, description, children }: ChartCardProps) {
-return <Card>
-    <CardHeader>
-      <CardTitle>{title}</CardTitle>
-      <CardDescription>{description}</CardDescription>
-    </CardHeader>
-    <CardContent>
-      <ResponsiveContainer width="100%" height={300}>
-        {children}
-      </ResponsiveContainer>
-    </CardContent>
-  </Card>
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>{title}</CardTitle>
+        <CardDescription>{description}</CardDescription>
+      </CardHeader>
+      <CardContent>
+        <ResponsiveContainer width="100%" height={300}>
+          {children}
+        </ResponsiveContainer>
+      </CardContent>
+    </Card>
+  );
 }

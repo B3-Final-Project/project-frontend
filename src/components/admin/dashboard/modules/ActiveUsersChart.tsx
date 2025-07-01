@@ -1,8 +1,8 @@
 "use client";
 
-import { Bar, BarChart, CartesianGrid, Tooltip, XAxis, YAxis } from 'recharts';
+import { Bar, BarChart, CartesianGrid, Tooltip, XAxis, YAxis } from "recharts";
 
-import { ChartCard } from '../shared/ChartCard';
+import { ChartCard } from "../shared/ChartCard";
 import { useComprehensiveStatsQuery } from "@/hooks/react-query/stats";
 
 export function ActiveUsersChart() {
@@ -11,9 +11,18 @@ export function ActiveUsersChart() {
   if (!comprehensiveStats?.engagement) return null;
 
   const engagementData = [
-    { name: 'Daily Active', value: comprehensiveStats.engagement.dailyActiveUsers },
-    { name: 'Weekly Active', value: comprehensiveStats.engagement.weeklyActiveUsers },
-    { name: 'Monthly Active', value: comprehensiveStats.engagement.monthlyActiveUsers },
+    {
+      name: "Daily Active",
+      value: comprehensiveStats.engagement.dailyActiveUsers,
+    },
+    {
+      name: "Weekly Active",
+      value: comprehensiveStats.engagement.weeklyActiveUsers,
+    },
+    {
+      name: "Monthly Active",
+      value: comprehensiveStats.engagement.monthlyActiveUsers,
+    },
   ];
 
   if (engagementData.length === 0) return null;

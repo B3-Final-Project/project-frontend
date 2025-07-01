@@ -14,3 +14,27 @@
 .rotate-y-180 {
   transform: rotateY(180deg);
 }
+
+.swiper-pagination {
+        position: absolute;
+        bottom: 10px;
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        z-index: 50;
+      }
+      .swiper-pagination-bullet {
+        width: 8px;
+        height: 8px;
+        margin: 0 4px;
+        border-radius: 50%;
+        background-color: rgba(255, 255, 255, 0.5);
+        cursor: pointer;
+        transition: all 0.3s ease;
+      }
+      .swiper-pagination-bullet-active {
+        background-color: white;
+        width: 12px;
+        height: 8px;
+        border-radius: 4px;
+      }

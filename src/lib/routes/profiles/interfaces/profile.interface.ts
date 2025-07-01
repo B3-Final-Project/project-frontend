@@ -5,10 +5,11 @@ import {
   RelationshipTypeEnum,
   ReligionEnum,
   SmokingEnum,
-  ZodiacEnum
+  ZodiacEnum,
 } from "@/lib/routes/profiles/enums";
 
 import { Interest } from "@/lib/routes/profiles/interfaces/interest.interface";
+
 export interface Profile {
   id: number;
   city?: string;

@@ -1,4 +1,4 @@
-'use client'
+"use client";
 
 import { ReactNode, useEffect, useMemo, useState } from "react";
 
@@ -14,11 +14,11 @@ const baseOIDCConfig = {
   response_type: "code",
   scope: "email openid profile",
   onSigninCallback: () => {
-    if (typeof window !== 'undefined') {
+    if (typeof window !== "undefined") {
       window.history.replaceState({}, document.title, "/");
     }
-  }
-}
+  },
+};
 
 export function CognitoAuthProvider({ children }: CognitoAuthProviderProps) {
   const { data: config, isLoading, isError, error } = useAuthSettingsQuery();
@@ -40,7 +40,8 @@ export function CognitoAuthProvider({ children }: CognitoAuthProviderProps) {
         ...baseOIDCConfig,
         authority: "",
         client_id: "",
-        redirect_uri: typeof window !== 'undefined' ? window.location.origin : "",
+        redirect_uri:
+          typeof window !== "undefined" ? window.location.origin : "",
         scope: "email openid profile",
         // Disable automatic signin attempts during loading
         automaticSilentRenew: false,
@@ -65,11 +66,12 @@ export function CognitoAuthProvider({ children }: CognitoAuthProviderProps) {
         <div className="text-center">
           <h2 className="text-lg font-semibold mb-2">Authentication Error</h2>
           <p className="text-sm text-muted-foreground mb-4">
-            Failed to load authentication configuration. Please try refreshing the page.
+            Failed to load authentication configuration. Please try refreshing
+            the page.
           </p>
           <button
             onClick={() => {
-              if (typeof window !== 'undefined') {
+              if (typeof window !== "undefined") {
                 window.location.reload();
               }
             }}
@@ -87,9 +89,5 @@ export function CognitoAuthProvider({ children }: CognitoAuthProviderProps) {
     return <LoadingFallback />;
   }
 
-  return (
-    <AuthProvider {...oidcConfig}>
-      {children}
-    </AuthProvider>
-  );
+  return <AuthProvider {...oidcConfig}>{children}</AuthProvider>;
 }

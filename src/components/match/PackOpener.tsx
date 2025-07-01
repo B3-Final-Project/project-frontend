@@ -1,78 +1,110 @@
-import { motion } from 'framer-motion';
-import { Calendar, MapPin } from 'lucide-react';
-import { useRef, useState } from 'react';
-import { clsx } from "clsx";
-import Image from "next/image";
-import { Button } from "@/components/ui/button";
-import {
-  ProfileCardType
-} from "@/lib/routes/profiles/dto/profile-card-type.dto";
+import { useEffect, useRef, useState } from "react";
+
+interface UserCard {
+  id: string;
+  name: string;
+  image?: string;
+  age?: number;
+  location?: string;
+  description?: string;
+  isRevealed?: boolean;
+}
 
 interface PackOpenerProps {
-  onPackOpened: (selectedCard?: ProfileCardType) => void;
-  profiles?: ProfileCardType[];
+  onPackOpened: (selectedCard?: UserCard) => void;
+  profiles?: UserCard[];
 }
 
 const PackOpener = ({ onPackOpened, profiles = [] }: PackOpenerProps) => {
   const [isOpening, setIsOpening] = useState(false);
-  const [dragProgress, setDragProgress] = useState(0);
-  const [isDragging, setIsDragging] = useState(false);
+  const [holdProgress, setHoldProgress] = useState(0);
+  const [isHolding, setIsHolding] = useState(false);
 
-  const buttonRef = useRef<HTMLDivElement>(null);
-  const dragStartXRef = useRef(0);
-  const isDraggingRef = useRef(false);
+  const circleRef = useRef<HTMLDivElement>(null);
+  const isHoldingRef = useRef(false);
+
+  const animationFrameRef = useRef<number | null>(null);
+
+  const startHoldAnimation = () => {
+    const startTime = Date.now();
+    const duration = 1500;
+
+    const animate = () => {
+      if (!isHoldingRef.current) {
+        if (animationFrameRef.current) {
+          cancelAnimationFrame(animationFrameRef.current);
+          animationFrameRef.current = null;
+        }
+        return;
+      }
+
+      const elapsed = Date.now() - startTime;
+      const progress = Math.min(100, (elapsed / duration) * 100);
+
+      setHoldProgress(progress);
+
+      if (progress >= 100) {
+        openPack();
+        return;
+      }
+
+      animationFrameRef.current = requestAnimationFrame(animate);
+    };
+
+    animationFrameRef.current = requestAnimationFrame(animate);
+  };
 
   const handlePointerDown = (e: React.PointerEvent) => {
     if (isOpening) return;
 
     e.currentTarget.setPointerCapture(e.pointerId);
-    isDraggingRef.current = true;
-    setIsDragging(true);
+    isHoldingRef.current = true;
+    setIsHolding(true);
 
-    if (buttonRef.current) {
-      const rect = buttonRef.current.getBoundingClientRect();
-      dragStartXRef.current = e.clientX - rect.left;
-    }
-  };
-
-  const handlePointerMove = (e: React.PointerEvent) => {
-    if (!isDraggingRef.current || !buttonRef.current) return;
-
-    const rect = buttonRef.current.getBoundingClientRect();
-    const currentX = e.clientX - rect.left;
-    const dragDistance = currentX - dragStartXRef.current;
-    const maxDistance = rect.width * 0.8;
-    const progress = Math.min(100, Math.max(0, (dragDistance / maxDistance) * 100));
-
-    setDragProgress(progress);
-
-    if (progress >= 100) {
-      openPack();
-    }
+    startHoldAnimation();
   };
 
   const handlePointerUp = (e: React.PointerEvent) => {
-    if (isDraggingRef.current) {
+    if (isHoldingRef.current) {
       e.currentTarget.releasePointerCapture(e.pointerId);
     }
 
-    isDraggingRef.current = false;
-    setIsDragging(false);
+    isHoldingRef.current = false;
+    setIsHolding(false);
 
-    if (dragProgress < 100) {
-      setDragProgress(0);
+    if (holdProgress < 100) {
+      setHoldProgress(0);
+    }
+
+    if (animationFrameRef.current) {
+      cancelAnimationFrame(animationFrameRef.current);
+      animationFrameRef.current = null;
     }
   };
 
   const handlePointerCancel = (e: React.PointerEvent) => {
-    if (isDraggingRef.current) {
+    if (isHoldingRef.current) {
       e.currentTarget.releasePointerCapture(e.pointerId);
     }
 
-    isDraggingRef.current = false;
-    setIsDragging(false);
-    setDragProgress(0);
+    isHoldingRef.current = false;
+    setIsHolding(false);
+    setHoldProgress(0);
+
+    if (animationFrameRef.current) {
+      cancelAnimationFrame(animationFrameRef.current);
+      animationFrameRef.current = null;
+    }
   };
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      if (animationFrameRef.current) {
+        cancelAnimationFrame(animationFrameRef.current);
+      }
+    };
+  }, []);
 
   const openPack = () => {
     if (isOpening) return;
@@ -85,7 +117,7 @@ const PackOpener = ({ onPackOpened, profiles = [] }: PackOpenerProps) => {
 
     setTimeout(() => {
       setIsOpening(false);
-      setDragProgress(0);
+      setHoldProgress(0);
 
       if (selectedProfile) {
         onPackOpened(selectedProfile);
@@ -96,106 +128,26 @@ const PackOpener = ({ onPackOpened, profiles = [] }: PackOpenerProps) => {
   };
 
   return (
-    <div className="pack-button-container">
-        <div className="flex justify-center mb-8">
-          <div className="pack-button-container">
-            <div className={clsx('pokemon-pack-3d', isDragging ?? 'dragging', isOpening ?? 'opening')}>
-              <div className="pack-front">
-                {profiles && profiles.length > 0 && (
-                  <div className="profiles-grid grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mt-8">
-                    {profiles.map((profile) => (
-                      <motion.div
-                        key={profile.id}
-                        className="profile-card cursor-pointer bg-gradient-to-br from-pink-500 to-purple-600 rounded-xl p-1 shadow-lg"
-                        whileHover={{ scale: 1.05 }}
-                        whileTap={{ scale: 0.98 }}
-                        style={{
-                          width: 'calc(100% - 1rem)',
-                          maxWidth: '350px',
-                          margin: '0 auto'
-                        }}
-                      >
-                        <div className="card-inner bg-white rounded-lg p-4 h-full flex flex-col">
-                          {profile.image_url && (
-                            <div className="relative profile-image mb-3 rounded-lg overflow-hidden">
-                              <Image fill={true} src={profile.image_url} alt={profile.name} className="w-full h-40 object-cover" />
-                            </div>
-                          )}
-                          <div className="flex justify-between items-center mb-3">
-                            <div className="rounded-full bg-gradient-to-r from-pink-500 to-purple-600 text-white px-3 py-1 text-xs font-bold shadow-md flex items-center gap-1">
-                              <Calendar className="w-3 h-3" />
-                              {profile.age} ans
-                            </div>
-                            <div className="rounded-full bg-gradient-to-r from-pink-500 to-purple-600 text-white px-3 py-1 text-xs font-bold shadow-md flex items-center gap-1">
-                              <MapPin className="w-3 h-3" />
-                              {profile.location}
-                            </div>
-                          </div>
-                          <h3 className="text-lg font-bold mb-2">{profile.name}</h3>
-                          <motion.button
-                            className="mt-3 w-full py-2 rounded-lg bg-gradient-to-r from-pink-500 to-purple-600 text-white text-sm font-bold"
-                            whileHover={{ scale: 1.03 }}
-                            whileTap={{ scale: 0.97 }}
-                            onClick={(e) => {
-                              e.stopPropagation();
-                            }}
-                          >
-                            Voir le profil
-                          </motion.button>
-                        </div>
-                      </motion.div>
-                    ))}
-                  </div>
-                )}
-                <Image fill={true} src="/logo.svg" alt="Pokemon Pack" className="pack-image" />
-                <div className="pack-shine"></div>
-              </div>
-            </div>
-
-            <Button
-              //@ts-expect-error if null buttonRef becomes undefined so we can use it
-              ref={buttonRef ?? undefined}
-              className="open-pack-button"
-              onPointerDown={handlePointerDown}
-              onPointerMove={handlePointerMove}
-              onPointerUp={handlePointerUp}
-              onPointerCancel={handlePointerCancel}
-              disabled={isOpening}
-              type="button"
-            >
-              <div className="button-inner">
-                <div className="progress-track">
-                  <div
-                    className="progress-fill"
-                    style={{ width: `${dragProgress}%` }}
-                  ></div>
-                </div>
-
-                <span className="button-icon">
-                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6">
-                    <path fillRule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25zm4.28 10.28a.75.75 0 000-1.06l-3-3a.75.75 0 10-1.06 1.06l1.72 1.72H8.25a.75.75 0 000 1.5h5.69l-1.72 1.72a.75.75 0 101.06 1.06l3-3z" clipRule="evenodd" />
-                  </svg>
-                </span>
-                <span className="button-text">Ouvrir le Pack</span>
-              </div>
-            </Button>
+    <div className="flex flex-col items-center justify-center w-full relative">
+      <div
+        ref={circleRef}
+        className="w-[200px] h-[200px] rounded-full bg-primary/20 flex items-center justify-center cursor-pointer shadow-lg select-none fixed mb-[75px]"
+        onPointerDown={handlePointerDown}
+        onPointerUp={handlePointerUp}
+        onPointerCancel={handlePointerCancel}
+        style={{
+          transform: isHolding
+            ? `scale(${1 + (holdProgress / 100) * 1.5})`
+            : "scale(1)",
+          transition: isHolding ? "none" : "transform 0.3s ease",
+        }}
+      >
+        <div className="relative w-[110px] h-[110px] rounded-full bg-primary/80 flex items-center justify-center overflow-hidden">
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-white font-bold text-center text-sm w-[90%] leading-tight z-10 drop-shadow-md">
+            Rester appuyé pour ouvrir
           </div>
         </div>
-
-        <div className="mb-4 text-center text-lg font-semibold">
-          {isDragging && (
-            <div className="text-blue-500">
-              {dragProgress > 70
-                ? "Presque là! Continuez..."
-                : dragProgress > 40
-                  ? "Continuez à tirer..."
-                  : "Tirez vers la droite pour ouvrir!"}
-            </div>
-          )}
-          <div className="text-gray-500 mt-2">
-            Progression: {Math.round(dragProgress)}%
-          </div>
-        </div>
+      </div>
     </div>
   );
 };

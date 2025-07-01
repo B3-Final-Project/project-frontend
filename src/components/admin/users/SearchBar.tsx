@@ -1,7 +1,7 @@
-import { Download, Search, X } from "lucide-react"
+import { Download, Search, X } from "lucide-react";
 
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { UserManagementDto } from "@/lib/routes/admin/dto/user-management.dto";
 import { toast } from "@/hooks/use-toast";
 import { useState } from "react";
@@ -13,14 +13,19 @@ interface SearchBarProps {
   readonly isSearching?: boolean;
 }
 
-function SearchBar({ userData, onSearch, searchTerm = '', isSearching = false }: SearchBarProps) {
+function SearchBar({
+  userData,
+  onSearch,
+  searchTerm = "",
+  isSearching = false,
+}: SearchBarProps) {
   const [isExporting, setIsExporting] = useState(false);
   const handleSearchChange = (value: string) => {
     onSearch?.(value);
   };
 
   const clearSearch = () => {
-    onSearch?.('');
+    onSearch?.("");
   };
   const handleExport = async () => {
     if (!userData || userData.length === 0) {
@@ -35,32 +40,40 @@ function SearchBar({ userData, onSearch, searchTerm = '', isSearching = false }:
     setIsExporting(true);
 
     try {
-      const timestamp = new Date().toISOString().split('T')[0];
+      const timestamp = new Date().toISOString().split("T")[0];
       const filename = `users-export-${timestamp}.csv`;
 
       // Create CSV headers
-      const headers = ['User ID', 'Profile ID', 'Name', 'Surname', 'Status', 'Report Count', 'Created At'];
+      const headers = [
+        "User ID",
+        "Profile ID",
+        "Name",
+        "Surname",
+        "Status",
+        "Report Count",
+        "Created At",
+      ];
 
       // Convert user data to CSV rows
-      const csvRows = userData.map(user => [
+      const csvRows = userData.map((user) => [
         user.userId,
         user.profileId.toString(),
         user.name,
         user.surname,
-        user.isBanned ? 'Banned' : 'Active',
+        user.isBanned ? "Banned" : "Active",
         user.reportCount.toString(),
-        user.createdAt ? new Date(user.createdAt).toLocaleDateString() : 'N/A'
+        user.createdAt ? new Date(user.createdAt).toLocaleDateString() : "N/A",
       ]);
 
       // Combine headers and rows
       const csvContent = [headers, ...csvRows]
-        .map(row => row.map(field => `"${field}"`).join(','))
-        .join('\n');
+        .map((row) => row.map((field) => `"${field}"`).join(","))
+        .join("\n");
 
       // Create a blob and download link
-      const blob = new Blob([csvContent], { type: 'text/csv' });
+      const blob = new Blob([csvContent], { type: "text/csv" });
       const url = window.URL.createObjectURL(blob);
-      const link = document.createElement('a');
+      const link = document.createElement("a");
       link.href = url;
       link.download = filename;
       link.click();
@@ -71,7 +84,7 @@ function SearchBar({ userData, onSearch, searchTerm = '', isSearching = false }:
         description: `Exported ${userData.length} users to ${filename}`,
       });
     } catch (error) {
-      console.error('Export failed:', error);
+      console.error("Export failed:", error);
       toast({
         title: "Export failed",
         description: "There was an error exporting the data. Please try again.",
@@ -88,7 +101,9 @@ function SearchBar({ userData, onSearch, searchTerm = '', isSearching = false }:
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">User Management</h1>
-          <p className="text-gray-600">Manage users, view profiles, and handle reports</p>
+          <p className="text-gray-600">
+            Manage users, view profiles, and handle reports
+          </p>
         </div>
         <Button
           onClick={handleExport}
@@ -97,7 +112,7 @@ function SearchBar({ userData, onSearch, searchTerm = '', isSearching = false }:
           disabled={isExporting ?? !userData ?? userData.length === 0}
         >
           <Download size={18} />
-          {isExporting ? 'Exporting...' : 'Export Data'}
+          {isExporting ? "Exporting..." : "Export Data"}
         </Button>
       </div>
 
@@ -129,7 +144,7 @@ function SearchBar({ userData, onSearch, searchTerm = '', isSearching = false }:
         </div>
       </div>
     </div>
-  )
+  );
 }
 
 export default SearchBar;
