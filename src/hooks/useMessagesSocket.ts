@@ -450,8 +450,8 @@ export const useMessagesSocket = () => {
   const getTypingUsers = useCallback((conversationId: string): string[] => {
     const typingUserIds = Array.from(typingUsers.get(conversationId) ?? []);
     
-    const conversations = queryClient.getQueryData(['conversations']) as Conversation[] | undefined;
-    if (!conversations) return typingUserIds.map(() => 'Quelqu\'un');
+    const conversations = queryClient.getQueryData(['conversations']);
+    if (!Array.isArray(conversations)) return typingUserIds.map(() => 'Quelqu\'un');
     
     const conversation = conversations.find(c => c.id === conversationId);
     if (!conversation) return typingUserIds.map(() => 'Quelqu\'un');

@@ -146,8 +146,8 @@ export default function ConversationPage({ initialConversationId }: Conversation
             await new Promise(resolve => setTimeout(resolve, 500));
             
             // Vérifier si la conversation existe encore avant d'appeler l'API REST
-            const conversations = queryClient.getQueryData(['conversations']) as any[] | undefined;
-            const conversationStillExists = conversations?.some(c => c.id === selectedConversation);
+            const conversations = queryClient.getQueryData(['conversations']);
+            const conversationStillExists = Array.isArray(conversations) && conversations.some(c => c.id === selectedConversation);
             
             if (conversationStillExists) {
                 // La conversation existe encore, essayer l'API REST
@@ -410,19 +410,17 @@ export default function ConversationPage({ initialConversationId }: Conversation
                     className="fixed inset-0 bg-opacity-50 flex items-center justify-center z-50 p-4"
                     aria-modal="true"
                     aria-labelledby="delete-dialog-title"
-                    onKeyDown={handlePopupKeyDown}
                 >
                     <button 
                         type="button"
                         className="fixed inset-0 bg-black bg-opacity-50 border-0 cursor-default"
                         onClick={!isDeleting ? cancelDeleteConversation : undefined}
-                        onKeyDown={!isDeleting ? (e) => e.key === 'Escape' && cancelDeleteConversation() : undefined}
+                        onKeyDown={handlePopupKeyDown}
                         aria-label="Fermer la modal"
                     />
                     <div 
                         ref={modalRef}
                         className="relative bg-white border border-gray-200 rounded-xl shadow-2xl max-w-md w-full p-6 animate-in fade-in-0 zoom-in-95 duration-200" 
-                        onClick={e => e.stopPropagation()}
                     >
                         <div className="flex items-center gap-3 mb-4">
                             <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center">
