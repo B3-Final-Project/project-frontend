@@ -5,7 +5,7 @@ import {
   RelationshipTypeEnum,
   ReligionEnum,
   SmokingEnum,
-  ZodiacEnum
+  ZodiacEnum,
 } from "@/lib/routes/preferences/enums";
 import { Interest } from "@/lib/routes/preferences/interfaces/interface";
 
@@ -40,6 +40,5 @@ export interface Booster {
   userProfile?: BoosterUserProfile; // Rendu optionnel car l'API peut ne pas l'inclure
   created_at?: Date; // Rendu optionnel car peut être absent
   updated_at?: Date; // Rendu optionnel car peut être absent
-  rarity?: RarityEnum
+  rarity?: RarityEnum;
 }
-

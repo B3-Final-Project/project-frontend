@@ -1,10 +1,9 @@
-'use client'
+"use client";
 import { signout } from "@/providers/CognitoAuthProvider";
-import { Heart, Home, MessageSquare, User } from 'lucide-react';
-import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { Heart, Home, MessageSquare, User } from "lucide-react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useAuth } from "react-oidc-context";
-
 
 
 export function SidebarComponent() {

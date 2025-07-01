@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -13,14 +13,15 @@ import { SelectorComponent } from "@/components/profile/SelectorComponent";
 import { getEnumOptions } from "@/lib/utils/enum-utils";
 
 export function PreferencesComponent() {
-  const { preferenceInfo, setPreferenceInfo, goToNextStep, goToPreviousStep } = useProfileCreation();
+  const { preferenceInfo, setPreferenceInfo, goToNextStep, goToPreviousStep } =
+    useProfileCreation();
   const { step } = useParams<{ step: string }>();
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   const handleChange = (field: string, value: string | number) => {
-    setPreferenceInfo(prev => ({ ...prev, [field]: value }));
+    setPreferenceInfo((prev) => ({ ...prev, [field]: value }));
     if (errors[field]) {
-      setErrors(prev => ({ ...prev, [field]: '' }));
+      setErrors((prev) => ({ ...prev, [field]: "" }));
     }
   };
 
@@ -28,19 +29,22 @@ export function PreferencesComponent() {
     const newErrors: Record<string, string> = {};
 
     if (!preferenceInfo.min_age || preferenceInfo.min_age < 18) {
-      newErrors.min_age = 'Minimum age must be at least 18';
+      newErrors.min_age = "Minimum age must be at least 18";
     }
 
-    if (!preferenceInfo.max_age || preferenceInfo.max_age < preferenceInfo.min_age) {
-      newErrors.max_age = 'Maximum age must be greater than minimum age';
+    if (
+      !preferenceInfo.max_age ||
+      preferenceInfo.max_age < preferenceInfo.min_age
+    ) {
+      newErrors.max_age = "Maximum age must be greater than minimum age";
     }
 
     if (!preferenceInfo.max_distance) {
-      newErrors.max_distance = 'Maximum distance is required';
+      newErrors.max_distance = "Maximum distance is required";
     }
 
-    if (typeof preferenceInfo.relationship_type !== 'number') {
-      newErrors.relationship_type = 'Relationship type is required';
+    if (typeof preferenceInfo.relationship_type !== "number") {
+      newErrors.relationship_type = "Relationship type is required";
     }
 
     setErrors(newErrors);
@@ -59,7 +63,7 @@ export function PreferencesComponent() {
   const minAge = preferenceInfo.min_age || 18;
   const maxAge = preferenceInfo.max_age || 99;
 
-  const relationshipTypeOptions = getEnumOptions(RelationshipTypeEnum)
+  const relationshipTypeOptions = getEnumOptions(RelationshipTypeEnum);
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">

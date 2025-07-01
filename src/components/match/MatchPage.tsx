@@ -1,21 +1,20 @@
-'use client';
+"use client";
 
 import { Loader } from "@/components/Loader";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { Booster } from "@/lib/routes/booster/interfaces/booster.interface";
-import { checkPackAvailability, recordPackOpening } from '@/utils/packManager';
-import { getRarityGradient } from '@/utils/rarityHelper';
-import { motion } from 'framer-motion';
-import { Cigarette, Languages, MapPin, Moon, User, Wine } from 'lucide-react';
-import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
-import MatchSystem from './MatchSystem';
-import PackOpener from './PackOpener';
+import { checkPackAvailability, recordPackOpening } from "@/utils/packManager";
+import { getRarityGradient } from "@/utils/rarityHelper";
+import { motion } from "framer-motion";
+import { Cigarette, Languages, MapPin, Moon, User, Wine } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import MatchSystem from "./MatchSystem";
+import PackOpener from "./PackOpener";
 import ProfileGenerator, {
   mapBoosterToProfileCardType,
-  ProfileCardType
+  ProfileCardType,
 } from "./ProfileGenerator";
-
 
 const MatchPage = () => {
   const router = useRouter();
@@ -31,7 +30,7 @@ const MatchPage = () => {
   useEffect(() => {
     const { canOpen } = checkPackAvailability();
     if (!canOpen) {
-      router.push('/boosters');
+      router.push("/boosters");
     } else {
       setIsVerified(true);
     }
@@ -65,7 +64,6 @@ const MatchPage = () => {
   };
 
   return (
-
     <div className="w-full h-full flex items-center justify-center">
       {showMatchSystem ? (
         <motion.div
@@ -77,12 +75,10 @@ const MatchPage = () => {
           }}
           transition={{
             duration: 0.5,
-            ease: "easeInOut"
+            ease: "easeInOut",
           }}
         >
-          <MatchSystem
-            profiles={packProfiles}
-          />
+          <MatchSystem profiles={packProfiles} />
         </motion.div>
       ) : showCardAnimation ? (
         <div className="relative w-full h-full flex items-center justify-center">
@@ -97,7 +93,7 @@ const MatchPage = () => {
                 y: "-50%",
                 rotateY: 180,
                 x: 0,
-                zIndex: packProfiles.length - index
+                zIndex: packProfiles.length - index,
               }}
               animate={{
                 opacity: cardsExitAnimation ? 0 : 1,
@@ -108,16 +104,16 @@ const MatchPage = () => {
                 x: isMobile ? `${(index - 2) * 15}px` : `${(index - 2) * 40}px`,
                 transition: cardsExitAnimation
                   ? {
-                    duration: 0.3,
-                    ease: "easeOut",
-                    delay: 0.05 * (packProfiles.length - index - 1)
-                  }
+                      duration: 0.3,
+                      ease: "easeOut",
+                      delay: 0.05 * (packProfiles.length - index - 1),
+                    }
                   : {
-                    delay: index * 0.2 + 0.5,
-                    type: "spring",
-                    stiffness: 300,
-                    damping: 20
-                  }
+                      delay: index * 0.2 + 0.5,
+                      type: "spring",
+                      stiffness: 300,
+                      damping: 20,
+                    },
               }}
               style={{ zIndex: packProfiles.length - index }}
             >
@@ -128,7 +124,7 @@ const MatchPage = () => {
                 <div
                   className="w-full h-full rounded-lg overflow-hidden"
                   style={{
-                    backgroundImage: `url(${profile.image_url || '/vintage.png'})`,
+                    backgroundImage: `url(${profile.image_url || "/vintage.png"})`,
                     backgroundSize: "cover",
                     backgroundPosition: "center",
                   }}
@@ -149,12 +145,14 @@ const MatchPage = () => {
                       )}
                     </div>
                     <div className="text-background">
-                      <h2 className="text-background drop-shadow-md mb-1">{profile.name}</h2>
+                      <h2 className="text-background drop-shadow-md mb-1">
+                        {profile.name}
+                      </h2>
                       <div className="flex flex-wrap gap-2 pt-1">
                         {profile.languages && profile.languages.length > 0 && (
                           <div className="flex items-center gap-1 text-sm bg-white/10 text-primary-foreground px-2 py-1 rounded-full">
                             <Languages size={16} className="text-yellow-300" />
-                            {profile.languages.slice(0, 2).join(', ')}
+                            {profile.languages.slice(0, 2).join(", ")}
                           </div>
                         )}
                         {profile.zodiac && (
@@ -196,10 +194,12 @@ const MatchPage = () => {
             </>
           ) : isVerified ? (
             <div className="flex flex-col items-center justify-center w-full">
-              <PackOpener onPackOpened={() => {
-                recordPackOpening();
-                setShouldFetchBoosters(true);
-              }} />
+              <PackOpener
+                onPackOpened={() => {
+                  recordPackOpening();
+                  setShouldFetchBoosters(true);
+                }}
+              />
             </div>
           ) : (
             <Loader />
@@ -207,7 +207,6 @@ const MatchPage = () => {
         </>
       )}
     </div>
-
   );
 };
 

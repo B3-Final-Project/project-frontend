@@ -23,13 +23,11 @@ export default function RootLayout({
         <ReactQueryClientProvider>
           <CognitoAuthProvider>
             <ProfileGuard>
-            <SidebarProvider>
-              <SidebarComponent />
-              <main className={'h-screen w-full'}>
-                {children}
-              </main>
-              <Toaster />
-            </SidebarProvider>
+              <SidebarProvider>
+                <SidebarComponent />
+                <main className={"h-screen w-full"}>{children}</main>
+                <Toaster />
+              </SidebarProvider>
             </ProfileGuard>
           </CognitoAuthProvider>
         </ReactQueryClientProvider>

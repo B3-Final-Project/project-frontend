@@ -1,22 +1,27 @@
 "use client";
 
-import { Cell, Pie, PieChart, Tooltip } from 'recharts';
+import { Cell, Pie, PieChart, Tooltip } from "recharts";
 
 import { useComprehensiveStatsQuery } from "@/hooks/react-query/stats";
 import {
+  createColoredData,
+  formatPercentageLabel,
   transformObjectToChartData,
-  createColoredData, formatPercentageLabel
 } from "@/lib/utils/stats-utils";
 import { ChartCard } from "@/components/admin/dashboard/shared/ChartCard";
-
 
 export function RelationshipGoalsChart() {
   const { data: comprehensiveStats } = useComprehensiveStatsQuery();
 
-  if (!comprehensiveStats?.relationshipGoals?.relationshipGoalsDistribution) return null;
+  if (!comprehensiveStats?.relationshipGoals?.relationshipGoalsDistribution)
+    return null;
 
   const relationshipGoalsData = createColoredData(
-    transformObjectToChartData(comprehensiveStats.relationshipGoals.relationshipGoalsDistribution, 'goal', 'count')
+    transformObjectToChartData(
+      comprehensiveStats.relationshipGoals.relationshipGoalsDistribution,
+      "goal",
+      "count",
+    ),
   );
 
   if (relationshipGoalsData.length === 0) return null;

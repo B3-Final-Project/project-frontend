@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from "react";
 
 interface UserCard {
   id: string;
@@ -19,7 +19,6 @@ const PackOpener = ({ onPackOpened, profiles = [] }: PackOpenerProps) => {
   const [isOpening, setIsOpening] = useState(false);
   const [holdProgress, setHoldProgress] = useState(0);
   const [isHolding, setIsHolding] = useState(false);
-
 
   const circleRef = useRef<HTMLDivElement>(null);
   const isHoldingRef = useRef(false);
@@ -128,10 +127,8 @@ const PackOpener = ({ onPackOpened, profiles = [] }: PackOpenerProps) => {
     }, 1000);
   };
 
-
   return (
     <div className="flex flex-col items-center justify-center w-full relative">
-
       <div
         ref={circleRef}
         className="w-[200px] h-[200px] rounded-full bg-primary/20 flex items-center justify-center cursor-pointer shadow-lg select-none fixed mb-[75px]"
@@ -139,8 +136,10 @@ const PackOpener = ({ onPackOpened, profiles = [] }: PackOpenerProps) => {
         onPointerUp={handlePointerUp}
         onPointerCancel={handlePointerCancel}
         style={{
-          transform: isHolding ? `scale(${1 + (holdProgress / 100) * 1.5})` : 'scale(1)',
-          transition: isHolding ? 'none' : 'transform 0.3s ease'
+          transform: isHolding
+            ? `scale(${1 + (holdProgress / 100) * 1.5})`
+            : "scale(1)",
+          transition: isHolding ? "none" : "transform 0.3s ease",
         }}
       >
         <div className="relative w-[110px] h-[110px] rounded-full bg-primary/80 flex items-center justify-center overflow-hidden">

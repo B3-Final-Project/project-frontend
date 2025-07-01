@@ -1,17 +1,26 @@
 "use client";
 
-import { getRarityGradient } from '@/utils/rarityHelper';
-import { motion } from 'framer-motion';
-import { ArrowLeft, Cigarette, Info, Languages, MapPin, Moon, User, Wine } from "lucide-react";
+import { getRarityGradient } from "@/utils/rarityHelper";
+import { motion } from "framer-motion";
+import {
+  ArrowLeft,
+  Cigarette,
+  Info,
+  Languages,
+  MapPin,
+  Moon,
+  User,
+  Wine
+} from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import { Swiper, SwiperSlide } from 'swiper/react';
+import { Swiper, SwiperSlide } from "swiper/react";
 
-import 'swiper/css';
-import 'swiper/css/pagination';
+import "swiper/css";
+import "swiper/css/pagination";
 
-import { Pagination } from 'swiper/modules';
+import { Pagination } from "swiper/modules";
 
-import '../styles/card-flip.css';
+import "../styles/card-flip.css";
 
 
 interface UserCardModalProps {

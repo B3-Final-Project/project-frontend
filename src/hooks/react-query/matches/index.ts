@@ -9,7 +9,7 @@ export function useMatchesQuery() {
     queryFn: () => MatchRouter.getMatches(),
     refetchOnWindowFocus: false,
     refetchInterval: 30000, // Refetch every 30 seconds for new matches
-    refetchOnMount: true
+    refetchOnMount: true,
   });
 }
 
@@ -20,7 +20,7 @@ export function usePendingMatchesQuery() {
     queryFn: () => MatchRouter.getPendingMatches(),
     refetchOnWindowFocus: false,
     refetchInterval: 30000,
-    refetchOnMount: true
+    refetchOnMount: true,
   });
 }
 
@@ -31,7 +31,7 @@ export function useSentMatchesQuery() {
     queryFn: () => MatchRouter.getSentMatches(),
     refetchOnWindowFocus: false,
     refetchInterval: 60000, // Less frequent for sent matches
-    refetchOnMount: false
+    refetchOnMount: false,
   });
 }
 
@@ -76,7 +76,8 @@ export function useLikeMatchMutation() {
       console.error("Failed to like match", error);
       toast({
         title: "Failed to like match",
-        description: "Please try again or contact support if the issue persists.",
+        description:
+          "Please try again or contact support if the issue persists.",
         variant: "destructive",
       });
     },
@@ -109,7 +110,8 @@ export function usePassMatchMutation() {
       console.error("Failed to pass match", error);
       toast({
         title: "Failed to pass match",
-        description: "Please try again or contact support if the issue persists.",
+        description:
+          "Please try again or contact support if the issue persists.",
         variant: "destructive",
       });
     },

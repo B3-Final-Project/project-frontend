@@ -1,4 +1,4 @@
-'use client';
+"use client";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
@@ -12,24 +12,24 @@ import {
   formatRelationshipTypeEnum,
   formatReligionEnum,
   formatSmokingEnum,
-  formatZodiacEnum
+  formatZodiacEnum,
 } from "@/lib/utils/enum-utils";
 import { useProfileCreation } from "@/providers/ProfileCreationProvider";
 import { useParams } from "next/navigation";
 import { useState } from "react";
 import { PROFILE_STEPS } from "../StepComponent";
 
-import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
-import { PROFILE_STEPS } from "../StepComponent";
-import { Separator } from "@/components/ui/separator";
-import { useParams } from "next/navigation";
-import { useProfileCreation } from "@/providers/ProfileCreationProvider";
-import { useState } from "react";
-import { useToast } from "@/hooks/use-toast";
-
 export function ReviewComponent() {
-  const { personalInfo, preferenceInfo, locationWork, lifestyleInfo, interestInfo, goToPreviousStep, saveProfile, goToStep } = useProfileCreation();
+  const {
+    personalInfo,
+    preferenceInfo,
+    locationWork,
+    lifestyleInfo,
+    interestInfo,
+    goToPreviousStep,
+    saveProfile,
+    goToStep,
+  } = useProfileCreation();
   const { step } = useParams<{ step: string }>();
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -55,15 +55,18 @@ export function ReviewComponent() {
 
   // Format array of languages for display
   const formatLanguages = () => {
-    if (!locationWork.languages || !locationWork.languages.length) return "None specified";
-    return locationWork.languages.join(', ');
+    if (!locationWork.languages || !locationWork.languages.length)
+      return "None specified";
+    return locationWork.languages.join(", ");
   };
 
   return (
     <div className="space-y-6">
       <div>
         <h2 className="text-2xl  mb-2">Review Your Profile</h2>
-        <p className="text-gray-500">Please review your information before submitting.</p>
+        <p className="text-gray-500">
+          Please review your information before submitting.
+        </p>
       </div>
 
       <Card className="p-4">
@@ -82,11 +85,13 @@ export function ReviewComponent() {
             <Separator />
             <div className="grid grid-cols-2 gap-2 pt-2">
               <p className="text-gray-500">Name:</p>
-              <p>{personalInfo.name} {personalInfo.surname}</p>
+              <p>
+                {personalInfo.name} {personalInfo.surname}
+              </p>
               <p className="text-gray-500">Gender:</p>
-              <p>{formatGenderEnum(personalInfo.gender ?? '')}</p>
+              <p>{formatGenderEnum(personalInfo.gender ?? "")}</p>
               <p className="text-gray-500">Orientation:</p>
-              <p>{formatOrientationEnum(personalInfo.orientation ?? '')}</p>
+              <p>{formatOrientationEnum(personalInfo.orientation ?? "")}</p>
             </div>
           </div>
 
@@ -126,11 +131,17 @@ export function ReviewComponent() {
             <Separator />
             <div className="grid grid-cols-2 gap-2 pt-2">
               <p className="text-gray-500">Age Range:</p>
-              <p>{preferenceInfo.min_age} - {preferenceInfo.max_age} years</p>
+              <p>
+                {preferenceInfo.min_age} - {preferenceInfo.max_age} years
+              </p>
               <p className="text-gray-500">Maximum Distance:</p>
               <p>{preferenceInfo.max_distance} km</p>
               <p className="text-gray-500">Looking For:</p>
-              <p>{formatRelationshipTypeEnum(preferenceInfo.relationship_type ?? '')}</p>
+              <p>
+                {formatRelationshipTypeEnum(
+                  preferenceInfo.relationship_type ?? "",
+                )}
+              </p>
             </div>
           </div>
 
@@ -148,22 +159,22 @@ export function ReviewComponent() {
             <Separator />
             <div className="grid grid-cols-2 gap-2 pt-2">
               <p className="text-gray-500">Smoking:</p>
-              <p>{formatSmokingEnum(lifestyleInfo.smoking ?? '')}</p>
+              <p>{formatSmokingEnum(lifestyleInfo.smoking ?? "")}</p>
               <p className="text-gray-500">Drinking:</p>
-              <p>{formatDrinkingEnum(lifestyleInfo.drinking ?? '')}</p>
-              {typeof lifestyleInfo.religion === 'number' && (
+              <p>{formatDrinkingEnum(lifestyleInfo.drinking ?? "")}</p>
+              {typeof lifestyleInfo.religion === "number" && (
                 <>
                   <p className="text-gray-500">Religion:</p>
                   <p>{formatReligionEnum(lifestyleInfo.religion)}</p>
                 </>
               )}
-              {typeof lifestyleInfo.politics === 'number' && (
+              {typeof lifestyleInfo.politics === "number" && (
                 <>
                   <p className="text-gray-500">Political Views:</p>
                   <p>{formatPoliticsEnum(lifestyleInfo.politics)}</p>
                 </>
               )}
-              {typeof lifestyleInfo.zodiac === 'number' && (
+              {typeof lifestyleInfo.zodiac === "number" && (
                 <>
                   <p className="text-gray-500">Zodiac Sign:</p>
                   <p>{formatZodiacEnum(lifestyleInfo.zodiac)}</p>
@@ -182,10 +193,7 @@ export function ReviewComponent() {
         >
           Back
         </Button>
-        <Button
-          onClick={handleSubmit}
-          disabled={isSubmitting}
-        >
+        <Button onClick={handleSubmit} disabled={isSubmitting}>
           {isSubmitting ? "Creating Profile..." : "Create Profile"}
         </Button>
       </div>

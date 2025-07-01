@@ -1,12 +1,14 @@
-'use client';
+"use client";
 
-import { motion } from 'framer-motion';
+import { motion } from "framer-motion";
 
 type RejectAnimationProps = {
   showRejectAnimation: boolean;
 };
 
-export default function RejectAnimation({ showRejectAnimation }: RejectAnimationProps) {
+export default function RejectAnimation({
+  showRejectAnimation,
+}: RejectAnimationProps) {
   if (!showRejectAnimation) return null;
 
   return (
@@ -16,7 +18,9 @@ export default function RejectAnimation({ showRejectAnimation }: RejectAnimation
       animate={{ y: 0, opacity: 1 }}
       exit={{ y: -50, opacity: 0 }}
     >
-      <span className="text-primary-foreground text-sm sm:text-base font-medium">Profil passé</span>
+      <span className="text-primary-foreground text-sm sm:text-base font-medium">
+        Profil passé
+      </span>
     </motion.div>
   );
 }

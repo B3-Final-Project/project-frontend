@@ -2,7 +2,7 @@ import { useMatchesQuery } from "@/hooks/react-query/matches";
 import Image from "next/image";
 
 export default function MatchList() {
-  const query = useMatchesQuery()
+  const query = useMatchesQuery();
 
   return (
     <div className="flex flex-col gap-4">
@@ -13,7 +13,7 @@ export default function MatchList() {
         <p>Error loading matches: {query.error.message}</p>
       ) : (
         <ul className="list-disc">
-          {query.data?.matches.map((match) =>
+          {query.data?.matches.map((match) => (
             <li key={match.id} className="flex items-center gap-4">
               <Image
                 src={match.imageUrl}
@@ -24,10 +24,9 @@ export default function MatchList() {
               />
               <span className="text-lg">{match.name}</span>
             </li>
-          )
-          }
+          ))}
         </ul>
       )}
     </div>
-  )
+  );
 }

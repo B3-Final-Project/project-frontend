@@ -1,22 +1,20 @@
-'use client';
+"use client";
 
-import { AnimatePresence, useMotionValue, useTransform } from 'framer-motion';
-import { useRouter } from 'next/navigation';
-import { useCallback, useEffect, useRef, useState } from 'react';
-import {
-  checkPackAvailability
-} from '../../utils/packManager';
-import { UserCardModal } from '../UserCardModal';
-import ControlButtons from './ControlButtons';
+import { AnimatePresence, useMotionValue, useTransform } from "framer-motion";
+import { useRouter } from "next/navigation";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { checkPackAvailability } from "../../utils/packManager";
+import { UserCardModal } from "../UserCardModal";
+import ControlButtons from "./ControlButtons";
 
 import { ProfileCardType } from "@/components/match/ProfileGenerator";
-import { useMatchActions } from '@/hooks/react-query/matches';
-import { Loader } from 'lucide-react';
-import MatchAnimation from './MatchAnimation';
-import MatchCounters from './MatchCounters';
-import MatchListModal from './MatchListModal';
-import NonMatchListModal from './NonMatchListModal';
-import ProfileCard from './ProfileCard';
+import { useMatchActions } from "@/hooks/react-query/matches";
+import { Loader } from "lucide-react";
+import MatchAnimation from "./MatchAnimation";
+import MatchCounters from "./MatchCounters";
+import MatchListModal from "./MatchListModal";
+import NonMatchListModal from "./NonMatchListModal";
+import ProfileCard from "./ProfileCard";
 
 type MatchSystemProps = {
   profiles: ProfileCardType[];
@@ -24,7 +22,7 @@ type MatchSystemProps = {
   onReject?: (profile: ProfileCardType) => void;
 };
 
-const SESSION_STORAGE_PACK_PAID_KEY = 'holomatch_current_pack_paid_for_session';
+const SESSION_STORAGE_PACK_PAID_KEY = "holomatch_current_pack_paid_for_session";
 const MAX_PACKS_PER_WINDOW = 2;
 
 export default function MatchSystem({ profiles }: MatchSystemProps) {
@@ -35,10 +33,14 @@ export default function MatchSystem({ profiles }: MatchSystemProps) {
   const [cardSize, setCardSize] = useState(getCardSize());
   const [showMatchAnimation, setShowMatchAnimation] = useState(false);
   const [showRejectAnimation, setShowRejectAnimation] = useState(false);
-  const [matchedProfile, setMatchedProfile] = useState<ProfileCardType | null>(null);
+  const [matchedProfile, setMatchedProfile] = useState<ProfileCardType | null>(
+    null,
+  );
   const [showMatchList, setShowMatchList] = useState(false);
   const [showNonMatchList, setShowNonMatchList] = useState(false);
-  const [selectedCard, setSelectedCard] = useState<ProfileCardType | null>(null);
+  const [selectedCard, setSelectedCard] = useState<ProfileCardType | null>(
+    null,
+  );
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const [isLoading, setIsLoading] = useState(true);
@@ -57,9 +59,9 @@ export default function MatchSystem({ profiles }: MatchSystemProps) {
   const constraintsRef = useRef<HTMLDivElement>(null);
   const { likeMatch, passMatch } = useMatchActions();
 
-
   const refreshPackStatusAndCountdown = useCallback(() => {
-    const { canOpen, timeUntilNextOpenMs, packsOpenedInWindow } = checkPackAvailability();
+    const { canOpen, timeUntilNextOpenMs, packsOpenedInWindow } =
+      checkPackAvailability();
     const remainingInWindow = MAX_PACKS_PER_WINDOW - (packsOpenedInWindow || 0);
 
     setPackStatus({ canOpen: canOpen, remainingPacks: remainingInWindow });
@@ -73,12 +75,13 @@ export default function MatchSystem({ profiles }: MatchSystemProps) {
 
   useEffect(() => {
     setIsLoading(true);
-    const isPackPaidForSession = sessionStorage.getItem(SESSION_STORAGE_PACK_PAID_KEY) === 'true';
+    const isPackPaidForSession =
+      sessionStorage.getItem(SESSION_STORAGE_PACK_PAID_KEY) === "true";
 
     if (!isPackPaidForSession) {
       const { canOpen: canCurrentlyOpen } = checkPackAvailability();
       if (canCurrentlyOpen) {
-        sessionStorage.setItem(SESSION_STORAGE_PACK_PAID_KEY, 'true');
+        sessionStorage.setItem(SESSION_STORAGE_PACK_PAID_KEY, "true");
       }
     }
     refreshPackStatusAndCountdown();
@@ -89,7 +92,7 @@ export default function MatchSystem({ profiles }: MatchSystemProps) {
     let timerId: NodeJS.Timeout | undefined;
     if (!packStatus.canOpen && countdown > 0) {
       timerId = setInterval(() => {
-        setCountdown(prev => {
+        setCountdown((prev) => {
           if (prev <= 1000) {
             clearInterval(timerId);
             refreshPackStatusAndCountdown();
@@ -107,7 +110,7 @@ export default function MatchSystem({ profiles }: MatchSystemProps) {
   useEffect(() => {
     if (!isLoading && currentIndex >= profiles.length && profiles.length > 0) {
       sessionStorage.removeItem(SESSION_STORAGE_PACK_PAID_KEY);
-      router.push('/boosters');
+      router.push("/boosters");
     }
   }, [profiles, currentIndex, isLoading, router]);
 
@@ -119,21 +122,22 @@ export default function MatchSystem({ profiles }: MatchSystemProps) {
   }, [profiles, x]);
 
   function getCardSize() {
-    if (typeof window !== 'undefined') {
-      let size = { height: 'min(420px, 70vh)', width: 'min(280px, 85vw)' };
-      if (window.innerWidth >= 768) size = { height: 'min(480px, 75vh)', width: 'min(320px, 90vw)' };
-      if (window.innerWidth >= 1024) size = { height: 'min(520px, 80vh)', width: 'min(350px, 95vw)' };
+    if (typeof window !== "undefined") {
+      let size = { height: "min(420px, 70vh)", width: "min(280px, 85vw)" };
+      if (window.innerWidth >= 768)
+        size = { height: "min(480px, 75vh)", width: "min(320px, 90vw)" };
+      if (window.innerWidth >= 1024)
+        size = { height: "min(520px, 80vh)", width: "min(350px, 95vw)" };
       return size;
     }
-    return { height: 'min(420px, 70vh)', width: 'min(280px, 85vw)' };
+    return { height: "min(420px, 70vh)", width: "min(280px, 85vw)" };
   }
 
   useEffect(() => {
     const handleResize = () => setCardSize(getCardSize());
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
   }, []);
-
 
   const handleMatch = (profile: ProfileCardType) => {
     if (isProcessing) return; // Evite les clics multiples
@@ -172,12 +176,14 @@ export default function MatchSystem({ profiles }: MatchSystemProps) {
   };
 
   const moveToNextCard = () => {
-    setCurrentIndex(current => {
+    setCurrentIndex((current) => {
       let nextIdx = current + 1;
       while (nextIdx < profiles.length) {
         const profileToCheck = profiles[nextIdx];
-        const isInMatches = matches.some(m => m.id === profileToCheck.id);
-        const isInNonMatches = nonMatches.some(nm => nm.id === profileToCheck.id);
+        const isInMatches = matches.some((m) => m.id === profileToCheck.id);
+        const isInNonMatches = nonMatches.some(
+          (nm) => nm.id === profileToCheck.id,
+        );
         if (!isInMatches && !isInNonMatches) break;
         nextIdx++;
       }
@@ -201,7 +207,6 @@ export default function MatchSystem({ profiles }: MatchSystemProps) {
     setIsModalOpen(false);
     setSelectedCard(null);
   };
-
 
   if (isLoading) {
     return (
@@ -298,10 +303,16 @@ export default function MatchSystem({ profiles }: MatchSystemProps) {
           description={selectedCard.description}
           isOpen={isModalOpen}
           onClose={closeModal}
-          images={selectedCard.images || ['/vintage.png', '/vintage.png', '/vintage.png']}
+          images={
+            selectedCard.images || [
+              "/vintage.png",
+              "/vintage.png",
+              "/vintage.png",
+            ]
+          }
           image_url={selectedCard.image_url}
           rarity={selectedCard.rarity}
-          interests={selectedCard.interests?.map(interest => interest.name)} // Map to array of names
+          interests={selectedCard.interests?.map((interest) => interest.name)} // Map to array of names
           languages={selectedCard.languages}
           zodiac={selectedCard.zodiac}
           smoking={selectedCard.smoking}

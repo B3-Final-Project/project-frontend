@@ -10,9 +10,9 @@ import { SelectorComponent } from "@/components/profile/SelectorComponent";
 import { getEnumOptions } from "@/lib/utils/enum-utils";
 
 // Define options outside component to prevent recreation on each render
-const genderOptions = getEnumOptions(GenderEnum)
+const genderOptions = getEnumOptions(GenderEnum);
 
-const orientationOptions = getEnumOptions(OrientationEnum)
+const orientationOptions = getEnumOptions(OrientationEnum);
 
 export function PersonalInfoDialog() {
   return (
@@ -23,14 +23,14 @@ export function PersonalInfoDialog() {
         surname: "",
         age: 18,
         gender: undefined,
-        orientation: undefined
+        orientation: undefined,
       }}
       extractFormDataFromProfile={(profile, user) => ({
         name: user.name || "",
         surname: user.surname || "",
         age: user.age || 18,
         gender: user.gender,
-        orientation: profile.orientation
+        orientation: profile.orientation,
       })}
       buildUpdatePayload={(formData) => ({
         personalInfo: formData,

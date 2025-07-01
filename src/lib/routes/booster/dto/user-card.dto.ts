@@ -1,7 +1,7 @@
 import {
   DrinkingEnum,
   SmokingEnum,
-  ZodiacEnum
+  ZodiacEnum,
 } from "@/lib/routes/profiles/enums";
 import { Interest } from "@/lib/routes/profiles/interfaces/interest.interface";
 import { RarityEnum } from "@/lib/routes/booster/dto/rarity.enum";

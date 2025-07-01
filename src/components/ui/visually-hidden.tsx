@@ -1,4 +1,4 @@
-import * as React from "react"
+import * as React from "react";
 
 const VisuallyHidden = React.forwardRef<
   HTMLSpanElement,
@@ -7,11 +7,11 @@ const VisuallyHidden = React.forwardRef<
   return (
     <span
       ref={ref}
-      className={`absolute -m-px h-px w-px overflow-hidden whitespace-nowrap border-0 p-0 [clip:rect(0,0,0,0)] ${className ?? ''}`}
+      className={`absolute -m-px h-px w-px overflow-hidden whitespace-nowrap border-0 p-0 [clip:rect(0,0,0,0)] ${className ?? ""}`}
       {...props}
     />
-  )
-})
-VisuallyHidden.displayName = "VisuallyHidden"
+  );
+});
+VisuallyHidden.displayName = "VisuallyHidden";
 
-export { VisuallyHidden }
+export { VisuallyHidden };

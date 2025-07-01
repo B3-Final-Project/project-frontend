@@ -1,6 +1,6 @@
-import { motion } from 'framer-motion';
-import { Heart, X } from 'lucide-react';
-import { ProfileCardType } from './ProfileGenerator';
+import { motion } from "framer-motion";
+import { Heart, X } from "lucide-react";
+import { ProfileCardType } from "./ProfileGenerator";
 
 type ControlButtonsProps = {
   currentProfile: ProfileCardType | undefined;
@@ -8,7 +8,11 @@ type ControlButtonsProps = {
   handleReject: (profile: ProfileCardType) => void;
 };
 
-export default function ControlButtons({ currentProfile, handleMatch, handleReject }: ControlButtonsProps) {
+export default function ControlButtons({
+  currentProfile,
+  handleMatch,
+  handleReject,
+}: ControlButtonsProps) {
   return (
     <div className="flex gap-4 sm:gap-6 mt-4 sm:mt-6">
       <motion.button
@@ -26,7 +30,10 @@ export default function ControlButtons({ currentProfile, handleMatch, handleReje
         className="bg-gradient-to-r from-green-400 to-blue-500 p-3 sm:p-4 rounded-full shadow-lg"
         onClick={() => currentProfile && handleMatch(currentProfile)}
       >
-        <Heart className="w-5 h-5 sm:w-6 sm:h-6 text-primary-foreground" fill="white" />
+        <Heart
+          className="w-5 h-5 sm:w-6 sm:h-6 text-primary-foreground"
+          fill="white"
+        />
       </motion.button>
     </div>
   );
