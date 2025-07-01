@@ -4,8 +4,8 @@ import { IoCheckmarkDone } from 'react-icons/io5';
 import type { Message } from './types';
 
 interface MessageBubbleProps {
-    message: Message;
-    isLastMessage?: boolean;
+    readonly message: Message;
+    readonly isLastMessage?: boolean;
 }
 
 export default function MessageBubble({ message, isLastMessage = false }: MessageBubbleProps) {

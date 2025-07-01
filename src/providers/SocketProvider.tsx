@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext, useEffect, useState, ReactNode } from "react";
+import { createContext, useContext, useEffect, useState, ReactNode, useMemo } from "react";
 import { io, Socket } from "socket.io-client";
 
 interface SocketContextType {
@@ -14,8 +14,8 @@ const SocketContext = createContext<SocketContextType>({
 });
 
 interface SocketProviderProps {
-  children: ReactNode;
-  token: string;
+  readonly children: ReactNode;
+  readonly token: string;
 }
 
 export function SocketProvider({ children, token }: SocketProviderProps) {
@@ -30,7 +30,7 @@ export function SocketProvider({ children, token }: SocketProviderProps) {
 
     console.log('🔌 Tentative de connexion WebSocket avec token:', token.substring(0, 20) + '...');
 
-    const socketInstance = io(`${process.env.NEXT_PUBLIC_WS_URL || 'http://localhost:8080'}/messages`, {
+    const socketInstance = io(`${process.env.NEXT_PUBLIC_WS_URL ?? 'http://localhost:8080'}/messages`, {
       auth: { token },
       transports: ['websocket', 'polling'],
       autoConnect: true,
@@ -63,8 +63,13 @@ export function SocketProvider({ children, token }: SocketProviderProps) {
     };
   }, [token]);
 
+  const contextValue = useMemo(() => ({
+    socket,
+    isConnected
+  }), [socket, isConnected]);
+
   return (
-    <SocketContext.Provider value={{ socket, isConnected }}>
+    <SocketContext.Provider value={contextValue}>
       {children}
     </SocketContext.Provider>
   );

@@ -1,4 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useRouter } from 'next/navigation';
 import { messagesApi } from '../../../lib/routes/messages';
 import { CreateMessageDto } from '../../../lib/routes/messages/dto/create-message.dto';
 import { CreateConversationDto } from '../../../lib/routes/messages/dto/create-conversation.dto';
@@ -61,6 +62,21 @@ export const useMarkMessagesAsRead = () => {
       });
       // Mettre à jour la liste des conversations
       queryClient.invalidateQueries({ queryKey: ['conversations'] });
+    },
+  });
+};
+
+export const useDeleteConversation = () => {
+  const queryClient = useQueryClient();
+  const router = useRouter();
+
+  return useMutation({
+    mutationFn: (conversationId: string) => messagesApi.deleteConversation(conversationId),
+    onSuccess: () => {
+      // Invalider et refetch les conversations
+      queryClient.invalidateQueries({ queryKey: ['conversations'] });
+      // Rediriger vers la liste des conversations
+      router.push('/messages');
     },
   });
 }; 

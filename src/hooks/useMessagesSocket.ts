@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
 import { useSocket } from '../providers/SocketProvider';
 import { useQueryClient } from '@tanstack/react-query';
+import { useToast } from './use-toast';
 import { Message, Conversation } from '../lib/routes/messages/interfaces/message.interface';
 
 interface TypingUser {
@@ -21,6 +22,7 @@ const processedMessages = new Set<string>();
 export const useMessagesSocket = () => {
   const { socket, isConnected } = useSocket();
   const queryClient = useQueryClient();
+  const { toast } = useToast();
   const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const [typingUsers, setTypingUsers] = useState<Map<string, Set<string>>>(new Map());
   const [onlineUsers, setOnlineUsers] = useState<Set<string>>(new Set());
@@ -35,6 +37,7 @@ export const useMessagesSocket = () => {
     handleUserOffline: (data: { userId: string }) => void;
     handleOnlineUsers: (data: { users: string[] }) => void;
     handleUnreadMessage: (data: { conversationId: string; messageCount: number; timestamp: Date }) => void;
+    handleConversationDeleted: (data: { conversationId: string; deletedBy: string; timestamp: Date }) => void;
   } | null>(null);
 
   // Fonction pour envoyer un message via socket
@@ -108,6 +111,14 @@ export const useMessagesSocket = () => {
   }) => {
     if (socket && isConnected) {
       socket.emit('createConversation', conversationData);
+    }
+  }, [socket, isConnected]);
+
+  // Fonction pour supprimer une conversation
+  const deleteConversation = useCallback((conversationId: string) => {
+    if (socket && isConnected) {
+      console.log('🗑️ Demande de suppression de conversation via WebSocket:', conversationId);
+      socket.emit('deleteConversation', conversationId);
     }
   }, [socket, isConnected]);
 
@@ -214,6 +225,10 @@ export const useMessagesSocket = () => {
       handleNewConversation: (conversation: Conversation) => {
         queryClient.setQueryData(['conversations'], (oldData: Conversation[] | undefined) => {
           if (!oldData) return [conversation];
+          // Vérifier si la conversation existe déjà
+          if (oldData.some(conv => conv.id === conversation.id)) {
+            return oldData;
+          }
           return [conversation, ...oldData];
         });
       },
@@ -250,11 +265,11 @@ export const useMessagesSocket = () => {
           const newMap = new Map(prev);
           
           if (data.isTyping) {
-            const users = new Set(newMap.get(data.conversationId) || []);
+            const users = new Set(newMap.get(data.conversationId) ?? []);
             users.add(data.userId);
             newMap.set(data.conversationId, users);
           } else {
-            const users = new Set(newMap.get(data.conversationId) || []);
+            const users = new Set(newMap.get(data.conversationId) ?? []);
             users.delete(data.userId);
             if (users.size === 0) {
               newMap.delete(data.conversationId);
@@ -286,7 +301,9 @@ export const useMessagesSocket = () => {
       // Liste des utilisateurs en ligne
       handleOnlineUsers: (data: { users: string[] }) => {
         console.log('📋 Liste des utilisateurs en ligne reçue:', data.users);
-        setOnlineUsers(new Set(data.users));
+        // Filtrer les doublons explicitement
+        const uniqueUsers = Array.from(new Set(data.users));
+        setOnlineUsers(new Set(uniqueUsers));
       },
 
       // Message non lu
@@ -310,6 +327,42 @@ export const useMessagesSocket = () => {
         
         // Invalider les requêtes pour forcer un refresh
         queryClient.invalidateQueries({ queryKey: ['conversations'] });
+      },
+
+      // Conversation supprimée
+      handleConversationDeleted: (data: { conversationId: string; deletedBy: string; timestamp: Date }) => {
+        console.log('🗑 Conversation supprimée:', data.conversationId);
+        
+        // Récupérer l'ID utilisateur actuel depuis le token
+        const token = localStorage.getItem('auth_token');
+        let currentUserId: string | null = null;
+        
+        if (token) {
+          try {
+            const payload = JSON.parse(atob(token.split('.')[1]));
+            currentUserId = payload.sub || payload.username;
+          } catch (error) {
+            console.error('❌ Erreur lors du décodage du token:', error);
+          }
+        }
+        
+        // Afficher une notification seulement si la conversation a été supprimée par l'autre utilisateur
+        if (currentUserId && data.deletedBy !== currentUserId) {
+          toast({
+            title: "Conversation supprimée",
+            description: "L'autre utilisateur a supprimé cette conversation.",
+            variant: "destructive",
+          });
+        }
+        
+        queryClient.setQueryData(['conversations'], (oldData: Conversation[] | undefined) => {
+          if (!oldData) return [];
+          
+          return oldData.filter(conv => conv.id !== data.conversationId);
+        });
+        
+        // Invalider les requêtes pour forcer un refresh
+        queryClient.invalidateQueries({ queryKey: ['conversations'] });
       }
     };
 
@@ -323,6 +376,7 @@ export const useMessagesSocket = () => {
     socket.on('userOffline', handlers.handleUserOffline);
     socket.on('onlineUsers', handlers.handleOnlineUsers);
     socket.on('unreadMessage', handlers.handleUnreadMessage);
+    socket.on('conversationDeleted', handlers.handleConversationDeleted);
 
     // Nettoyer les listeners
     return () => {
@@ -337,6 +391,7 @@ export const useMessagesSocket = () => {
         socket.off('userOffline', handlers.handleUserOffline);
         socket.off('onlineUsers', handlers.handleOnlineUsers);
         socket.off('unreadMessage', handlers.handleUnreadMessage);
+        socket.off('conversationDeleted', handlers.handleConversationDeleted);
       }
       listenersInitialized.current = false;
       handlersRef.current = null;
@@ -361,7 +416,7 @@ export const useMessagesSocket = () => {
     
     typingTimeoutRef.current = setTimeout(() => {
       handleTyping(conversationId, false);
-    }, 3000);
+    }, 5000);
   }, [handleTyping]);
 
   const stopTyping = useCallback((conversationId: string) => {
@@ -383,7 +438,7 @@ export const useMessagesSocket = () => {
 
   // Obtenir les utilisateurs en train de taper pour une conversation
   const getTypingUsers = useCallback((conversationId: string): string[] => {
-    const typingUserIds = Array.from(typingUsers.get(conversationId) || []);
+    const typingUserIds = Array.from(typingUsers.get(conversationId) ?? []);
     
     // Récupérer les données des conversations pour mapper les IDs vers les noms
     const conversations = queryClient.getQueryData(['conversations']) as Conversation[] | undefined;
@@ -399,7 +454,7 @@ export const useMessagesSocket = () => {
     if (token) {
       try {
         const payload = JSON.parse(atob(token.split('.')[1]));
-        currentUserId = payload.sub || payload.username;
+        currentUserId = payload.sub ?? payload.username;
       } catch (error) {
         console.error('❌ Erreur lors du décodage du token:', error);
       }
@@ -408,7 +463,7 @@ export const useMessagesSocket = () => {
     // Retourner les noms des utilisateurs qui tapent (exclure l'utilisateur actuel)
     return typingUserIds
       .filter(userId => userId !== currentUserId) // Exclure l'utilisateur actuel
-      .map(() => conversation.name || 'Quelqu\'un'); // Utiliser le nom de la conversation
+      .map(() => conversation.name ?? 'Quelqu\'un'); // Utiliser le nom de la conversation
   }, [typingUsers, queryClient]);
 
   // Vérifier si un utilisateur est en ligne
@@ -447,6 +502,7 @@ export const useMessagesSocket = () => {
     stopTyping,
     markAsRead,
     createConversation,
+    deleteConversation,
     getOnlineUsers,
     
     // Utilitaires

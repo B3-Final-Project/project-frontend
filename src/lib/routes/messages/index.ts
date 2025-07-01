@@ -32,4 +32,9 @@ export const messagesApi = {
   markMessagesAsRead: async (conversationId: string): Promise<void> => {
     await authenticatedAxios.post(`/messages/conversations/${conversationId}/read`);
   },
+
+  // Supprimer une conversation
+  deleteConversation: async (conversationId: string): Promise<void> => {
+    await authenticatedAxios.delete(`/messages/conversations/${conversationId}`);
+  },
 }; 

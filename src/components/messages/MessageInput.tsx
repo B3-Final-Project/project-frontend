@@ -3,10 +3,10 @@
 import { IoSend, IoImage } from 'react-icons/io5';
 
 interface MessageInputProps {
-    value: string;
-    onChange: (value: string) => void;
-    onSend: () => void;
-    onKeyPress: (e: React.KeyboardEvent) => void;
+    readonly value: string;
+    readonly onChange: (value: string) => void;
+    readonly onSend: () => void;
+    readonly onKeyPress: (e: React.KeyboardEvent) => void;
 }
 
 export default function MessageInput({ value, onChange, onSend, onKeyPress }: MessageInputProps) {

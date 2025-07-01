@@ -62,7 +62,7 @@ export const useAuthToken = () => {
     const originalSetItem = sessionStorage.setItem;
     sessionStorage.setItem = function(key, value) {
       originalSetItem.apply(this, [key, value]);
-      if (key.startsWith('oidc.user:')) {
+      if (key?.startsWith('oidc.user:')) {
         handleStorageChange();
       }
     };

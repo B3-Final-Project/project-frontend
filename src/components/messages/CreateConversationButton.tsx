@@ -9,7 +9,7 @@ import { useCurrentUserId } from '../../hooks/useAuthToken';
 import { User } from '../../lib/routes/profiles/interfaces/user.interface';
 
 interface CreateConversationButtonProps {
-  onConversationCreated?: (conversationId: string) => void;
+  readonly onConversationCreated?: (conversationId: string) => void;
 }
 
 export const CreateConversationButton: React.FC<CreateConversationButtonProps> = ({
@@ -23,7 +23,7 @@ export const CreateConversationButton: React.FC<CreateConversationButtonProps> =
   const createConversationMutation = useCreateConversation();
   
   // Essayer d'abord l'API matches, puis fallback sur tous les profils
-  const { data: matches, isLoading: matchesLoading, error: matchesError } = useMatches();
+  const { data: matches, isLoading: matchesLoading } = useMatches();
   const { data: allProfiles, isLoading: profilesLoading } = useAllUsersAsMatches();
   
   const currentUserId = useCurrentUserId();

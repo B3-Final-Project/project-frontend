@@ -94,9 +94,8 @@ export function UserCardModal({ name, age, location, description, isOpen, onClos
         whileTap={{ scale: 0.98 }}
       >
         <motion.div
-          className="w-[min(280px,85vw)] h-[min(420px,70vh)] md:w-[380px] md:h-[550px] perspective-1000 relative cursor-pointer"
-          onClick={handleCardFlip}
           className="w-[80vw] max-w-[400px] aspect-[7/10] perspective-1000 relative cursor-pointer"
+          onClick={handleCardFlip}
           aria-label="Flip user card"
         >
           <motion.div
@@ -119,11 +118,11 @@ export function UserCardModal({ name, age, location, description, isOpen, onClos
                   <div className="flex justify-between items-center p-3 sm:p-5 font-medium flex-wrap gap-2">
                     <div className="flex items-center gap-1 sm:gap-2 bg-white/20 px-2 sm:px-3 py-1 sm:py-1.5 rounded-full text-white shadow-lg text-xs sm:text-sm">
                       <MapPin className="text-red-400 w-4 h-4 sm:w-5 sm:h-5" />
-                      <p>{location || "Location"}</p>
+                      <p>{location ?? "Location"}</p>
                     </div>
                     <div className="flex items-center gap-1 sm:gap-2 bg-white/20 px-2 sm:px-3 py-1 sm:py-1.5 rounded-full text-white shadow-lg text-xs sm:text-sm">
                       <User className="text-blue-300 w-4 h-4 sm:w-5 sm:h-5" />
-                      <p>{age || 99} ans</p>
+                      <p>{age ?? 99} ans</p>
                     </div>
                   </div>
 
@@ -143,7 +142,7 @@ export function UserCardModal({ name, age, location, description, isOpen, onClos
                 </div>
                 <div className="mb-3 text-gray-200 leading-relaxed overflow-auto max-h-[300px] custom-scrollbar">
                   <p>
-                    {description ||
+                    {description ??
                       "Lorem ipsum dolor sit amet consectetur adipisicing elit. Expedita at vero voluptatem, eum voluptate quia corrupti doloremque voluptatum quos obcaecati dicta eos distinctio ea earum eligendi odit reprehenderit! Iste, vitae!"}
                   </p>
                 </div>

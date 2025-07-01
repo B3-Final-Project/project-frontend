@@ -1,7 +1,7 @@
 "use client"
 
 import React, { useState } from 'react';
-import { IoInformationCircle, IoClose } from 'react-icons/io5';
+import { IoClose } from 'react-icons/io5';
 import { useMessagesSocket } from '../../hooks/useMessagesSocket';
 
 export const ConnectionStatus: React.FC = () => {

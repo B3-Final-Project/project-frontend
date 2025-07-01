@@ -2,12 +2,8 @@ import MessagesList from '@/components/messages/MessagesList';
 
 export default function MessagesPage() {
     return (
-        <div className="min-h-screen bg-gray-50">
-            <div className="max-w-4xl mx-auto p-4">
-                <div className="bg-white rounded-lg shadow-sm">
-                    <MessagesList />
-                </div>
-            </div>
+        <div className="md:h-screen h-[calc(100vh-50px)] bg-gray-50">
+            <MessagesList />
         </div>
     );
 }

@@ -4,11 +4,11 @@ import { IoChevronBack, IoMenu } from 'react-icons/io5';
 import { useRouter } from 'next/navigation';
 
 interface ConversationHeaderProps {
-    name: string;
-    avatar: string;
-    isOnline?: boolean;
-    onToggleList?: () => void;
-    showBackButton?: boolean;
+    readonly name: string;
+    readonly avatar: string;
+    readonly isOnline?: boolean;
+    readonly onToggleList?: () => void;
+    readonly showBackButton?: boolean;
 }
 
 export default function ConversationHeader({ 

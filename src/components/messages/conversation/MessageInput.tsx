@@ -1,10 +1,10 @@
-import React, { useCallback } from 'react';
+import React from 'react';
 
 interface MessageInputProps {
-    newMessage: string;
-    onMessageChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-    onSendMessage: () => void;
-    onKeyPress: (e: React.KeyboardEvent) => void;
+    readonly newMessage: string;
+    readonly onMessageChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+    readonly onSendMessage: () => void;
+    readonly onKeyPress: (e: React.KeyboardEvent) => void;
 }
 
 export const MessageInput: React.FC<MessageInputProps> = ({

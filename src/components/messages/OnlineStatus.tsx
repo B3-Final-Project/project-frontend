@@ -1,9 +1,8 @@
 import React from 'react';
 
 interface OnlineStatusProps {
-  isOnline: boolean;
-  lastSeen?: Date;
-  size?: 'sm' | 'md' | 'lg';
+  readonly isOnline: boolean;
+  readonly size?: 'sm' | 'md' | 'lg';
 }
 
 export const OnlineStatus: React.FC<OnlineStatusProps> = ({ 

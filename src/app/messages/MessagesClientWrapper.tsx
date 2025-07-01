@@ -5,14 +5,14 @@ import { SocketProvider } from "../../providers/SocketProvider";
 import { useAuthToken } from "@/hooks/useAuthToken";
 
 interface MessagesClientWrapperProps {
-  children: ReactNode;
+  readonly children: ReactNode;
 }
 
 export function MessagesClientWrapper({ children }: MessagesClientWrapperProps) {
   const token = useAuthToken();
 
   return (
-    <SocketProvider token={token || ''}>
+    <SocketProvider token={token ?? ''}>
       {children}
     </SocketProvider>
   );

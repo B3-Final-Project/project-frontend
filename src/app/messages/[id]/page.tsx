@@ -2,7 +2,7 @@ import { use } from 'react';
 import ConversationPage from '@/components/messages/ConversationPage';
 
 interface ConversationPageProps {
-    params: Promise<{
+    readonly params: Promise<{
         id: string;
     }>;
 }
