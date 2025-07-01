@@ -1,4 +1,4 @@
-export type ProfileCardType = {
+export type MatchProfile = {
   id: string;
   name: string;
   image: string;

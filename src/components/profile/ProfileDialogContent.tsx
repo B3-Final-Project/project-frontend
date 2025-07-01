@@ -4,14 +4,15 @@ import { DialogContentSelector } from "@/components/profile/DialogContentSelecto
 import { ProfileOptions } from "@/components/profile/ProfileOptions";
 import { Dialog } from "@/components/ui/dialog";
 import { useState } from "react";
-import { Book, Camera, Circle, MoreHorizontal } from "lucide-react";
+import { Book, Camera, Circle, Heart, MoreHorizontal } from "lucide-react";
 
 export enum DialogContentChoices {
-  LIFESTYLE = 'lifestyle',
-  LOCATION_WORK = 'location_work',
-  PERSONAL_INFO = 'personal_info',
-  PREFERENCES = 'preferences',
-  PICTURES = 'pictures',
+  LIFESTYLE = "lifestyle",
+  LOCATION_WORK = "location_work",
+  PERSONAL_INFO = "personal_info",
+  PREFERENCES = "preferences",
+  PICTURES = "pictures",
+  INTERESTS = "interests",
 }
 
 export const editProfileData = [
@@ -44,7 +45,13 @@ export const editProfileData = [
     title: "Style de vie",
     description: "Description",
     icon: Circle,
-  }
+  },
+  {
+    key: DialogContentChoices.INTERESTS,
+    title: "Centres d'intérêt",
+    description: "Prompts personnalisés",
+    icon: Heart,
+  },
 ];
 
 export function ProfileDialogContent() {
@@ -52,8 +59,11 @@ export function ProfileDialogContent() {
 
   return (
     <Dialog>
-      <ProfileOptions data={editProfileData} setSelectedOption={setSelectedOption} />
-      <DialogContentSelector  selectedOption={selectedOption} />
+      <ProfileOptions
+        data={editProfileData}
+        setSelectedOption={setSelectedOption}
+      />
+      <DialogContentSelector selectedOption={selectedOption} />
     </Dialog>
   );
 }

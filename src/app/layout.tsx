@@ -6,6 +6,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { CognitoAuthProvider } from "@/providers/CognitoAuthProvider";
 import ReactQueryClientProvider from "@/providers/ReactQueryClientProvider";
 import type { Metadata } from "next";
+import { ProfileGuard } from "@/components/guards/ProfileGuard";
 
 export const metadata: Metadata = {
   title: "Holomatch",
@@ -21,13 +22,13 @@ export default function RootLayout({
       <body>
         <ReactQueryClientProvider>
           <CognitoAuthProvider>
-            <SidebarProvider>
-              <SidebarComponent />
-              <main className={'h-screen w-full'}>
-                {children}
-              </main>
-              <Toaster />
-            </SidebarProvider>
+            <ProfileGuard>
+              <SidebarProvider>
+                <SidebarComponent />
+                <main className={"h-screen w-full"}>{children}</main>
+                <Toaster />
+              </SidebarProvider>
+            </ProfileGuard>
           </CognitoAuthProvider>
         </ReactQueryClientProvider>
       </body>

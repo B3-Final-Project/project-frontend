@@ -1,21 +1,20 @@
-'use client';
+"use client";
 
-import { AnimatePresence, PanInfo, useMotionValue, useTransform } from 'framer-motion';
-import { useRouter } from 'next/navigation';
-import { useCallback, useEffect, useRef, useState } from 'react';
-import {
-  checkPackAvailability
-} from '../../utils/packManager';
-import { UserCardModal } from '../UserCardModal';
-import ControlButtons from './ControlButtons';
+import { AnimatePresence, useMotionValue, useTransform } from "framer-motion";
+import { useRouter } from "next/navigation";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { checkPackAvailability } from "@/utils/packManager";
+import { UserCardModal } from "../UserCardModal";
+import ControlButtons from "./ControlButtons";
 
-import { ProfileCardType } from "@/components/match/ProfileGenerator";
-import { useMatchActions } from '@/hooks/react-query/matches';
-import { Loader } from 'lucide-react';
-import MatchCounters from './MatchCounters';
-import MatchListModal from './MatchListModal';
-import NonMatchListModal from './NonMatchListModal';
-import ProfileCard from './ProfileCard';
+import { useMatchActions } from "@/hooks/react-query/matches";
+import { Loader } from "lucide-react";
+import MatchAnimation from "./MatchAnimation";
+import MatchCounters from "./MatchCounters";
+import MatchListModal from "./MatchListModal";
+import NonMatchListModal from "./NonMatchListModal";
+import ProfileCard from "./ProfileCard";
+import { ProfileCardType } from "@/lib/routes/profiles/dto/profile-card-type.dto";
 
 type MatchSystemProps = {
   profiles: ProfileCardType[];
@@ -23,7 +22,7 @@ type MatchSystemProps = {
   onReject?: (profile: ProfileCardType) => void;
 };
 
-const SESSION_STORAGE_PACK_PAID_KEY = 'holomatch_current_pack_paid_for_session';
+const SESSION_STORAGE_PACK_PAID_KEY = "holomatch_current_pack_paid_for_session";
 const MAX_PACKS_PER_WINDOW = 2;
 
 export default function MatchSystem({ profiles }: MatchSystemProps) {
@@ -32,9 +31,15 @@ export default function MatchSystem({ profiles }: MatchSystemProps) {
   const [nonMatches, setNonMatches] = useState<ProfileCardType[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [cardSize, setCardSize] = useState(getCardSize());
+  const [showMatchAnimation, setShowMatchAnimation] = useState(false);
+  const [matchedProfile, setMatchedProfile] = useState<ProfileCardType | null>(
+    null,
+  );
   const [showMatchList, setShowMatchList] = useState(false);
   const [showNonMatchList, setShowNonMatchList] = useState(false);
-  const [selectedCard, setSelectedCard] = useState<ProfileCardType | null>(null);
+  const [selectedCard, setSelectedCard] = useState<ProfileCardType | null>(
+    null,
+  );
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const [isLoading, setIsLoading] = useState(true);
@@ -54,7 +59,8 @@ export default function MatchSystem({ profiles }: MatchSystemProps) {
   const { likeMatch, passMatch } = useMatchActions();
 
   const refreshPackStatusAndCountdown = useCallback(() => {
-    const { canOpen, timeUntilNextOpenMs, packsOpenedInWindow } = checkPackAvailability();
+    const { canOpen, timeUntilNextOpenMs, packsOpenedInWindow } =
+      checkPackAvailability();
     const remainingInWindow = MAX_PACKS_PER_WINDOW - (packsOpenedInWindow || 0);
 
     setPackStatus({ canOpen: canOpen, remainingPacks: remainingInWindow });
@@ -68,12 +74,13 @@ export default function MatchSystem({ profiles }: MatchSystemProps) {
 
   useEffect(() => {
     setIsLoading(true);
-    const isPackPaidForSession = sessionStorage.getItem(SESSION_STORAGE_PACK_PAID_KEY) === 'true';
+    const isPackPaidForSession =
+      sessionStorage.getItem(SESSION_STORAGE_PACK_PAID_KEY) === "true";
 
     if (!isPackPaidForSession) {
       const { canOpen: canCurrentlyOpen } = checkPackAvailability();
       if (canCurrentlyOpen) {
-        sessionStorage.setItem(SESSION_STORAGE_PACK_PAID_KEY, 'true');
+        sessionStorage.setItem(SESSION_STORAGE_PACK_PAID_KEY, "true");
       }
     }
     refreshPackStatusAndCountdown();
@@ -84,7 +91,7 @@ export default function MatchSystem({ profiles }: MatchSystemProps) {
     let timerId: NodeJS.Timeout | undefined;
     if (!packStatus.canOpen && countdown > 0) {
       timerId = setInterval(() => {
-        setCountdown(prev => {
+        setCountdown((prev) => {
           if (prev <= 1000) {
             clearInterval(timerId);
             refreshPackStatusAndCountdown();
@@ -102,7 +109,7 @@ export default function MatchSystem({ profiles }: MatchSystemProps) {
   useEffect(() => {
     if (!isLoading && currentIndex >= profiles.length && profiles.length > 0) {
       sessionStorage.removeItem(SESSION_STORAGE_PACK_PAID_KEY);
-      router.push('/boosters');
+      router.push("/boosters");
     }
   }, [profiles, currentIndex, isLoading, router]);
 
@@ -114,19 +121,21 @@ export default function MatchSystem({ profiles }: MatchSystemProps) {
   }, [profiles, x]);
 
   function getCardSize() {
-    if (typeof window !== 'undefined') {
-      let size = { height: 'min(420px, 70vh)', width: 'min(280px, 85vw)' };
-      if (window.innerWidth >= 768) size = { height: 'min(480px, 75vh)', width: 'min(320px, 90vw)' };
-      if (window.innerWidth >= 1024) size = { height: 'min(520px, 80vh)', width: 'min(350px, 95vw)' };
+    if (typeof window !== "undefined") {
+      let size = { height: "min(420px, 70vh)", width: "min(280px, 85vw)" };
+      if (window.innerWidth >= 768)
+        size = { height: "min(480px, 75vh)", width: "min(320px, 90vw)" };
+      if (window.innerWidth >= 1024)
+        size = { height: "min(520px, 80vh)", width: "min(350px, 95vw)" };
       return size;
     }
-    return { height: 'min(420px, 70vh)', width: 'min(280px, 85vw)' };
+    return { height: "min(420px, 70vh)", width: "min(280px, 85vw)" };
   }
 
   useEffect(() => {
     const handleResize = () => setCardSize(getCardSize());
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
   }, []);
 
   const handleMatch = (profile: ProfileCardType) => {
@@ -135,19 +144,21 @@ export default function MatchSystem({ profiles }: MatchSystemProps) {
 
     likeMatch(profile.id);
 
-    // Mise à jour de matchedProfile supprimée
+    setMatchedProfile(profile);
+    setShowMatchAnimation(true);
     const updatedMatches = [...matches, profile];
     setMatches(updatedMatches);
 
     setTimeout(() => {
-      // Réinitialisation de matchedProfile supprimée
+      setShowMatchAnimation(false);
+      setMatchedProfile(null);
       moveToNextCard();
-      setIsProcessing(false);
+      setIsProcessing(false); // Réactive les boutons
     }, 1500);
   };
 
   const handleReject = (profile: ProfileCardType) => {
-    if (isProcessing) return;
+    if (isProcessing) return; // Evite les clics multiples
     setIsProcessing(true);
 
     passMatch(profile.id);
@@ -157,17 +168,19 @@ export default function MatchSystem({ profiles }: MatchSystemProps) {
 
     setTimeout(() => {
       moveToNextCard();
-      setIsProcessing(false);
+      setIsProcessing(false); // Réactive les boutons
     }, 1000);
   };
 
   const moveToNextCard = () => {
-    setCurrentIndex(current => {
+    setCurrentIndex((current) => {
       let nextIdx = current + 1;
       while (nextIdx < profiles.length) {
         const profileToCheck = profiles[nextIdx];
-        const isInMatches = matches.some(m => m.id === profileToCheck.id);
-        const isInNonMatches = nonMatches.some(nm => nm.id === profileToCheck.id);
+        const isInMatches = matches.some((m) => m.id === profileToCheck.id);
+        const isInNonMatches = nonMatches.some(
+          (nm) => nm.id === profileToCheck.id,
+        );
         if (!isInMatches && !isInNonMatches) break;
         nextIdx++;
       }
@@ -176,8 +189,8 @@ export default function MatchSystem({ profiles }: MatchSystemProps) {
     });
   };
 
-  const handleDragEnd = (event: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => {
-    const offset = info.offset.x; // PanInfo contient offset.x
+  const handleDragEnd = (_event: Event, info: {offset: {x: number}}) => {
+    const offset = info.offset.x;
     if (offset > 100 && currentProfile) handleMatch(currentProfile);
     else if (offset < -100 && currentProfile) handleReject(currentProfile);
   };
@@ -194,7 +207,9 @@ export default function MatchSystem({ profiles }: MatchSystemProps) {
 
   if (isLoading) {
     return (
-      <Loader />
+      <div className="flex items-center justify-center min-h-screen w-full bg-gray-900 text-primary-foreground">
+        Chargement...
+      </div>
     );
   }
 
@@ -203,6 +218,15 @@ export default function MatchSystem({ profiles }: MatchSystemProps) {
   return (
     <div className="relative min-h-screen w-full overflow-hidden">
       <div className="container mx-auto px-4 py-6 sm:py-10 relative z-10 flex flex-col items-center w-full h-screen">
+        {/* <div className="h-12 sm:h-16 relative w-full">
+          <AnimatePresence>
+            {showRejectAnimation && (
+              <div className="absolute top-1/2 left-0 right-0 flex justify-center z-50 -translate-y-1/2">
+                <RejectAnimation key="reject-animation" showRejectAnimation={showRejectAnimation} />
+              </div>
+            )}
+          </AnimatePresence>
+        </div> */}
         <MatchCounters
           matchesCount={matches.length}
           nonMatchesCount={nonMatches.length}
@@ -239,6 +263,15 @@ export default function MatchSystem({ profiles }: MatchSystemProps) {
           />
         )}
         <AnimatePresence>
+          {showMatchAnimation && (
+            <MatchAnimation
+              key="match-animation"
+              showMatchAnimation={showMatchAnimation}
+              matchedProfile={matchedProfile}
+            />
+          )}
+        </AnimatePresence>
+        <AnimatePresence>
           {showMatchList && (
             <MatchListModal
               key="match-list-modal"
@@ -261,19 +294,9 @@ export default function MatchSystem({ profiles }: MatchSystemProps) {
       </div>
       {selectedCard && (
         <UserCardModal
-          name={selectedCard.name}
-          age={selectedCard.age}
-          location={selectedCard.location}
           isOpen={isModalOpen}
-          onClose={closeModal}
-          images={selectedCard.images || ['/vintage.png', '/vintage.png', '/vintage.png']}
-          image_url={selectedCard.image_url}
-          rarity={selectedCard.rarity}
-          interests={selectedCard.interests?.map(interest => interest.name)}
-          languages={selectedCard.languages}
-          zodiac={selectedCard.zodiac}
-          smoking={selectedCard.smoking}
-          drinking={selectedCard.drinking}
+          onCloseAction={closeModal}
+          user={selectedCard}
         />
       )}
     </div>

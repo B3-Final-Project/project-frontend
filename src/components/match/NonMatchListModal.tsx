@@ -1,22 +1,22 @@
-'use client';
+"use client";
 
-import { motion } from 'framer-motion';
-import { X } from 'lucide-react';
-import { ProfileCardType } from './ProfileGenerator';
-import ProfileGrid from './ProfileGrid';
+import { motion } from "framer-motion";
+import { X } from "lucide-react";
+import ProfileGrid from "./ProfileGrid";
+import { ProfileCardType } from "@/lib/routes/profiles/dto/profile-card-type.dto";
 
 type NonMatchListModalProps = {
   showNonMatchList: boolean;
-  setShowNonMatchList: (show: boolean) => void;
   nonMatches: ProfileCardType[];
-  openModal: (profile: ProfileCardType) => void;
+  setShowNonMatchList(show: boolean): void;
+  openModal(profile: ProfileCardType): void;
 };
 
 export default function NonMatchListModal({
   showNonMatchList,
   setShowNonMatchList,
   nonMatches,
-  openModal
+  openModal,
 }: NonMatchListModalProps) {
   if (!showNonMatchList) return null;
 
@@ -49,12 +49,20 @@ export default function NonMatchListModal({
 
           {nonMatches.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-8 text-center">
-              <p className="text-gray-400 mb-2">Vous n&#39;avez pas encore passé de profils</p>
-              <p className="text-gray-500 text-sm">Swipez à gauche pour passer un profil</p>
+              <p className="text-gray-400 mb-2">
+                Vous n&#39;avez pas encore passé de profils
+              </p>
+              <p className="text-gray-500 text-sm">
+                Swipez à gauche pour passer un profil
+              </p>
             </div>
           ) : (
             <div className="overflow-y-auto custom-scrollbar flex-1 -mx-2 px-2">
-              <ProfileGrid profiles={nonMatches} openModal={openModal} isGrayscale={true} />
+              <ProfileGrid
+                profiles={nonMatches}
+                openModal={openModal}
+                isGrayscale={true}
+              />
             </div>
           )}
         </div>

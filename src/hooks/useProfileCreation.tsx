@@ -1,7 +1,6 @@
 "use client";
 
 import { Dispatch, SetStateAction, useCallback, useState } from "react";
-
 import { DrinkingEnum } from "@/lib/routes/profiles/enums/drinking.enum";
 import { GenderEnum } from "@/lib/routes/profiles/enums/gender.enum";
 import { OrientationEnum } from "@/lib/routes/profiles/enums/orientation.enum";
@@ -11,10 +10,17 @@ import { ReligionEnum } from "@/lib/routes/profiles/enums/religion.enum";
 import { SmokingEnum } from "@/lib/routes/profiles/enums/smoking.enum";
 import { ZodiacEnum } from "@/lib/routes/profiles/enums/zodiac.enum";
 import { useAuth } from "react-oidc-context";
-import {
-  useCreateProfileMutation,
-} from "@/hooks/react-query/profiles";
+import { useCreateProfileMutation } from "@/hooks/react-query/profiles";
 import { useRouter } from "next/navigation";
+
+export interface InterestItem {
+  prompt: string;
+  answer: string;
+}
+
+export interface InterestInfo {
+  interests: InterestItem[];
+}
 
 export interface PersonalInfo {
   name: string;
@@ -54,13 +60,17 @@ export interface ProfileCreationApi {
   setPreferenceInfo: Dispatch<SetStateAction<PreferenceInfo>>;
   lifestyleInfo: LifestyleInfo;
   setLifestyleInfo: Dispatch<SetStateAction<LifestyleInfo>>;
+  interestInfo: InterestInfo;
+  setInterestInfo: Dispatch<SetStateAction<InterestInfo>>;
   saveProfile: () => Promise<void>;
   goToStep: (step: string) => void;
   goToNextStep: (currentStep: string, steps: string[]) => void;
   goToPreviousStep: (currentStep: string, steps: string[]) => void;
 }
 
-export const useProfileCreation = (): ProfileCreationApi => {
+export const useProfileCreation = (
+  basePath: string = "/profile",
+): ProfileCreationApi => {
   const router = useRouter();
   const { user } = useAuth();
   const userId = user?.profile?.sub;
@@ -86,6 +96,10 @@ export const useProfileCreation = (): ProfileCreationApi => {
 
   const [lifestyleInfo, setLifestyleInfo] = useState<LifestyleInfo>({});
 
+  const [interestInfo, setInterestInfo] = useState<InterestInfo>({
+    interests: [],
+  });
+
   const saveProfile = useCallback(async () => {
     if (!userId) {
       console.error("User ID not loaded yet");
@@ -97,6 +111,7 @@ export const useProfileCreation = (): ProfileCreationApi => {
       locationWork,
       lifestyleInfo,
       preferenceInfo,
+      interestInfo,
     });
   }, [
     userId,
@@ -104,14 +119,15 @@ export const useProfileCreation = (): ProfileCreationApi => {
     locationWork,
     lifestyleInfo,
     preferenceInfo,
+    interestInfo,
     preferenceMutation,
   ]);
 
   const goToStep = useCallback(
     (step: string) => {
-      router.push(`/profile/create/${step}`);
+      router.push(`${basePath}/create/${step}`);
     },
-    [router],
+    [router, basePath],
   );
 
   const goToNextStep = useCallback(
@@ -145,6 +161,8 @@ export const useProfileCreation = (): ProfileCreationApi => {
     setPreferenceInfo,
     lifestyleInfo,
     setLifestyleInfo,
+    interestInfo,
+    setInterestInfo: setInterestInfo,
     saveProfile,
     goToStep,
     goToNextStep,
