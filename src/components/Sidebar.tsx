@@ -18,6 +18,8 @@ export function SidebarComponent() {
     return pathname?.startsWith(itemUrl);
   }
 
+  const auth = useAuth();
+  const router = useRouter();
   const items = [
     { title: "Home", url: '/', icon: Home },
     { title: "Messages", url: '/messages', icon: MessageSquare },
@@ -30,6 +32,18 @@ export function SidebarComponent() {
     await signout()
     await auth.removeUser()
   }
+    { title: "Messages", url: '/messages', icon: FiMessageSquare },
+    { canUse: true, title: "Open a Booster", url: '/boosters' },
+    { title: "Profile", url: '/profile', icon: FaRegUser },
+    { title: "Settings", url: '/register', icon: IoSettingsOutline },
+  ];
+  const groups = auth.user?.profile['cognito:groups'] as string[];
+  const isAdmin = groups?.includes('admin') ?? false;
+
+  const signOutAction = async () => {
+    await auth.removeUser();
+    router.replace('/');
+  };
 
   return (
     <>
@@ -68,8 +82,35 @@ export function SidebarComponent() {
                     </SidebarMenuItem>
                   );
                 })}
+                {isAdmin && (
+                  <SidebarMenuItem>
+                    <SidebarMenuButton asChild>
+                      <Link href={'/admin?dashboard'}>
+                        <FiShield style={{ width: '1.5rem', height: '1.5rem' }} size={40} />
+                        <span className="hidden lg:block">Admin Dashboard</span>
+                      </Link>
+                    </SidebarMenuButton>
+                    <SidebarMenuSub>
+                      <SidebarMenuSubItem>
+                        <SidebarMenuButton asChild>
+                          <Link href="/admin?dashboard">
+                            <span className="hidden lg:block">Statistics</span>
+                          </Link>
+                        </SidebarMenuButton>
+                      </SidebarMenuSubItem>
+                      <SidebarMenuSubItem>
+                        <SidebarMenuButton asChild>
+                          <Link href="/admin?users">
+                            <span className="hidden lg:block">Users</span>
+                          </Link>
+                        </SidebarMenuButton>
+                      </SidebarMenuSubItem>
+                    </SidebarMenuSub>
+                  </SidebarMenuItem>
+                )}
               </SidebarMenu>
               {auth.user && <Button onClick={() => signOutAction()}>Sign Out</Button>}
+              {auth.user && <Button onClick={() => signOutAction()}>Logout</Button>}
             </SidebarGroup>
           </SidebarContent>
         </Sidebar>
@@ -100,5 +141,5 @@ export function SidebarComponent() {
         </div>
       </nav>
     </>
-  )
+  );
 }

@@ -70,34 +70,33 @@ export const mapBoosterToProfileCardType = (booster: Booster): ProfileCardType =
 
 interface ProfileGeneratorProps {
   count: number;
-  onProfilesLoaded: (boosters: Booster[]) => void;
+  onProfilesLoaded: (boosters: ProfileCardType[]) => void;
   onError: (err: Error) => void;
 }
 
 const ProfileGenerator: React.FC<ProfileGeneratorProps> = ({ count, onProfilesLoaded, onError }) => {
+  const { data: boosterData, isError, error, mutate } = useGetBooster(count);
 
-  const {
-    data: boosterData,
-    isLoading,
-    isError,
-    error,
-  } = useQuery<Booster[], Error>({
-    queryKey: ['boosters', count],
-    queryFn: () => fetchBoosters(count),
-  });
-
+  // Trigger the mutation when component mounts or count changes
   useEffect(() => {
-    if (boosterData) {
-      onProfilesLoaded(boosterData);
-    }
-  }, [boosterData, onProfilesLoaded]);
+    mutate();
+  }, [count, mutate]);
 
+  // Handle errors
   useEffect(() => {
     if (isError && error) {
+      console.error('Error fetching boosters:', error);
       onError(error);
     }
   }, [isError, error, onError]);
 
+  // Handle successful data
+  useEffect(() => {
+    if (boosterData) {
+      const profileCards = boosterData.map(mapBoosterToProfileCardType);
+      onProfilesLoaded(profileCards);
+    }
+  }, [boosterData, onProfilesLoaded]);
 
   return null;
 };

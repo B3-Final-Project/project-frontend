@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { useToast } from "@/hooks/use-toast";
+
 import {
   formatDrinkingEnum,
   formatGenderEnum,
@@ -18,8 +19,17 @@ import { useParams } from "next/navigation";
 import { useState } from "react";
 import { PROFILE_STEPS } from "../StepComponent";
 
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { PROFILE_STEPS } from "../StepComponent";
+import { Separator } from "@/components/ui/separator";
+import { useParams } from "next/navigation";
+import { useProfileCreation } from "@/providers/ProfileCreationProvider";
+import { useState } from "react";
+import { useToast } from "@/hooks/use-toast";
+
 export function ReviewComponent() {
-  const { personalInfo, preferenceInfo, locationWork, lifestyleInfo, goToPreviousStep, saveProfile, goToStep } = useProfileCreation();
+  const { personalInfo, preferenceInfo, locationWork, lifestyleInfo, interestInfo, goToPreviousStep, saveProfile, goToStep } = useProfileCreation();
   const { step } = useParams<{ step: string }>();
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -168,7 +178,7 @@ export function ReviewComponent() {
         <Button
           type="button"
           variant="outline"
-          onClick={() => goToPreviousStep(step as string, PROFILE_STEPS)}
+          onClick={() => step && goToPreviousStep(step, PROFILE_STEPS)}
         >
           Back
         </Button>

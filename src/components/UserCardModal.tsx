@@ -49,6 +49,7 @@ export function UserCardModal({
 }: UserCardModalProps) {
   const [isFlipped, setIsFlipped] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [isReportModalOpen, setIsReportModalOpen] = useState(false);
   const modalRef = useRef<HTMLDivElement>(null);
 
   const imageList = images && images.length > 0
@@ -64,26 +65,36 @@ export function UserCardModal({
     e.stopPropagation();
     console.log("flipToFront appelé!", new Date().toISOString());
     setIsFlipped(false);
+    if (isReportModalOpen) return;
+    setIsFlipped((f) => !f);
   };
 
   const handleClickOutside = (e: MouseEvent) => {
+  const handleClickOutside = useCallback((e: Event) => {
+    if (isReportModalOpen) return;
     if (modalRef.current && !modalRef.current.contains(e.target as Node)) {
       onClose();
       setIsFlipped(false)
+      onCloseAction();
+      setIsFlipped(false);
     }
   };
+  }, [isReportModalOpen, onCloseAction]);
 
   useEffect(() => {
     if (isOpen) {
       document.addEventListener("mousedown", handleClickOutside);
     } else {
       document.removeEventListener("mousedown", handleClickOutside);
+      document.addEventListener("mousedown", handleClickOutside, true);
     }
 
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("mousedown", handleClickOutside, true);
     };
   }, [isOpen]);
+  }, [handleClickOutside, isOpen]);
 
   if (!isOpen) return null;
 

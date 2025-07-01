@@ -29,17 +29,52 @@ export const createFetcher = <T = unknown, B = undefined>(
       ...(body && method !== "GET" ? { data: body } : {}),
     };
 
+    const response = await authenticatedAxios<{data: T}>(config);
+    return response.data.data;
+  };
+};
+
+export const createPaginatedFetcher = <T = unknown>(
+  path: string,
+  method: "GET" | "POST" | "PUT" | "DELETE" | "PATCH" = "GET"
+) => {
+  return async (queryParams?: Record<string, string | number>): Promise<T> => {
+    const config = {
+      method,
+      url: path,
+      params: queryParams,
+    };
+
     const response = await authenticatedAxios<T>(config);
     return response.data;
   };
 };
 
-export const sendImage = async ({formData, index}: {formData: unknown, index: number}) => authenticatedAxios.put(RESTServerRoute.REST_PROFILES_IMAGES + `/${index}`, formData, {
-  headers: {
-    "Content-Type": "multipart/form-data",
-  },
-})
+export const sendImage = async (profileId: number, formData: FormData, index?: number) => {
+  if (index) {
+    // PUT request for updating existing image
+    const path = RESTServerRoute.REST_PROFILE_IMAGE
+      .replace(':profileId', profileId.toString())
+      .replace(':index', index.toString());
+    return authenticatedAxios.put(path, formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+  } else {
+    // POST request for adding new image
+    const path = RESTServerRoute.REST_PROFILE_IMAGES.replace(':profileId', profileId.toString());
+    return authenticatedAxios.post(path, formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+  }
+};
 
-export const removeImage = async ({index}:{index: number}) => {
-  return authenticatedAxios.delete(RESTServerRoute.REST_PROFILES_IMAGES + `/${index}`);
-}
+export const removeImage = async ({profileId, index}: {profileId: number, index: number}) => {
+  const path = RESTServerRoute.REST_PROFILE_IMAGE
+    .replace(':profileId', profileId.toString())
+    .replace(':index', index.toString());
+  return authenticatedAxios.delete(path);
+};

@@ -1,5 +1,16 @@
 'use client'
+
+import { useEffect, useState } from "react";
+import { FullScreenLoading } from "../FullScreenLoading";
+import Image from 'next/image';
+import { UserCardModal } from "@/components/UserCardModal";
 import { useProfileQuery } from "@/hooks/react-query/profiles";
+import {
+  mapUserProfileToProfileCardType
+} from "@/lib/utils/card-utils";
+import {
+  ProfileCardType
+} from "@/lib/routes/profiles/dto/profile-card-type.dto";
 import { Loader } from "../Loader";
 
 
@@ -10,15 +21,24 @@ const capitalizeFirstLetter = (name: string): string => {
 };
 
 export function ProfileAvatar() {
-
+  const [isUserCardModalOpen, setIsUserCardModalOpen] = useState(false);
+  const [userCard, setUserCard] = useState<ProfileCardType>();
   const query = useProfileQuery();
 
+  useEffect(() => {
+    if (query.data){
+    setUserCard(mapUserProfileToProfileCardType(query.data));
+    }
+  }, [query.data]);
+
+  const handleOpenUserCardModal = () => setIsUserCardModalOpen(true);
+  const handleCloseUserCardModal = () => setIsUserCardModalOpen(false);
 
   if (query.isLoading) {
     return <Loader />
   }
 
-  if (query.isError) {
+  if (query.isError){
     return <div>{JSON.stringify(query.error)}</div>
   }
 

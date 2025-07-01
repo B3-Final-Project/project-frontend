@@ -1,5 +1,11 @@
 "use client";
 
+import { DialogContent, DialogDescription, DialogTitle } from "@/components/ui/dialog";
+import { useCallback, useMemo, useRef, useState } from "react";
+import { useImageMutations, useProfileQuery } from "@/hooks/react-query/profiles";
+import Image from "next/image";
+import { toast } from "@/hooks/use-toast";
+import { Info } from "lucide-react";
 import {
   DialogContent,
   DialogDescription,
@@ -19,28 +25,30 @@ const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
 
 export function PicturesDialog() {
   const { data, isLoading } = useProfileQuery();
+  const [removingIndex, setRemovingIndex] = useState<number | null>(null);
+  const [uploadingIndex, setUploadingIndex] = useState<number | null>(null);
+  const { uploadImage, removeImage, isUploading, isRemoving } = useImageMutations();
+
+  const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
+
   const profile = data?.profile;
 
-  // Get current images directly from profile data, no local state sync needed
-  const currentImages = useMemo(() =>
-    profile?.images ?? Array(MAX_IMAGES).fill(null),
-    [profile?.images]
-  );
-
-  const [uploadingIndex, setUploadingIndex] = useState<number | null>(null);
-  const [removingIndex, setRemovingIndex] = useState<number | null>(null);
-
-  const { uploadImage, removeImage, isUploading, isRemoving } = useImageMutations();
+  const currentImages = useMemo(() => {
+    const images = profile?.images ?? [];
+    const paddedImages: (string | null)[] = images.slice(0, MAX_IMAGES);
+    while (paddedImages.length < MAX_IMAGES) {
+      paddedImages.push(null);
+    }
+    return paddedImages;
+  }, [profile?.images]);
 
   const validateFile = useCallback((file: File): string | null => {
     if (!ACCEPTED_IMAGE_TYPES.includes(file.type)) {
       return "Please select a valid image file (JPEG, PNG, or WebP).";
     }
-
     if (file.size > MAX_FILE_SIZE) {
       return "File size must be less than 10MB.";
     }
-
     return null;
   }, []);
 
@@ -53,46 +61,45 @@ export function PicturesDialog() {
 
     const validationError = validateFile(file);
     if (validationError) {
-      toast({
-        title: "Invalid file",
-        description: validationError,
-        variant: "destructive",
-      });
+      toast({ title: "Invalid file", description: validationError, variant: "destructive" });
       return;
     }
 
     setUploadingIndex(index);
 
-    uploadImage(
-      { file, index },
-      {
-        onSettled: () => setUploadingIndex(null),
-      }
-    );
+    uploadImage({
+      profileId: profile.id,
+      file,
+      index
+    }, {
+      onSuccess: () => toast({ title: "Image uploaded" }),
+      onError: () => toast({ title: "Upload failed", variant: "destructive" }),
+      onSettled: () => setUploadingIndex(null),
+    });
 
-    // Reset the input value to allow re-uploading the same file
     e.target.value = '';
-  }, [validateFile, uploadImage, profile?.id]);
+  }, [validateFile, uploadImage, profile]);
 
   const handleImageUpload = useCallback((index: number) => {
-    const input = document.getElementById(
-      `profile-image-input-${index}`
-    ) as HTMLInputElement;
-    input?.click();
+    inputRefs.current[index]?.click();
   }, []);
 
   const handleRemoveImage = useCallback((index: number) => {
     if (!profile?.id) return;
+    const imageObj = currentImages[index];
+    if (!imageObj) return;
 
     setRemovingIndex(index);
 
     removeImage(
-      { index },
+      { profileId: profile.id, index },
       {
+        onSuccess: () => toast({ title: "Image removed" }),
+        onError: () => toast({ title: "Remove failed", variant: "destructive" }),
         onSettled: () => setRemovingIndex(null),
       }
     );
-  }, [removeImage, profile?.id]);
+  }, [removeImage, profile?.id, currentImages]);
 
   if (isLoading) {
     return (
@@ -101,6 +108,15 @@ export function PicturesDialog() {
           <div className="animate-spin rounded-full h-8 w-8 border-2 border-gray-400 border-t-gray-800"></div>
           <span className="ml-2">Loading...</span>
         </div>
+      </DialogContent>
+    );
+  }
+
+  if (!profile) {
+    return (
+      <DialogContent>
+        <DialogTitle>Error</DialogTitle>
+        <DialogDescription>Profile not found. Please try again later.</DialogDescription>
       </DialogContent>
     );
   }
@@ -115,6 +131,8 @@ export function PicturesDialog() {
       <div className="aspect-square relative rounded-lg border-2 border-dashed border-gray-300">
         {/* Hidden file input */}
         <input
+          //@ts-expect-error - ref is not assignable to input element
+          ref={el => inputRefs.current[index] = el}
           id={`profile-image-input-${index}`}
           type="file"
           accept={ACCEPTED_IMAGE_TYPES.join(',')}

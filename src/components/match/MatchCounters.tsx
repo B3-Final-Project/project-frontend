@@ -6,8 +6,8 @@ import { UserCheck, UserX } from 'lucide-react';
 type MatchCountersProps = {
   matchesCount: number;
   nonMatchesCount: number;
-  setShowMatchList: (show: boolean) => void;
-  setShowNonMatchList: (show: boolean) => void;
+  setShowMatchList(show: boolean): void;
+  setShowNonMatchList(show: boolean): void;
 };
 
 export default function MatchCounters({

@@ -2,17 +2,19 @@
 
 import { motion } from 'framer-motion';
 import { Heart, X } from 'lucide-react';
-import { ProfileCardType } from './MatchSystem';
 import ProfileGrid from './ProfileGrid';
+import {
+  ProfileCardType
+} from "@/lib/routes/profiles/dto/profile-card-type.dto";
 
 type MatchListModalProps = {
-  showMatchList: boolean;
-  setShowMatchList: (show: boolean) => void;
   matches: ProfileCardType[];
-  openModal: (profile: ProfileCardType) => void;
+  showMatchList: boolean;
+  setShowMatchList(show: boolean): void;
+  openModal(profile: ProfileCardType): void;
 };
 
-export default function MatchListModal({ showMatchList, setShowMatchList, matches, openModal }: MatchListModalProps) {
+export default function MatchListModal({ matches, showMatchList, setShowMatchList, openModal }: MatchListModalProps) {
   if (!showMatchList) return <></>;
 
   return (

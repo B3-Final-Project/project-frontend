@@ -1,7 +1,7 @@
-import { BoosterPackDto } from "@/lib/routes/booster/dto/booster.dto";
-import { RelationshipTypeEnum } from "@/lib/routes/profiles/enums";
 import { formatRelationshipTypeEnum } from "@/lib/utils/enum-utils";
+import { BoosterPackDto } from "@/lib/routes/booster/dto/booster.dto";
 import clsx from "clsx";
+import { RelationshipTypeEnum } from "@/lib/routes/profiles/enums";
 
 interface BoosterPackProps {
   pack: BoosterPackDto
@@ -14,6 +14,7 @@ const relationshipTypeBg: Record<RelationshipTypeEnum, string> = {
   [RelationshipTypeEnum.MARRIAGE]: "bg-gradient-to-br from-yellow-200 via-yellow-400 to-yellow-600",
   [RelationshipTypeEnum.FRIENDSHIP]: "bg-gradient-to-br from-green-300 via-green-400 to-green-600",
   [RelationshipTypeEnum.UNSURE]: "bg-gradient-to-br from-gray-300 via-purple-300 to-purple-500",
+  [RelationshipTypeEnum.ANY]: "bg-gradient-to-br from-gray-200 to-gray-400",
 }
 
 export function BoosterPack({ pack }: BoosterPackProps) {
