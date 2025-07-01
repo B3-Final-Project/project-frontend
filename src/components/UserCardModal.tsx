@@ -12,7 +12,7 @@ import {
   User,
   Wine
 } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 
 import "swiper/css";
@@ -21,6 +21,7 @@ import "swiper/css/pagination";
 import { Pagination } from "swiper/modules";
 
 import "../styles/card-flip.css";
+import { RarityEnum } from "@/lib/routes/booster/dto/rarity.enum";
 
 
 interface UserCardModalProps {
@@ -30,7 +31,7 @@ interface UserCardModalProps {
   description?: string;
   isOpen: boolean;
   onClose: () => void;
-  rarity?: string;
+  rarity?: RarityEnum;
   image_url?: string;
   images?: string[];
   interests?: string[];
@@ -78,17 +79,13 @@ export function UserCardModal({
     setIsFlipped((f) => !f);
   };
 
-  const handleClickOutside = (e: MouseEvent) => {
   const handleClickOutside = useCallback((e: Event) => {
     if (isReportModalOpen) return;
     if (modalRef.current && !modalRef.current.contains(e.target as Node)) {
       onClose();
       setIsFlipped(false)
-      onCloseAction();
-      setIsFlipped(false);
     }
-  };
-  }, [isReportModalOpen, onCloseAction]);
+  }, [isReportModalOpen, onClose]);
 
   useEffect(() => {
     if (isOpen) {
@@ -102,7 +99,6 @@ export function UserCardModal({
       document.removeEventListener("mousedown", handleClickOutside);
       document.removeEventListener("mousedown", handleClickOutside, true);
     };
-  }, [isOpen]);
   }, [handleClickOutside, isOpen]);
 
   if (!isOpen) return null;

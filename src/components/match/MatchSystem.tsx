@@ -7,7 +7,7 @@ import { checkPackAvailability } from "../../utils/packManager";
 import { UserCardModal } from "../UserCardModal";
 import ControlButtons from "./ControlButtons";
 
-import { ProfileCardType } from "@/components/match/ProfileGenerator";
+import { MatchProfile } from "@/components/match/ProfileGenerator";
 import { useMatchActions } from "@/hooks/react-query/matches";
 import { Loader } from "lucide-react";
 import MatchAnimation from "./MatchAnimation";

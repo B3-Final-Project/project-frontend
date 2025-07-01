@@ -3,7 +3,7 @@
 import { motion } from "framer-motion";
 import { User } from "lucide-react";
 import Image from "next/image";
-import { ProfileCardType } from "./ProfileGenerator";
+import { MatchProfile } from "./ProfileGenerator";
 
 type ProfileGridProps = {
   profiles: ProfileCardType[];

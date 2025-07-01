@@ -2,10 +2,10 @@
 
 import { usePathname, useRouter } from "next/navigation";
 
-import { FullScreenLoading } from "@/components/FullScreenLoading";
 import { useAuth } from "react-oidc-context";
 import { useEffect } from "react";
 import { useProfileQuery } from "@/hooks/react-query/profiles";
+import { Loader } from "@/components/Loader";
 
 interface ProfileGuardProps {
   readonly children: React.ReactNode;
@@ -69,7 +69,7 @@ export function ProfileGuard({ children }: ProfileGuardProps) {
 
   // Show loading while query is in progress
   if (query.isLoading) {
-    return <FullScreenLoading />;
+    return <Loader />;
   }
 
   // Show error if query failed
@@ -85,7 +85,7 @@ export function ProfileGuard({ children }: ProfileGuardProps) {
     !isAllowedRoute &&
     !pathname.startsWith("/profile/welcome/create")
   ) {
-    return <FullScreenLoading />;
+    return <Loader />;
   }
 
   // Render children for all other cases

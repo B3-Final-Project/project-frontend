@@ -15,6 +15,6 @@ export interface ProfileCardType {
   drinking?: string;
   zodiac?: string;
   interests?: Interest[];
-  rarity?: RarityEnum;
+  rarity: string;
   isRevealed: boolean;
 }

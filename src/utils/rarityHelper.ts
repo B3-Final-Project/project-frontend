@@ -1,16 +1,15 @@
-import { RarityEnum } from "@/lib/routes/booster/dto/rarity.enum";
-
-export const getRarityGradient = (rarity?: RarityEnum): string => {
+// we use strings instead of RarityEnum because we receive the formatted rarity from the ProfileCardBuilder
+export const getRarityGradient = (rarity?: string): string => {
   switch (rarity) {
-    case RarityEnum.COMMON:
+    case "Common":
       return "linear-gradient(to bottom right, #FF6B6B, #ED2272, #6A5ACD)";
-    case RarityEnum.UNCOMMON:
+    case "Uncommon":
       return "linear-gradient(to bottom right, #00FFCC, #33CC99, #006633)";
-    case RarityEnum.RARE:
+    case "Rare":
       return "linear-gradient(to bottom right, #00CCFF, #0066FF, #3300FF)";
-    case RarityEnum.EPIC:
+    case "Epic":
       return "linear-gradient(to bottom right, #CC33FF, #9900FF, #6600CC)";
-    case RarityEnum.LEGENDARY:
+    case "Legendary":
       return "linear-gradient(to bottom right, #FFD700, #FFA500, #FF0000)";
     default:
       return "linear-gradient(to bottom right, #FF6B6B, #ED2272, #6A5ACD)";

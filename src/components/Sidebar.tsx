@@ -1,14 +1,14 @@
 "use client";
-import { signout } from "@/providers/CognitoAuthProvider";
 import { Heart, Home, MessageSquare, User } from "lucide-react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useAuth } from "react-oidc-context";
 
 
 export function SidebarComponent() {
   const auth = useAuth()
   const pathname = usePathname()
+  const router = useRouter();
 
   const isActive = (itemUrl: string) => {
     if (itemUrl === '/') {
@@ -17,8 +17,6 @@ export function SidebarComponent() {
     return pathname?.startsWith(itemUrl);
   }
 
-  const auth = useAuth();
-  const router = useRouter();
   const items = [
     { title: "Home", url: '/', icon: Home },
     { title: "Messages", url: '/messages', icon: MessageSquare },
@@ -27,15 +25,6 @@ export function SidebarComponent() {
     // { title: "Settings", url: '/register', icon: IoSettingsOutline },
   ]
 
-  const signOutAction = async () => {
-    await signout()
-    await auth.removeUser()
-  }
-    { title: "Messages", url: '/messages', icon: FiMessageSquare },
-    { canUse: true, title: "Open a Booster", url: '/boosters' },
-    { title: "Profile", url: '/profile', icon: FaRegUser },
-    { title: "Settings", url: '/register', icon: IoSettingsOutline },
-  ];
   const groups = auth.user?.profile['cognito:groups'] as string[];
   const isAdmin = groups?.includes('admin') ?? false;
 

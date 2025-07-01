@@ -1,13 +1,13 @@
+import { RarityEnum } from "@/lib/routes/booster/dto/rarity.enum";
 import {
   DrinkingEnum,
   OrientationEnum,
-  PoliticsEnum,
-  RelationshipTypeEnum,
+  PoliticsEnum, RelationshipTypeEnum,
   ReligionEnum,
   SmokingEnum,
-  ZodiacEnum,
-} from "@/lib/routes/preferences/enums";
-import { Interest } from "@/lib/routes/preferences/interfaces/interface";
+  ZodiacEnum
+} from "../../profiles/enums";
+import { Interest } from "../../profiles/interfaces/interest.interface";
 
 export interface BoosterUserProfile {
   id: string;
@@ -40,5 +40,5 @@ export interface Booster {
   userProfile?: BoosterUserProfile; // Rendu optionnel car l'API peut ne pas l'inclure
   created_at?: Date; // Rendu optionnel car peut être absent
   updated_at?: Date; // Rendu optionnel car peut être absent
-  rarity?: RarityEnum;
+  rarity: RarityEnum;
 }

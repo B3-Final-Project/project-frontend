@@ -53,7 +53,7 @@ export function SelectorComponent({
           {options.map((opt) => (
             <SelectItem key={String(opt)} value={serialize(opt)}>
               {opt != null
-                ? formatEnumByField(opt, fieldName)
+                ? formatEnumByField(fieldName,opt)
                 : (placeholder ?? "None")}
             </SelectItem>
           ))}

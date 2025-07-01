@@ -11,11 +11,7 @@ import {
 import { RarityEnum } from "@/lib/routes/booster/dto/rarity.enum";
 import { ReportReason } from "../routes/admin/dto/report.dto";
 
-export function formatGenderEnum(value: number | string): string {
-  if (typeof value === "string") {
-    value = Number(value);
-  }
-
+export function formatGenderEnum(value?: GenderEnum): string {
   switch (value) {
     case GenderEnum.MALE:
       return "Male";
@@ -30,11 +26,7 @@ export function formatGenderEnum(value: number | string): string {
   }
 }
 
-export function formatOrientationEnum(value: number | string): string {
-  if (typeof value === "string") {
-    value = Number(value);
-  }
-
+export function formatOrientationEnum(value?: OrientationEnum): string {
   switch (value) {
     case OrientationEnum.STRAIGHT:
       return "Straight";
@@ -55,11 +47,7 @@ export function formatOrientationEnum(value: number | string): string {
   }
 }
 
-export function formatRelationshipTypeEnum(value: number | string): string {
-  if (typeof value === "string") {
-    value = Number(value);
-  }
-
+export function formatRelationshipTypeEnum(value?: RelationshipTypeEnum): string {
   switch (value) {
     case RelationshipTypeEnum.CASUAL:
       return "Casual Dating";
@@ -77,11 +65,7 @@ export function formatRelationshipTypeEnum(value: number | string): string {
   }
 }
 
-export function formatSmokingEnum(value: number | string): string {
-  if (typeof value === "string") {
-    value = Number(value);
-  }
-
+export function formatSmokingEnum(value?: SmokingEnum): string {
   switch (value) {
     case SmokingEnum.NEVER:
       return "Never";
@@ -98,11 +82,7 @@ export function formatSmokingEnum(value: number | string): string {
   }
 }
 
-export function formatDrinkingEnum(value: number | string): string {
-  if (typeof value === "string") {
-    value = Number(value);
-  }
-
+export function formatDrinkingEnum(value?: DrinkingEnum): string {
   switch (value) {
     case DrinkingEnum.NEVER:
       return "Never";
@@ -115,11 +95,7 @@ export function formatDrinkingEnum(value: number | string): string {
   }
 }
 
-export function formatReligionEnum(value: number | string): string {
-  if (typeof value === "string") {
-    value = Number(value);
-  }
-
+export function formatReligionEnum(value?: ReligionEnum): string {
   switch (value) {
     case ReligionEnum.ATHEIST:
       return "Atheist";
@@ -146,11 +122,7 @@ export function formatReligionEnum(value: number | string): string {
   }
 }
 
-export function formatPoliticsEnum(value: number | string): string {
-  if (typeof value === "string") {
-    value = Number(value);
-  }
-
+export function formatPoliticsEnum(value?: PoliticsEnum): string {
   switch (value) {
     case PoliticsEnum.LIBERAL:
       return "Liberal";
@@ -169,11 +141,7 @@ export function formatPoliticsEnum(value: number | string): string {
   }
 }
 
-export function formatZodiacEnum(value: number | string): string {
-  if (typeof value === "string") {
-    value = Number(value);
-  }
-
+export function formatZodiacEnum(value?: ZodiacEnum): string {
   switch (value) {
     case ZodiacEnum.ARIES:
       return "Aries";
@@ -207,8 +175,8 @@ export function formatZodiacEnum(value: number | string): string {
 }
 
 export function formatEnumByField(
-  value: number | string,
   fieldName: string,
+  value?: number,
 ): string {
   switch (fieldName) {
     case "gender":
@@ -269,7 +237,7 @@ export function formatReportEnum(value: ReportReason): string {
   return "Other";
 }
 
-function formatGenericEnum(value: string | number): string {
+function formatGenericEnum(value?: string | number): string {
   // Handle undefined/null values
   if (value === undefined || value === null) return "";
 
