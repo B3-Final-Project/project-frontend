@@ -241,23 +241,35 @@ export default function ConversationPage({ initialConversationId }: Conversation
         }
     }, [selectedConversation, conversations, router]);
 
-    // Extraire les classes CSS pour les messages
-    const getMessageClasses = (isMe: boolean) => {
-        const baseClasses = 'max-w-[90%] md:max-w-[75%] rounded-2xl';
-        return isMe 
-            ? `${baseClasses} bg-blue-500 text-white p-2 md:p-3`
-            : `${baseClasses} bg-white text-gray-900 shadow-sm border border-gray-100 p-2.5 md:p-3.5`;
-    };
+    // Méthodes pour l'alignement des messages
+    const getMessageAlignmentForSender = () => 'justify-end';
+    const getMessageAlignmentForReceiver = () => 'justify-start';
+    
+    // Méthodes pour les classes CSS des messages
+    const getMessageClassesForSender = () => 'max-w-[90%] md:max-w-[75%] rounded-2xl bg-blue-500 text-white p-2 md:p-3';
+    const getMessageClassesForReceiver = () => 'max-w-[90%] md:max-w-[75%] rounded-2xl bg-white text-gray-900 shadow-sm border border-gray-100 p-2.5 md:p-3.5';
+    
+    // Méthodes pour les classes CSS des timestamps
+    const getTimestampClassesForSender = () => 'text-blue-100';
+    const getTimestampClassesForReceiver = () => 'text-gray-500';
+    
+    // Méthodes pour les indicateurs de lecture
+    const getReadIndicatorForRead = () => '✓✓';
+    const getReadIndicatorForUnread = () => '✓';
+    const getReadIndicatorClassesForRead = () => 'text-blue-100';
+    const getReadIndicatorClassesForUnread = () => 'text-blue-200';
 
-    // Extraire les classes CSS pour les timestamps
-    const getTimestampClasses = (isMe: boolean) => {
-        return isMe ? 'text-blue-100' : 'text-gray-500';
-    };
+    // Méthodes pour le statut de l'utilisateur
+    const getUserStatusOnline = () => 'En ligne';
+    const getUserStatusOffline = () => 'Hors ligne';
 
-    // Extraire les classes CSS pour les indicateurs de lecture
-    const getReadIndicatorClasses = (isRead: boolean) => {
-        return isRead ? 'text-blue-100' : 'text-blue-200';
-    };
+    // Méthodes pour obtenir les classes appropriées selon le type de message
+    const getMessageAlignment = (isMe: boolean) => isMe ? getMessageAlignmentForSender() : getMessageAlignmentForReceiver();
+    const getMessageClasses = (isMe: boolean) => isMe ? getMessageClassesForSender() : getMessageClassesForReceiver();
+    const getTimestampClasses = (isMe: boolean) => isMe ? getTimestampClassesForSender() : getTimestampClassesForReceiver();
+    const getReadIndicator = (isRead: boolean) => isRead ? getReadIndicatorForRead() : getReadIndicatorForUnread();
+    const getReadIndicatorClasses = (isRead: boolean) => isRead ? getReadIndicatorClassesForRead() : getReadIndicatorClassesForUnread();
+    const getUserStatus = (isOnline: boolean) => isOnline ? getUserStatusOnline() : getUserStatusOffline();
 
     // Gestionnaire de clavier pour la popup de suppression
     const handlePopupKeyDown = (e: React.KeyboardEvent) => {
@@ -265,6 +277,48 @@ export default function ConversationPage({ initialConversationId }: Conversation
             cancelDeleteConversation();
         }
     };
+
+    // Préparer le contenu des messages
+    let messagesContent;
+    if (messagesLoading) {
+        messagesContent = <LoadingState message="Chargement des messages..." size="sm" />;
+    } else if (messages.length === 0) {
+        messagesContent = <EmptyState title="Aucun message" description="Soyez le premier à envoyer un message !" />;
+    } else {
+        messagesContent = <>
+            {messages.map((message) => (
+                <div
+                    key={message.id}
+                    className={`flex ${getMessageAlignment(message.isMe)}`}
+                >
+                    <div className={getMessageClasses(message.isMe)}>
+                        <p className="text-[13px] md:text-[15px] leading-relaxed break-words">
+                            {message.content}
+                        </p>
+                        <div className="flex items-center justify-end space-x-1 mt-1">
+                            <p className={`text-[10px] md:text-xs ${getTimestampClasses(message.isMe)}`}>
+                                {new Date(message.timestamp).toLocaleTimeString('fr-FR', {
+                                    hour: '2-digit',
+                                    minute: '2-digit'
+                                })}
+                            </p>
+                            {message.isMe && (
+                                <span className={`text-[10px] md:text-xs ${getReadIndicatorClasses(message.isRead)}`}>
+                                    {getReadIndicator(message.isRead)}
+                                </span>
+                            )}
+                        </div>
+                    </div>
+                </div>
+            ))}
+            <TypingIndicator isVisible={typingUsers.length > 0} typingUsers={typingUsers} />
+            <div ref={messagesEndRef} />
+        </>;
+    }
+
+    // Préparer le nom et le statut de l'utilisateur
+    const conversationName = selectedConversationData?.name ?? "Messages";
+    const userStatus = selectedConversationData ? getUserStatus(isOtherUserOnline) : null;
 
     return (
         <div className="flex flex-col md:h-full h-[calc(100vh-50px)] bg-white">
@@ -278,7 +332,6 @@ export default function ConversationPage({ initialConversationId }: Conversation
                     >
                         <IoArrowBack className="w-5 h-5 text-gray-600" />
                     </button>
-                    
                     {/* Avatar et nom de la personne */}
                     <div className="flex items-center gap-3">
                         {selectedConversationData && (
@@ -286,27 +339,19 @@ export default function ConversationPage({ initialConversationId }: Conversation
                                 <img
                                     src={selectedConversationData.avatar ?? '/img.png'}
                                     alt={selectedConversationData.name}
-                                    className={`
-                                        w-10 h-10 rounded-full object-cover border-2
-                                        ${isOtherUserOnline ? 'border-green-500' : 'border-gray-300'}
-                                    `}
+                                    className={`w-10 h-10 rounded-full object-cover border-2 ${isOtherUserOnline ? 'border-green-500' : 'border-gray-300'}`}
                                 />
                                 <div className="absolute -bottom-1 -right-1">
-                                    <OnlineStatus 
-                                        isOnline={isOtherUserOnline} 
-                                        size="sm"
-                                    />
+                                    <OnlineStatus isOnline={isOtherUserOnline} size="sm" />
                                 </div>
                             </div>
                         )}
                         <div className="flex flex-col">
                             <h1 className="text-xl font-semibold text-gray-800">
-                                {selectedConversationData?.name ?? "Messages"}
+                                {conversationName}
                             </h1>
-                            {selectedConversationData && (
-                                <p className="text-sm text-gray-500">
-                                    {isOtherUserOnline ? 'En ligne' : 'Hors ligne'}
-                                </p>
+                            {userStatus && (
+                                <p className="text-sm text-gray-500">{userStatus}</p>
                             )}
                         </div>
                     </div>
@@ -327,56 +372,10 @@ export default function ConversationPage({ initialConversationId }: Conversation
                     <div className={`w-2 h-2 rounded-full ${isConnected ? 'bg-green-500' : 'bg-red-500'}`} />
                 </div>
             </div>
-            
             {/* Zone des messages */}
             <div className="flex-1 overflow-y-auto p-4 space-y-3">
-                {messagesLoading ? (
-                    <LoadingState message="Chargement des messages..." size="sm" />
-                ) : messages.length === 0 ? (
-                    <EmptyState 
-                        title="Aucun message"
-                        description="Soyez le premier à envoyer un message !"
-                    />
-                ) : (
-                    <>
-                        {messages.map((message) => (
-                            <div
-                                key={message.id}
-                                className={`flex ${message.isMe ? 'justify-end' : 'justify-start'}`}
-                            >
-                                <div className={getMessageClasses(message.isMe)}>
-                                    <p className="text-[13px] md:text-[15px] leading-relaxed break-words">
-                                        {message.content}
-                                    </p>
-                                    <div className="flex items-center justify-end space-x-1 mt-1">
-                                        <p className={`text-[10px] md:text-xs ${getTimestampClasses(message.isMe)}`}>
-                                            {new Date(message.timestamp).toLocaleTimeString('fr-FR', {
-                                                hour: '2-digit',
-                                                minute: '2-digit'
-                                            })}
-                                        </p>
-                                        {message.isMe && (
-                                            <span className={`text-[10px] md:text-xs ${getReadIndicatorClasses(message.isRead)}`}>
-                                                {message.isRead ? '✓✓' : '✓'}
-                                            </span>
-                                        )}
-                                    </div>
-                                </div>
-                            </div>
-                        ))}
-                        
-                        {/* Indicateur de frappe */}
-                        <TypingIndicator 
-                            isVisible={typingUsers.length > 0}
-                            typingUsers={typingUsers}
-                        />
-                        
-                        {/* Référence pour le scroll automatique */}
-                        <div ref={messagesEndRef} />
-                    </>
-                )}
+                {messagesContent}
             </div>
-            
             {/* Barre de saisie */}
             <div className="p-4 border-t border-gray-200">
                 <div className="flex gap-2">
@@ -398,23 +397,21 @@ export default function ConversationPage({ initialConversationId }: Conversation
                     </button>
                 </div>
             </div>
-            
             {/* Popup de confirmation de suppression */}
             {showDeleteConfirm && (
-                <div 
-                    className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
-                    onClick={!isDeleting ? cancelDeleteConversation : undefined}
+                <dialog 
+                    open
+                    className="fixed inset-0 bg-opacity-50 flex items-center justify-center z-50 p-4"
                     onKeyDown={handlePopupKeyDown}
-                    role="dialog"
                     aria-modal="true"
                     aria-labelledby="delete-dialog-title"
-                    tabIndex={-1}
                 >
                     <div 
-                        className="bg-white rounded-xl shadow-2xl max-w-md w-full p-6 animate-in fade-in-0 zoom-in-95 duration-200"
-                        onClick={(e) => e.stopPropagation()}
-                        onKeyDown={(e) => e.stopPropagation()}
-                    >
+                        className="fixed inset-0"
+                        onClick={!isDeleting ? cancelDeleteConversation : undefined}
+                        aria-hidden="true"
+                    />
+                    <form method="dialog" className="relative bg-white border border-gray-200 rounded-xl shadow-2xl max-w-md w-full p-6 animate-in fade-in-0 zoom-in-95 duration-200" onClick={e => e.stopPropagation()}>
                         <div className="flex items-center gap-3 mb-4">
                             <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center">
                                 <IoTrash className="w-6 h-6 text-red-600" />
@@ -428,14 +425,13 @@ export default function ConversationPage({ initialConversationId }: Conversation
                                 </p>
                             </div>
                         </div>
-                        
                         <p className="text-gray-700 mb-6">
                             Êtes-vous sûr de vouloir supprimer cette conversation ? 
                             Tous les messages seront définitivement supprimés et l'autre utilisateur sera notifié.
                         </p>
-                        
                         <div className="flex gap-3">
                             <button
+                                type="button"
                                 onClick={cancelDeleteConversation}
                                 disabled={isDeleting}
                                 className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed"
@@ -443,6 +439,7 @@ export default function ConversationPage({ initialConversationId }: Conversation
                                 Annuler
                             </button>
                             <button
+                                type="submit"
                                 onClick={confirmDeleteConversation}
                                 disabled={isDeleting}
                                 className="flex-1 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
@@ -457,8 +454,8 @@ export default function ConversationPage({ initialConversationId }: Conversation
                                 )}
                             </button>
                         </div>
-                    </div>
-                </div>
+                    </form>
+                </dialog>
             )}
         </div>
     );

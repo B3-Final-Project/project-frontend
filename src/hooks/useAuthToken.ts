@@ -84,7 +84,7 @@ export const useCurrentUserId = () => {
   useEffect(() => {
     if (token) {
       const decoded = decodeJwtToken(token);
-      if (decoded && decoded.sub) {
+      if (decoded?.sub) {
         setUserId(decoded.sub);
       }
     } else {

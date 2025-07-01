@@ -136,6 +136,90 @@ export const useMessagesSocket = () => {
     console.log('🔌 Initialisation des listeners WebSocket...');
     listenersInitialized.current = true;
 
+    // Fonctions utilitaires pour les mises à jour
+    const updateMessagesData = (conversationId: string, correctedMessage: Message) => {
+      queryClient.setQueryData(['messages', conversationId], (oldData: Message[] | undefined) => {
+        if (!oldData) return [correctedMessage];
+        
+        const existingMessage = oldData.find(m => m.id === correctedMessage.id);
+        if (existingMessage) {
+          console.log('⚠️ Message déjà dans la liste, ignoré:', correctedMessage.id);
+          return oldData;
+        }
+        
+        return [...oldData, correctedMessage];
+      });
+    };
+
+    const updateConversationsData = (conversationId: string, correctedMessage: Message, isMe: boolean) => {
+      queryClient.setQueryData(['conversations'], (oldData: Conversation[] | undefined) => {
+        if (!oldData) return [];
+        
+        return oldData.map(conv => {
+          if (conv.id === conversationId) {
+            return {
+              ...conv,
+              lastMessage: correctedMessage,
+              unread: conv.unread + (isMe ? 0 : 1),
+              lastActive: correctedMessage.timestamp,
+            };
+          }
+          return conv;
+        });
+      });
+    };
+
+    const updateConversationsForRead = (conversationId: string) => {
+      queryClient.setQueryData(['conversations'], (oldData: Conversation[] | undefined) => {
+        if (!oldData) return [];
+        
+        return oldData.map(conv => {
+          if (conv.id === conversationId) {
+            return {
+              ...conv,
+              unread: 0,
+            };
+          }
+          return conv;
+        });
+      });
+    };
+
+    const updateMessagesForRead = (conversationId: string) => {
+      queryClient.setQueryData(['messages', conversationId], (oldData: Message[] | undefined) => {
+        if (!oldData) return [];
+        
+        return oldData.map(message => ({
+          ...message,
+          isRead: message.isMe ? message.isRead : true,
+        }));
+      });
+    };
+
+    const updateConversationsForUnread = (conversationId: string, messageCount: number) => {
+      queryClient.setQueryData(['conversations'], (oldData: Conversation[] | undefined) => {
+        if (!oldData) return [];
+        
+        return oldData.map(conv => {
+          if (conv.id === conversationId) {
+            console.log(`📈 Mise à jour du compteur pour la conversation ${conversationId}: ${conv.unread} + ${messageCount}`);
+            return {
+              ...conv,
+              unread: conv.unread + messageCount,
+            };
+          }
+          return conv;
+        });
+      });
+    };
+
+    const removeConversation = (conversationId: string) => {
+      queryClient.setQueryData(['conversations'], (oldData: Conversation[] | undefined) => {
+        if (!oldData) return [];
+        return oldData.filter(conv => conv.id !== conversationId);
+      });
+    };
+
     // Créer les handlers une seule fois
     handlersRef.current = {
       // Nouveau message reçu
@@ -177,7 +261,7 @@ export const useMessagesSocket = () => {
         }
         
         // Recalculer isMe en comparant avec l'utilisateur actuel
-        const isMe = currentUserId && message.sender_id === currentUserId;
+        const isMe = Boolean(currentUserId && message.sender_id === currentUserId);
         
         // Créer le message avec isMe recalculé
         const correctedMessage = {
@@ -185,36 +269,9 @@ export const useMessagesSocket = () => {
           isMe
         };
         
-        // Mettre à jour les messages de la conversation
-        queryClient.setQueryData(['messages', message.conversationId], (oldData: Message[] | undefined) => {
-          if (!oldData) return [correctedMessage];
-          
-          // Vérifier si le message existe déjà
-          const existingMessage = oldData.find(m => m.id === message.id);
-          if (existingMessage) {
-            console.log('⚠️ Message déjà dans la liste, ignoré:', message.id);
-            return oldData;
-          }
-          
-          return [...oldData, correctedMessage];
-        });
-
-        // Mettre à jour la liste des conversations
-        queryClient.setQueryData(['conversations'], (oldData: Conversation[] | undefined) => {
-          if (!oldData) return [];
-          
-          return oldData.map(conv => {
-            if (conv.id === message.conversationId) {
-              return {
-                ...conv,
-                lastMessage: correctedMessage,
-                unread: conv.unread + (isMe ? 0 : 1),
-                lastActive: message.timestamp,
-              };
-            }
-            return conv;
-          });
-        });
+        // Mettre à jour les données
+        updateMessagesData(message.conversationId, correctedMessage);
+        updateConversationsData(message.conversationId, correctedMessage, isMe);
         
         // Invalider les requêtes pour forcer un refresh
         queryClient.invalidateQueries({ queryKey: ['messages', message.conversationId] });
@@ -235,28 +292,8 @@ export const useMessagesSocket = () => {
 
       // Messages marqués comme lus
       handleMessagesRead: (data: { conversationId: string; readBy: string; timestamp: Date }) => {
-        queryClient.setQueryData(['messages', data.conversationId], (oldData: Message[] | undefined) => {
-          if (!oldData) return [];
-          
-          return oldData.map(message => ({
-            ...message,
-            isRead: message.isMe ? message.isRead : true,
-          }));
-        });
-
-        queryClient.setQueryData(['conversations'], (oldData: Conversation[] | undefined) => {
-          if (!oldData) return [];
-          
-          return oldData.map(conv => {
-            if (conv.id === data.conversationId) {
-              return {
-                ...conv,
-                unread: 0,
-              };
-            }
-            return conv;
-          });
-        });
+        updateMessagesForRead(data.conversationId);
+        updateConversationsForRead(data.conversationId);
       },
 
       // Utilisateur en train de taper
@@ -310,20 +347,7 @@ export const useMessagesSocket = () => {
       handleUnreadMessage: (data: { conversationId: string; messageCount: number; timestamp: Date }) => {
         console.log('🔔 Notification de message non lu reçue:', data);
         
-        queryClient.setQueryData(['conversations'], (oldData: Conversation[] | undefined) => {
-          if (!oldData) return [];
-          
-          return oldData.map(conv => {
-            if (conv.id === data.conversationId) {
-              console.log(`📈 Mise à jour du compteur pour la conversation ${data.conversationId}: ${conv.unread} + ${data.messageCount}`);
-              return {
-                ...conv,
-                unread: conv.unread + data.messageCount,
-              };
-            }
-            return conv;
-          });
-        });
+        updateConversationsForUnread(data.conversationId, data.messageCount);
         
         // Invalider les requêtes pour forcer un refresh
         queryClient.invalidateQueries({ queryKey: ['conversations'] });
@@ -355,11 +379,7 @@ export const useMessagesSocket = () => {
           });
         }
         
-        queryClient.setQueryData(['conversations'], (oldData: Conversation[] | undefined) => {
-          if (!oldData) return [];
-          
-          return oldData.filter(conv => conv.id !== data.conversationId);
-        });
+        removeConversation(data.conversationId);
         
         // Invalider les requêtes pour forcer un refresh
         queryClient.invalidateQueries({ queryKey: ['conversations'] });
