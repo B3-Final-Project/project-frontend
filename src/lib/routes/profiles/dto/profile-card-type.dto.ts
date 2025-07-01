@@ -1,5 +1,4 @@
 import { Interest } from "@/lib/routes/profiles/interfaces/interest.interface";
-import { RarityEnum } from "@/lib/routes/booster/dto/rarity.enum";
 
 export interface ProfileCardType {
   id: string;

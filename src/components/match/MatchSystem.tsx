@@ -3,11 +3,10 @@
 import { AnimatePresence, useMotionValue, useTransform } from "framer-motion";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { checkPackAvailability } from "../../utils/packManager";
+import { checkPackAvailability } from "@/utils/packManager";
 import { UserCardModal } from "../UserCardModal";
 import ControlButtons from "./ControlButtons";
 
-import { MatchProfile } from "@/components/match/ProfileGenerator";
 import { useMatchActions } from "@/hooks/react-query/matches";
 import { Loader } from "lucide-react";
 import MatchAnimation from "./MatchAnimation";
@@ -15,6 +14,7 @@ import MatchCounters from "./MatchCounters";
 import MatchListModal from "./MatchListModal";
 import NonMatchListModal from "./NonMatchListModal";
 import ProfileCard from "./ProfileCard";
+import { ProfileCardType } from "@/lib/routes/profiles/dto/profile-card-type.dto";
 
 type MatchSystemProps = {
   profiles: ProfileCardType[];
@@ -32,7 +32,6 @@ export default function MatchSystem({ profiles }: MatchSystemProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [cardSize, setCardSize] = useState(getCardSize());
   const [showMatchAnimation, setShowMatchAnimation] = useState(false);
-  const [showRejectAnimation, setShowRejectAnimation] = useState(false);
   const [matchedProfile, setMatchedProfile] = useState<ProfileCardType | null>(
     null,
   );
@@ -164,12 +163,10 @@ export default function MatchSystem({ profiles }: MatchSystemProps) {
 
     passMatch(profile.id);
 
-    setShowRejectAnimation(true);
     const updatedNonMatches = [...nonMatches, profile];
     setNonMatches(updatedNonMatches);
 
     setTimeout(() => {
-      setShowRejectAnimation(false);
       moveToNextCard();
       setIsProcessing(false); // Réactive les boutons
     }, 1000);
@@ -192,7 +189,7 @@ export default function MatchSystem({ profiles }: MatchSystemProps) {
     });
   };
 
-  const handleDragEnd = (event: any, info: any) => {
+  const handleDragEnd = (_event: Event, info: {offset: {x: number}}) => {
     const offset = info.offset.x;
     if (offset > 100 && currentProfile) handleMatch(currentProfile);
     else if (offset < -100 && currentProfile) handleReject(currentProfile);
@@ -297,26 +294,9 @@ export default function MatchSystem({ profiles }: MatchSystemProps) {
       </div>
       {selectedCard && (
         <UserCardModal
-          name={selectedCard.name}
-          age={selectedCard.age}
-          location={selectedCard.location}
-          description={selectedCard.description}
           isOpen={isModalOpen}
-          onClose={closeModal}
-          images={
-            selectedCard.images || [
-              "/vintage.png",
-              "/vintage.png",
-              "/vintage.png",
-            ]
-          }
-          image_url={selectedCard.image_url}
-          rarity={selectedCard.rarity}
-          interests={selectedCard.interests?.map((interest) => interest.name)} // Map to array of names
-          languages={selectedCard.languages}
-          zodiac={selectedCard.zodiac}
-          smoking={selectedCard.smoking}
-          drinking={selectedCard.drinking}
+          onCloseAction={closeModal}
+          user={selectedCard}
         />
       )}
     </div>

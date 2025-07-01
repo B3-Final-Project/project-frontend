@@ -89,9 +89,9 @@ export function ReviewComponent() {
                 {personalInfo.name} {personalInfo.surname}
               </p>
               <p className="text-gray-500">Gender:</p>
-              <p>{formatGenderEnum(personalInfo.gender ?? "")}</p>
+              <p>{formatGenderEnum(personalInfo.gender)}</p>
               <p className="text-gray-500">Orientation:</p>
-              <p>{formatOrientationEnum(personalInfo.orientation ?? "")}</p>
+              <p>{formatOrientationEnum(personalInfo.orientation)}</p>
             </div>
           </div>
 
@@ -139,7 +139,7 @@ export function ReviewComponent() {
               <p className="text-gray-500">Looking For:</p>
               <p>
                 {formatRelationshipTypeEnum(
-                  preferenceInfo.relationship_type ?? "",
+                  preferenceInfo.relationship_type,
                 )}
               </p>
             </div>
@@ -159,9 +159,9 @@ export function ReviewComponent() {
             <Separator />
             <div className="grid grid-cols-2 gap-2 pt-2">
               <p className="text-gray-500">Smoking:</p>
-              <p>{formatSmokingEnum(lifestyleInfo.smoking ?? "")}</p>
+              <p>{formatSmokingEnum(lifestyleInfo.smoking)}</p>
               <p className="text-gray-500">Drinking:</p>
-              <p>{formatDrinkingEnum(lifestyleInfo.drinking ?? "")}</p>
+              <p>{formatDrinkingEnum(lifestyleInfo.drinking)}</p>
               {typeof lifestyleInfo.religion === "number" && (
                 <>
                   <p className="text-gray-500">Religion:</p>
@@ -179,6 +179,20 @@ export function ReviewComponent() {
                   <p className="text-gray-500">Zodiac Sign:</p>
                   <p>{formatZodiacEnum(lifestyleInfo.zodiac)}</p>
                 </>
+              )}
+            </div>
+            <Separator />
+            <div className="space-y-2 pt-2">
+              <h4 className="text-md font-medium">Interests</h4>
+              {interestInfo.interests.length > 0 ? (
+                interestInfo.interests.map((interest, index) => (
+                  <div key={index} className="flex flex-col space-y-1">
+                    <p className="text-gray-500">{interest.prompt}</p>
+                    <p>{interest.answer}</p>
+                  </div>
+                ))
+              ) : (
+                <p className="text-gray-500">No interests specified.</p>
               )}
             </div>
           </div>

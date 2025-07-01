@@ -3,7 +3,9 @@
 import { motion } from "framer-motion";
 import { User } from "lucide-react";
 import Image from "next/image";
-import { MatchProfile } from "./ProfileGenerator";
+import {
+  ProfileCardType
+} from "@/lib/routes/profiles/dto/profile-card-type.dto";
 
 type ProfileGridProps = {
   profiles: ProfileCardType[];

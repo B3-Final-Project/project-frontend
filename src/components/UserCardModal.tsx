@@ -21,50 +21,32 @@ import "swiper/css/pagination";
 import { Pagination } from "swiper/modules";
 
 import "../styles/card-flip.css";
-import { RarityEnum } from "@/lib/routes/booster/dto/rarity.enum";
-
+import { ReportUserModal } from "@/components/ReportUserModal";
+import {
+  ProfileCardType
+} from "@/lib/routes/profiles/dto/profile-card-type.dto";
 
 interface UserCardModalProps {
-  name: string;
-  age?: number;
-  location?: string;
-  description?: string;
+  user: ProfileCardType
   isOpen: boolean;
-  onClose: () => void;
-  rarity?: RarityEnum;
-  image_url?: string;
-  images?: string[];
-  interests?: string[];
-  languages?: string[];
-  zodiac?: string;
-  smoking?: string;
-  drinking?: string;
+  isConnectedUser?: boolean;
+  onCloseAction(): void;
 }
 
 export function UserCardModal({
-  name,
-  age,
-  location,
-  description,
+  user,
   isOpen,
-  onClose,
-  rarity,
-  image_url,
-  images,
-  interests,
-  languages,
-  zodiac,
-  smoking,
-  drinking,
+  isConnectedUser = false,
+  onCloseAction,
 }: UserCardModalProps) {
   const [isFlipped, setIsFlipped] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isReportModalOpen, setIsReportModalOpen] = useState(false);
   const modalRef = useRef<HTMLDivElement>(null);
 
-  const imageList = images && images.length > 0
-    ? images
-    : image_url ? [image_url] : ['/vintage.png', '/vintage.png', '/vintage.png'];
+  const imageList = user.images && user.images.length > 0
+    ? user.images
+    : user.image_url ? [user.image_url] : ['/vintage.png', '/vintage.png', '/vintage.png'];
 
   const handleCardFlip = () => {
     setIsFlipped(!isFlipped);
@@ -82,10 +64,10 @@ export function UserCardModal({
   const handleClickOutside = useCallback((e: Event) => {
     if (isReportModalOpen) return;
     if (modalRef.current && !modalRef.current.contains(e.target as Node)) {
-      onClose();
+      onCloseAction();
       setIsFlipped(false)
     }
-  }, [isReportModalOpen, onClose]);
+  }, [isReportModalOpen, onCloseAction]);
 
   useEffect(() => {
     if (isOpen) {
@@ -153,22 +135,25 @@ export function UserCardModal({
           whileHover={{ y: -5 }}
           whileTap={{ scale: 0.98 }}
         >
-          <motion.div
-            className="w-[280px] h-[420px] sm:w-[320px] sm:h-[480px] md:w-[380px] md:h-[550px] perspective-1000 relative"
-          >
+          <motion.div className="w-[280px] h-[420px] sm:w-[320px] sm:h-[480px] md:w-[380px] md:h-[550px] perspective-1000 relative">
             <motion.div
               className="w-full h-full relative"
-              style={{ transformStyle: 'preserve-3d' }}
-              animate={isFlipped ? 'back' : 'front'}
+              style={{ transformStyle: "preserve-3d" }}
+              animate={isFlipped ? "back" : "front"}
               variants={flipVariants}
-              transition={{ duration: 0.6, type: 'spring', stiffness: 300, damping: 30 }}
+              transition={{
+                duration: 0.6,
+                type: "spring",
+                stiffness: 300,
+                damping: 30,
+              }}
             >
               {/* Front side of the card */}
               <div
                 className="w-full h-full rounded-xl p-[10px] absolute shadow-2xl overflow-hidden"
                 style={{
-                  backfaceVisibility: 'hidden',
-                  background: getRarityGradient(rarity)
+                  backfaceVisibility: "hidden",
+                  background: getRarityGradient(user.rarity),
                 }}
               >
                 <div className="w-full h-full rounded-lg overflow-hidden relative">
@@ -177,22 +162,27 @@ export function UserCardModal({
                     pagination={{
                       clickable: true,
                       dynamicBullets: true,
-                      bulletActiveClass: 'swiper-pagination-bullet-active',
-                      bulletClass: 'swiper-pagination-bullet'
+                      bulletActiveClass: "swiper-pagination-bullet-active",
+                      bulletClass: "swiper-pagination-bullet",
                     }}
                     modules={[Pagination]}
                     className="w-full h-full relative z-10"
-                    onSlideChange={(swiper: any) => setCurrentImageIndex(swiper.activeIndex)}
+                    // typeof Swiper
+                    onSlideChange={(swiper: { activeIndex: number }) =>
+                      setCurrentImageIndex(swiper.activeIndex)
+                    }
                   >
                     {imageList.map((image, index) => (
-                      <SwiperSlide key={index} className="bg-black flex items-center justify-center">
+                      <SwiperSlide
+                        key={index}
+                        className="bg-black flex items-center justify-center"
+                      >
                         <div
                           className="w-full h-full bg-cover bg-center"
                           style={{
-                            backgroundImage: `url(${image || '/vintage.png'})`,
+                            backgroundImage: `url(${image || "/vintage.png"})`,
                           }}
-                        >
-                        </div>
+                        ></div>
                       </SwiperSlide>
                     ))}
                   </Swiper>
@@ -202,16 +192,16 @@ export function UserCardModal({
                   <div className="w-full h-full flex flex-col justify-between bg-gradient-to-t from-black/70 via-transparent to-black/30 p-3 absolute top-0 left-0 pointer-events-none z-10">
                     <div className="flex justify-between items-center w-full">
                       <div className="flex gap-2 items-center pointer-events-auto">
-                        {age && (
+                        {user.age && (
                           <div className="flex gap-1 items-center text-white text-sm bg-black/50 px-2 py-1 rounded-full shadow-md">
                             <User size={14} />
-                            <span>{age} ans</span>
+                            <span>{user.age} ans</span>
                           </div>
                         )}
-                        {location && (
+                        {user.location && (
                           <div className="flex gap-1 items-center text-white text-sm bg-black/50 px-2 py-1 rounded-full shadow-md">
                             <MapPin size={14} />
-                            <span>{location}</span>
+                            <span>{user.location}</span>
                           </div>
                         )}
                       </div>
@@ -226,30 +216,32 @@ export function UserCardModal({
                     </div>
 
                     <div className="text-primary-foreground pointer-events-auto mt-auto mb-5">
-                      <h2 className="text-xl drop-shadow-md mb-1 text-primary-foreground">{name}</h2>
+                      <h2 className="text-xl drop-shadow-md mb-1 text-primary-foreground">
+                        {user.name}
+                      </h2>
                       <div className="flex flex-wrap gap-2 pt-1 pointer-events-auto">
-                        {languages && languages.length > 0 && (
+                        {user.languages && user.languages.length > 0 && (
                           <div className="flex items-center gap-1 text-sm bg-white/10 text-primary-foreground px-2 py-1 rounded-full pointer-events-auto">
                             <Languages size={16} className="text-yellow-300" />
-                            {languages.slice(0, 2).join(', ')}
+                            {user.languages.slice(0, 2).join(", ")}
                           </div>
                         )}
-                        {zodiac && (
+                        {user.zodiac && (
                           <div className="flex items-center gap-1 text-sm bg-white/10 text-primary-foreground px-2 py-1 rounded-full pointer-events-auto">
                             <Moon size={16} className="text-cyan-300" />
-                            {zodiac}
+                            {user.zodiac}
                           </div>
                         )}
-                        {smoking && (
+                        {user.smoking && (
                           <div className="flex items-center gap-1 text-sm bg-white/10 text-primary-foreground px-2 py-1 rounded-full pointer-events-auto">
                             <Cigarette size={16} className="text-red-300" />
-                            {smoking}
+                            {user.smoking}
                           </div>
                         )}
-                        {drinking && (
+                        {user.drinking && (
                           <div className="flex items-center gap-1 text-sm bg-white/10 text-primary-foreground px-2 py-1 rounded-full pointer-events-auto">
                             <Wine size={16} className="text-purple-300" />
-                            {drinking}
+                            {user.drinking}
                           </div>
                         )}
                       </div>
@@ -262,13 +254,12 @@ export function UserCardModal({
               <div
                 className="w-full h-full rounded-xl p-[10px] absolute shadow-2xl overflow-hidden"
                 style={{
-                  backfaceVisibility: 'hidden',
-                  transform: 'rotateY(180deg)',
-                  background: getRarityGradient(rarity)
+                  backfaceVisibility: "hidden",
+                  transform: "rotateY(180deg)",
+                  background: getRarityGradient(user.rarity),
                 }}
               >
                 <div className="w-full h-full rounded-lg bg-gradient-to-b from-black/90 to-black/70 flex flex-col justify-start p-5 text-primary-foreground">
-
                   <div className="absolute top-5 left-5 z-50">
                     <button
                       onClick={flipToFront}
@@ -278,6 +269,13 @@ export function UserCardModal({
                     >
                       <ArrowLeft size={18} />
                     </button>
+                    { isConnectedUser &&
+                    <ReportUserModal
+                      open={isReportModalOpen}
+                      setIsOpen={setIsReportModalOpen}
+                      user={user}
+                    />
+                    }
                   </div>
 
                   <div className="mt-2 mb-6 text-center pt-3">
@@ -288,11 +286,15 @@ export function UserCardModal({
                   </div>
 
                   <div className="mb-3 text-gray-200 leading-relaxed overflow-auto max-h-[300px] p-2 scrollbar-thin scrollbar-thumb-white/30 scrollbar-track-black/20">
-                    {interests && interests.length > 0 && (
+                    {user.interests && user.interests.length > 0 && (
                       <div className="flex flex-wrap gap-2 mt-1">
-                        {interests.slice(0, 3).map((interest, index) => (
-                          <span key={index} className="bg-white/20 px-3 py-1 rounded-full text-sm">
-                            {interest}
+                        {user.interests.slice(0, 3).map((interest, index) => (
+                          <span
+                            key={index}
+                            className="bg-white/20 px-3 py-1 rounded-full text-sm"
+                          >
+                            {interest.prompt}
+                            {interest.answer}
                           </span>
                         ))}
                       </div>

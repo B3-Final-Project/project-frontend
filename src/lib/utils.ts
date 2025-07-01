@@ -93,3 +93,8 @@ export const removeImage = async ({
   ).replace(":index", index.toString());
   return authenticatedAxios.delete(path);
 };
+
+export const capitalizeFirstLetter = (name: string): string => {
+  if (!name) return "";
+  return name.charAt(0).toUpperCase() + name.slice(1);
+};

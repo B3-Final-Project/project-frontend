@@ -1,6 +1,5 @@
 "use client";
 
-import { MatchProfile } from "@/components/match/ProfileGenerator";
 import { getRarityGradient } from "@/utils/rarityHelper";
 import { motion, MotionValue } from "framer-motion";
 import { Heart, MapPin, User, X } from "lucide-react";
