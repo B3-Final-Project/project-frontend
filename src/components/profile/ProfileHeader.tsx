@@ -46,11 +46,6 @@ const getZodiacLabel = (value?: ZodiacEnum): string => {
   }
 };
 
-// Fonction pour capitaliser la première lettre du prénom
-const capitalizeFirstLetter = (name: string): string => {
-  if (!name) return '';
-  return name.charAt(0).toUpperCase() + name.slice(1);
-};
 
 export function ProfileHeader() {
   const [isUserCardModalOpen, setUserCardModalOpen] = useState(false);
@@ -91,7 +86,6 @@ export function ProfileHeader() {
           name={query.data.user.name}
           age={query.data.user.age}
           location={typeof query.data.user.location === 'string' ? query.data.user.location : query.data.profile.city || 'Paris'}
-          description={query.data.profile.interests?.map(interest => interest.description).join(', ') || "Découvrez mes centres d'intérêt !"}
           images={query.data.profile.images || ['/vintage.png', '/vintage.png', '/vintage.png']}
           image_url={(query.data.profile.images && query.data.profile.images.length > 0 && query.data.profile.images[0]) || '/vintage.png'}
           interests={query.data.profile.interests?.map(interest => interest.description)}

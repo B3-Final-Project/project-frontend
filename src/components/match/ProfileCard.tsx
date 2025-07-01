@@ -2,7 +2,7 @@
 
 import { ProfileCardType } from '@/components/match/ProfileGenerator';
 import { getRarityGradient } from '@/utils/rarityHelper';
-import { motion, MotionValue } from 'framer-motion';
+import { motion, MotionValue, PanInfo } from 'framer-motion';
 import { Heart, MapPin, User, X } from 'lucide-react';
 
 type ProfileCardProps = {
@@ -13,7 +13,7 @@ type ProfileCardProps = {
   matchOpacity: MotionValue<number>;
   rejectOpacity: MotionValue<number>;
   constraintsRef: React.RefObject<HTMLDivElement | null>;
-  handleDragEnd: (event: any, info: any) => void;
+  handleDragEnd: (event: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => void;
   openModal: (profile: ProfileCardType) => void;
 };
 

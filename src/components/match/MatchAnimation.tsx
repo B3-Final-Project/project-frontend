@@ -3,11 +3,11 @@
 import { motion } from 'framer-motion';
 import { Heart } from 'lucide-react';
 import Image from 'next/image';
-import { ProfileCardType } from './MatchSystem';
+import { ProfileCardType } from './ProfileGenerator';
 
 type MatchAnimationProps = {
-  readonly showMatchAnimation: boolean; // Added readonly
-  readonly matchedProfile: ProfileCardType | null; // Added readonly
+  readonly showMatchAnimation: boolean;
+  readonly matchedProfile: ProfileCardType | null;
 };
 
 export default function MatchAnimation({ showMatchAnimation, matchedProfile }: MatchAnimationProps) {
@@ -43,13 +43,13 @@ export default function MatchAnimation({ showMatchAnimation, matchedProfile }: M
               <Heart className="w-12 h-12 sm:w-16 sm:h-16 text-pink-500" fill="#ec4899" />
             </motion.div>
           </div>
-          <h2 className="text-xl sm:text-2xl  text-primary-foreground mb-2">C'est un match!</h2>
+          <h2 className="text-xl sm:text-2xl  text-primary-foreground mb-2">C&apos;est un match!</h2>
           <p className="text-gray-300 text-center mb-4">
             Vous avez matché avec <span className="font-semibold text-blue-300">{matchedProfile.name}</span>
           </p>
           <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-full overflow-hidden border-3 sm:border-4 border-blue-500 mb-2">
             <Image
-              src={matchedProfile.image}
+              src={matchedProfile.image_url}
               alt={matchedProfile.name}
               width={96}
               height={96}

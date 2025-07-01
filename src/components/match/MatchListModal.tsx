@@ -2,7 +2,7 @@
 
 import { motion } from 'framer-motion';
 import { Heart, X } from 'lucide-react';
-import { ProfileCardType } from './MatchSystem';
+import { ProfileCardType } from './ProfileGenerator';
 import ProfileGrid from './ProfileGrid';
 
 type MatchListModalProps = {

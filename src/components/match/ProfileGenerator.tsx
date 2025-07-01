@@ -23,8 +23,8 @@ export interface ProfileCardType {
   isRevealed: boolean;
 }
 
-export const fetchBoosters = async (count: number): Promise<any> => {
-  return BoosterRouter.getBoosters(undefined, { count: count.toString() });
+export const fetchBoosters = async (count: number): Promise<Booster[]> => {
+  return BoosterRouter.getBoosters(undefined, { count: count.toString() }) as Promise<Booster[]>;
 };
 
 export const mapBoosterToProfileCardType = (booster: Booster): ProfileCardType => {
@@ -78,7 +78,7 @@ const ProfileGenerator: React.FC<ProfileGeneratorProps> = ({ count, onProfilesLo
 
   const {
     data: boosterData,
-    isLoading,
+    // isLoading non utilisé
     isError,
     error,
   } = useQuery<Booster[], Error>({

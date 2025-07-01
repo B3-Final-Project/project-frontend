@@ -27,7 +27,7 @@ const PackOpener = ({ onPackOpened, profiles = [] }: PackOpenerProps) => {
   const animationFrameRef = useRef<number | null>(null);
 
   const startHoldAnimation = () => {
-    let startTime = Date.now();
+    const startTime = Date.now();
     const duration = 1500;
 
     const animate = () => {

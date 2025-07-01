@@ -1,6 +1,6 @@
 'use client';
 
-import { AnimatePresence, useMotionValue, useTransform } from 'framer-motion';
+import { AnimatePresence, PanInfo, useMotionValue, useTransform } from 'framer-motion';
 import { useRouter } from 'next/navigation';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import {
@@ -12,7 +12,6 @@ import ControlButtons from './ControlButtons';
 import { ProfileCardType } from "@/components/match/ProfileGenerator";
 import { useMatchActions } from '@/hooks/react-query/matches';
 import { Loader } from 'lucide-react';
-import MatchAnimation from './MatchAnimation';
 import MatchCounters from './MatchCounters';
 import MatchListModal from './MatchListModal';
 import NonMatchListModal from './NonMatchListModal';
@@ -33,9 +32,6 @@ export default function MatchSystem({ profiles }: MatchSystemProps) {
   const [nonMatches, setNonMatches] = useState<ProfileCardType[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [cardSize, setCardSize] = useState(getCardSize());
-  const [showMatchAnimation, setShowMatchAnimation] = useState(false);
-  const [showRejectAnimation, setShowRejectAnimation] = useState(false);
-  const [matchedProfile, setMatchedProfile] = useState<ProfileCardType | null>(null);
   const [showMatchList, setShowMatchList] = useState(false);
   const [showNonMatchList, setShowNonMatchList] = useState(false);
   const [selectedCard, setSelectedCard] = useState<ProfileCardType | null>(null);
@@ -56,7 +52,6 @@ export default function MatchSystem({ profiles }: MatchSystemProps) {
 
   const constraintsRef = useRef<HTMLDivElement>(null);
   const { likeMatch, passMatch } = useMatchActions();
-
 
   const refreshPackStatusAndCountdown = useCallback(() => {
     const { canOpen, timeUntilNextOpenMs, packsOpenedInWindow } = checkPackAvailability();
@@ -134,40 +129,35 @@ export default function MatchSystem({ profiles }: MatchSystemProps) {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-
   const handleMatch = (profile: ProfileCardType) => {
     if (isProcessing) return; // Evite les clics multiples
     setIsProcessing(true);
 
     likeMatch(profile.id);
 
-    setMatchedProfile(profile);
-    setShowMatchAnimation(true);
+    // Mise à jour de matchedProfile supprimée
     const updatedMatches = [...matches, profile];
     setMatches(updatedMatches);
 
     setTimeout(() => {
-      setShowMatchAnimation(false);
-      setMatchedProfile(null);
+      // Réinitialisation de matchedProfile supprimée
       moveToNextCard();
-      setIsProcessing(false); // Réactive les boutons
+      setIsProcessing(false);
     }, 1500);
   };
 
   const handleReject = (profile: ProfileCardType) => {
-    if (isProcessing) return; // Evite les clics multiples
+    if (isProcessing) return;
     setIsProcessing(true);
 
     passMatch(profile.id);
 
-    setShowRejectAnimation(true);
     const updatedNonMatches = [...nonMatches, profile];
     setNonMatches(updatedNonMatches);
 
     setTimeout(() => {
-      setShowRejectAnimation(false);
       moveToNextCard();
-      setIsProcessing(false); // Réactive les boutons
+      setIsProcessing(false);
     }, 1000);
   };
 
@@ -186,8 +176,8 @@ export default function MatchSystem({ profiles }: MatchSystemProps) {
     });
   };
 
-  const handleDragEnd = (event: any, info: any) => {
-    const offset = info.offset.x;
+  const handleDragEnd = (event: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => {
+    const offset = info.offset.x; // PanInfo contient offset.x
     if (offset > 100 && currentProfile) handleMatch(currentProfile);
     else if (offset < -100 && currentProfile) handleReject(currentProfile);
   };
@@ -202,12 +192,9 @@ export default function MatchSystem({ profiles }: MatchSystemProps) {
     setSelectedCard(null);
   };
 
-
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center min-h-screen w-full bg-gray-900 text-primary-foreground">
-        Chargement...
-      </div>
+      <Loader />
     );
   }
 
@@ -216,15 +203,6 @@ export default function MatchSystem({ profiles }: MatchSystemProps) {
   return (
     <div className="relative min-h-screen w-full overflow-hidden">
       <div className="container mx-auto px-4 py-6 sm:py-10 relative z-10 flex flex-col items-center w-full h-screen">
-        {/* <div className="h-12 sm:h-16 relative w-full">
-          <AnimatePresence>
-            {showRejectAnimation && (
-              <div className="absolute top-1/2 left-0 right-0 flex justify-center z-50 -translate-y-1/2">
-                <RejectAnimation key="reject-animation" showRejectAnimation={showRejectAnimation} />
-              </div>
-            )}
-          </AnimatePresence>
-        </div> */}
         <MatchCounters
           matchesCount={matches.length}
           nonMatchesCount={nonMatches.length}
@@ -261,15 +239,6 @@ export default function MatchSystem({ profiles }: MatchSystemProps) {
           />
         )}
         <AnimatePresence>
-          {showMatchAnimation && (
-            <MatchAnimation
-              key="match-animation"
-              showMatchAnimation={showMatchAnimation}
-              matchedProfile={matchedProfile}
-            />
-          )}
-        </AnimatePresence>
-        <AnimatePresence>
           {showMatchList && (
             <MatchListModal
               key="match-list-modal"
@@ -295,13 +264,12 @@ export default function MatchSystem({ profiles }: MatchSystemProps) {
           name={selectedCard.name}
           age={selectedCard.age}
           location={selectedCard.location}
-          description={selectedCard.description}
           isOpen={isModalOpen}
           onClose={closeModal}
           images={selectedCard.images || ['/vintage.png', '/vintage.png', '/vintage.png']}
           image_url={selectedCard.image_url}
           rarity={selectedCard.rarity}
-          interests={selectedCard.interests?.map(interest => interest.name)} // Map to array of names
+          interests={selectedCard.interests?.map(interest => interest.name)}
           languages={selectedCard.languages}
           zodiac={selectedCard.zodiac}
           smoking={selectedCard.smoking}

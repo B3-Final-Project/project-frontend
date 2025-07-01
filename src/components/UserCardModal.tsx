@@ -18,7 +18,6 @@ interface UserCardModalProps {
   name: string;
   age?: number;
   location?: string;
-  description?: string;
   isOpen: boolean;
   onClose: () => void;
   rarity?: string;
@@ -35,7 +34,6 @@ export function UserCardModal({
   name,
   age,
   location,
-  description,
   isOpen,
   onClose,
   rarity,
@@ -48,7 +46,6 @@ export function UserCardModal({
   drinking,
 }: UserCardModalProps) {
   const [isFlipped, setIsFlipped] = useState(false);
-  const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const modalRef = useRef<HTMLDivElement>(null);
 
   const imageList = images && images.length > 0
@@ -66,14 +63,14 @@ export function UserCardModal({
     setIsFlipped(false);
   };
 
-  const handleClickOutside = (e: MouseEvent) => {
-    if (modalRef.current && !modalRef.current.contains(e.target as Node)) {
-      onClose();
-      setIsFlipped(false)
-    }
-  };
-
   useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (modalRef.current && !modalRef.current.contains(e.target as Node)) {
+        onClose();
+        setIsFlipped(false)
+      }
+    };
+
     if (isOpen) {
       document.addEventListener("mousedown", handleClickOutside);
     } else {
@@ -83,7 +80,7 @@ export function UserCardModal({
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, [isOpen]);
+  }, [isOpen, onClose]);
 
   if (!isOpen) return null;
 
@@ -166,7 +163,7 @@ export function UserCardModal({
                     }}
                     modules={[Pagination]}
                     className="w-full h-full relative z-10"
-                    onSlideChange={(swiper: any) => setCurrentImageIndex(swiper.activeIndex)}
+                  // onSlideChange supprimé car currentImageIndex n'est pas utilisé
                   >
                     {imageList.map((image, index) => (
                       <SwiperSlide key={index} className="bg-black flex items-center justify-center">
