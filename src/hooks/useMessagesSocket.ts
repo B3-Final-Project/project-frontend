@@ -161,7 +161,7 @@ export const useMessagesSocket = () => {
           }
         }
         
-        console.log('✅ Message ajouté à la conversation:', message.id || 'ID manquant');
+        console.log('✅ Message ajouté à la conversation:', message.id ?? 'ID manquant');
         
         // Récupérer l'ID utilisateur actuel depuis le token
         const token = localStorage.getItem('auth_token');
@@ -170,7 +170,7 @@ export const useMessagesSocket = () => {
         if (token) {
           try {
             const payload = JSON.parse(atob(token.split('.')[1]));
-            currentUserId = payload.sub || payload.username;
+            currentUserId = payload.sub ?? payload.username;
           } catch (error) {
             console.error('❌ Erreur lors du décodage du token:', error);
           }
@@ -340,7 +340,7 @@ export const useMessagesSocket = () => {
         if (token) {
           try {
             const payload = JSON.parse(atob(token.split('.')[1]));
-            currentUserId = payload.sub || payload.username;
+            currentUserId = payload.sub ?? payload.username;
           } catch (error) {
             console.error('❌ Erreur lors du décodage du token:', error);
           }

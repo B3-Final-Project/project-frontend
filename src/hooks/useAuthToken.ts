@@ -34,7 +34,7 @@ export const useAuthToken = () => {
             if (userJson) {
               const user: User = JSON.parse(userJson);
               if (user?.access_token) {
-                return user.access_token;
+                return user?.access_token;
               }
             }
           }

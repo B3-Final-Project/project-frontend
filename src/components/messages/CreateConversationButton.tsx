@@ -50,7 +50,7 @@ export const CreateConversationButton: React.FC<CreateConversationButtonProps> =
   // Utiliser matches si non vide, sinon fallback sur allProfiles
   const availableUsers = matchesArray.length > 0 ? matchesArray : allProfilesArray;
   
-  const isLoading = matchesLoading || profilesLoading;
+  const isLoading = matchesLoading ?? profilesLoading;
 
   // Filtrer les utilisateurs basés sur la recherche et exclure l'utilisateur actuel
   // S'assurer que availableUsers est bien un tableau avant d'appeler filter

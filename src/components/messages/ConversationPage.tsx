@@ -1,8 +1,7 @@
 'use client'
 
 import { useState, useEffect, useRef } from "react";
-import { IoArrowBack } from 'react-icons/io5';
-import { IoTrash } from 'react-icons/io5';
+import { IoArrowBack, IoTrash } from 'react-icons/io5';
 import { useRouter } from 'next/navigation';
 import { TypingIndicator } from './TypingIndicator';
 import { OnlineStatus } from './OnlineStatus';
@@ -22,7 +21,7 @@ interface ConversationPageProps {
 }
 
 export default function ConversationPage({ initialConversationId }: ConversationPageProps) {
-    const [selectedConversation, setSelectedConversation] = useState<string | null>(initialConversationId ?? null);
+    const [selectedConversation] = useState<string | null>(initialConversationId ?? null);
     const [newMessage, setNewMessage] = useState('');
     const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
     const [isDeleting, setIsDeleting] = useState(false);
@@ -45,7 +44,7 @@ export default function ConversationPage({ initialConversationId }: Conversation
         deleteConversation
     } = useMessagesSocket();
 
-    const { data: conversations = [], isLoading: conversationsLoading } = useConversations();
+    const { data: conversations = [] } = useConversations();
     const { data: messages = [], isLoading: messagesLoading } = useMessages(selectedConversation ?? '');
     const markAsReadMutation = useMarkMessagesAsRead();
     const deleteConversationMutation = useDeleteConversation();
@@ -242,6 +241,31 @@ export default function ConversationPage({ initialConversationId }: Conversation
         }
     }, [selectedConversation, conversations, router]);
 
+    // Extraire les classes CSS pour les messages
+    const getMessageClasses = (isMe: boolean) => {
+        const baseClasses = 'max-w-[90%] md:max-w-[75%] rounded-2xl';
+        return isMe 
+            ? `${baseClasses} bg-blue-500 text-white p-2 md:p-3`
+            : `${baseClasses} bg-white text-gray-900 shadow-sm border border-gray-100 p-2.5 md:p-3.5`;
+    };
+
+    // Extraire les classes CSS pour les timestamps
+    const getTimestampClasses = (isMe: boolean) => {
+        return isMe ? 'text-blue-100' : 'text-gray-500';
+    };
+
+    // Extraire les classes CSS pour les indicateurs de lecture
+    const getReadIndicatorClasses = (isRead: boolean) => {
+        return isRead ? 'text-blue-100' : 'text-blue-200';
+    };
+
+    // Gestionnaire de clavier pour la popup de suppression
+    const handlePopupKeyDown = (e: React.KeyboardEvent) => {
+        if (e.key === 'Escape' && !isDeleting) {
+            cancelDeleteConversation();
+        }
+    };
+
     return (
         <div className="flex flex-col md:h-full h-[calc(100vh-50px)] bg-white">
             {/* Header avec bouton retour */}
@@ -320,31 +344,19 @@ export default function ConversationPage({ initialConversationId }: Conversation
                                 key={message.id}
                                 className={`flex ${message.isMe ? 'justify-end' : 'justify-start'}`}
                             >
-                                <div
-                                    className={`
-                                        max-w-[90%] md:max-w-[75%] rounded-2xl 
-                                        ${message.isMe 
-                                            ? 'bg-blue-500 text-white p-2 md:p-3' 
-                                            : 'bg-white text-gray-900 shadow-sm border border-gray-100 p-2.5 md:p-3.5'
-                                        }
-                                    `}
-                                >
+                                <div className={getMessageClasses(message.isMe)}>
                                     <p className="text-[13px] md:text-[15px] leading-relaxed break-words">
                                         {message.content}
                                     </p>
                                     <div className="flex items-center justify-end space-x-1 mt-1">
-                                        <p className={`text-[10px] md:text-xs ${
-                                            message.isMe ? 'text-blue-100' : 'text-gray-500'
-                                        }`}>
+                                        <p className={`text-[10px] md:text-xs ${getTimestampClasses(message.isMe)}`}>
                                             {new Date(message.timestamp).toLocaleTimeString('fr-FR', {
                                                 hour: '2-digit',
                                                 minute: '2-digit'
                                             })}
                                         </p>
                                         {message.isMe && (
-                                            <span className={`text-[10px] md:text-xs ${
-                                                message.isRead ? 'text-blue-100' : 'text-blue-200'
-                                            }`}>
+                                            <span className={`text-[10px] md:text-xs ${getReadIndicatorClasses(message.isRead)}`}>
                                                 {message.isRead ? '✓✓' : '✓'}
                                             </span>
                                         )}
@@ -392,17 +404,23 @@ export default function ConversationPage({ initialConversationId }: Conversation
                 <div 
                     className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
                     onClick={!isDeleting ? cancelDeleteConversation : undefined}
+                    onKeyDown={handlePopupKeyDown}
+                    role="dialog"
+                    aria-modal="true"
+                    aria-labelledby="delete-dialog-title"
+                    tabIndex={-1}
                 >
                     <div 
                         className="bg-white rounded-xl shadow-2xl max-w-md w-full p-6 animate-in fade-in-0 zoom-in-95 duration-200"
                         onClick={(e) => e.stopPropagation()}
+                        onKeyDown={(e) => e.stopPropagation()}
                     >
                         <div className="flex items-center gap-3 mb-4">
                             <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center">
                                 <IoTrash className="w-6 h-6 text-red-600" />
                             </div>
                             <div>
-                                <h3 className="text-lg font-semibold text-gray-900">
+                                <h3 id="delete-dialog-title" className="text-lg font-semibold text-gray-900">
                                     Supprimer la conversation
                                 </h3>
                                 <p className="text-sm text-gray-500">

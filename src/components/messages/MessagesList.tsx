@@ -63,6 +63,43 @@ export default function MessagesList() {
         return isUserOnline(conversation.otherUserId);
     };
 
+    // Préparer le contenu de la liste des conversations
+    let conversationListContent;
+    if (isLoading) {
+        conversationListContent = (
+            <div className="flex items-center justify-center">
+                <LoadingState message="Chargement des conversations..." size="lg" />
+            </div>
+        );
+    } else if (conversations.length === 0) {
+        conversationListContent = (
+            <div className="flex h-full items-center justify-center">
+                <NoConversationsState />
+            </div>
+        );
+    } else {
+        conversationListContent = (
+            <div className="divide-y divide-gray-100">
+                {conversations.map((conversation) => {
+                    const isOnline = isOtherUserOnline(conversation);
+                    const unreadCount = getUnreadCount(conversation.id);
+                    
+                    return (
+                        <ConversationItem
+                            key={conversation.id}
+                            conversation={conversation}
+                            isSelected={selectedConversation === conversation.id}
+                            isExpanded={true}
+                            onClick={() => handleConversationSelect(conversation.id)}
+                            isOnline={isOnline}
+                            unreadCount={unreadCount}
+                        />
+                    );
+                })}
+            </div>
+        );
+    }
+
     return (
         <div className="flex flex-col h-full bg-white">
             {/* Header */}
@@ -100,34 +137,7 @@ export default function MessagesList() {
 
             {/* Liste des conversations */}
             <div className="flex-1 overflow-y-auto px-2 sm:px-0">
-                {isLoading ? (
-                    <div className="flex items-center justify-center">
-                        <LoadingState message="Chargement des conversations..." size="lg" />
-                    </div>
-                ) : conversations.length === 0 ? (
-                    <div className="flex h-full items-center justify-center">
-                        <NoConversationsState />
-                    </div>
-                ) : (
-                    <div className="divide-y divide-gray-100">
-                        {conversations.map((conversation) => {
-                            const isOnline = isOtherUserOnline(conversation);
-                            const unreadCount = getUnreadCount(conversation.id);
-                            
-                            return (
-                                <ConversationItem
-                                    key={conversation.id}
-                                    conversation={conversation}
-                                    isSelected={selectedConversation === conversation.id}
-                                    isExpanded={true}
-                                    onClick={() => handleConversationSelect(conversation.id)}
-                                    isOnline={isOnline}
-                                    unreadCount={unreadCount}
-                                />
-                            );
-                        })}
-                    </div>
-                )}
+                {conversationListContent}
             </div>
         </div>
     );
