@@ -11,12 +11,12 @@ import {
 import { KeyRound, Loader2, UserX } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
-import { authenticatedAxios } from "@/lib/auth-axios";
 import { useAuth } from "react-oidc-context";
 import { useAuthConfigReady } from "@/hooks/useAuthConfigReady";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
+import { useDeleteAccountMutation } from "@/hooks/react-query/users";
 
 interface SettingsDialogProps {
   readonly isOpen: boolean;
@@ -29,6 +29,7 @@ export function SettingsDialog({ isOpen, onClose }: SettingsDialogProps) {
   const router = useRouter();
   const { config } = useAuthConfigReady();
   const { toast } = useToast();
+  const deleteMutation = useDeleteAccountMutation();
 
   const handleChangePassword = () => {
     if (!config) {
@@ -60,32 +61,47 @@ export function SettingsDialog({ isOpen, onClose }: SettingsDialogProps) {
     window.open(changePasswordUrl, '_blank');
   };
 
+    const handleSignOut = async () => {
+    try {
+      await auth.signoutSilent()
+      router.replace('/')
+      toast({
+        title: "Déconnexion réussie",
+        description: "Vous avez été déconnecté avec succès",
+      });
+      onClose();
+    } catch (error) {
+      console.error('Error signing out:', error);
+      toast({
+        title: "Erreur",
+        description: "Impossible de se déconnecter. Veuillez réessayer.",
+        variant: "destructive",
+      });
+    }
+  };
+
   const handleDeleteAccount = async () => {
-    const confirmDelete = window.confirm(
-      "Êtes-vous sûr de vouloir supprimer votre compte ? Cette action est irréversible."
-    );
-
-    if (!confirmDelete) return;
-
-    const doubleConfirm = window.confirm(
-      "ATTENTION : Vous êtes sur le point de supprimer définitivement votre compte. Tapez 'SUPPRIMER' pour confirmer."
-    );
-
-    if (!doubleConfirm) return;
-
+    // const confirmDelete = window.confirm(
+    //   "Êtes-vous sûr de vouloir supprimer votre compte ? Cette action est irréversible."
+    // );
+    //
+    // if (!confirmDelete) return;
+    //
+    // const doubleConfirm = window.confirm(
+    //   "ATTENTION : Vous êtes sur le point de supprimer définitivement votre compte. Tapez 'SUPPRIMER' pour confirmer."
+    // );
+    //
+    // if (!doubleConfirm) return;
+    //
     setIsDeleting(true);
 
     try {
       // Call the API to delete the user account
-      await authenticatedAxios.delete('/users/me');
-
+      deleteMutation.mutate()
       toast({
         title: "Compte supprimé",
         description: "Votre compte a été supprimé avec succès",
       });
-
-      // Sign out the user
-      await auth.removeUser();
 
       // Redirect to home page
       router.push('/');
@@ -114,8 +130,15 @@ export function SettingsDialog({ isOpen, onClose }: SettingsDialogProps) {
           </DialogDescription>
         </DialogHeader>
 
-        <div className="grid gap-4 py-4">
-          <Button
+       <div className="grid gap-4 py-4">
+         <Button
+           onClick={handleSignOut}
+           variant="outline"
+           className="w-full justify-start gap-2"
+         >
+           Déconnexion
+         </Button>
+         <Button
             onClick={handleChangePassword}
             variant="outline"
             className="w-full justify-start gap-2"
