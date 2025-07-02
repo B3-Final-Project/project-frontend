@@ -166,8 +166,6 @@ export function UserCardModal({
                     }}
                     modules={[Pagination]}
                     className="w-full h-full relative z-10"
-                    // Swiper configuration
-                    // Nous n'avons pas besoin de suivre l'index d'image actuellement
                   >
                     {imageList.map((image, index) => (
                       <SwiperSlide

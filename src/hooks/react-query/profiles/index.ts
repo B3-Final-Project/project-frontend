@@ -108,7 +108,7 @@ export function useUpdatePartialProfileMutation<
       return ProfileRouter.updatePartialProfile(data);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["profiles"] });
+      queryClient.invalidateQueries({ queryKey: ["profile"] });
       toast({
         title: "Profile saved",
         description: "Your profile profiles have been saved successfully.",
@@ -135,7 +135,7 @@ export function useCreateProfileMutation() {
       return ProfileRouter.createProfile(data);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["profiles"] });
+      queryClient.invalidateQueries({ queryKey: ["profile"] });
       toast({
         title: "Profile saved",
         description: "Your profile profiles have been saved successfully.",
