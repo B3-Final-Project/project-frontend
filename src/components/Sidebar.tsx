@@ -2,9 +2,11 @@
 import { Heart, Home, MessageSquare, User } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useAuth } from "react-oidc-context";
 
 
 export function SidebarComponent() {
+  const auth = useAuth()
   const pathname = usePathname()
 
   const isActive = (itemUrl: string) => {
@@ -20,6 +22,9 @@ export function SidebarComponent() {
     { canUse: true, title: "Booster", url: '/boosters', icon: Heart },
     { title: "Profile", url: '/profile', icon: User },
   ]
+
+  const groups = auth.user?.profile['cognito:groups'] as string[];
+  const isAdmin = groups?.includes('admin') ?? false;
 
   return (
     <>
@@ -43,6 +48,15 @@ export function SidebarComponent() {
             )
           })
           }
+          {isAdmin && (
+            // admin?dashboard or admin?users
+            <div className={`flex flex-col items-center justify-center py-2 px-3 rounded-lg ${pathname.startsWith('/admin') ? 'bg-primary/10 text-primary' : 'text-muted-foreground'}`}>
+              <Link href="/admin?dashboard" className="flex flex-col items-center justify-center mb-1">
+                <Heart size={24} />
+              </Link>
+              <p className={`text-xs font-medium ${pathname.startsWith('/admin') ? 'text-primary' : 'text-muted-foreground'}`}>Admin</p>
+            </div>
+          )}
         </div>
       </nav>
     </>

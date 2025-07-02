@@ -7,9 +7,6 @@ export function useMatchesQuery() {
   return useQuery({
     queryKey: ["matches"],
     queryFn: () => MatchRouter.getMatches(),
-    refetchOnWindowFocus: false,
-    refetchInterval: 30000, // Refetch every 30 seconds for new matches
-    refetchOnMount: true,
   });
 }
 

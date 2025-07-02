@@ -3,17 +3,20 @@
 import { useProfileQuery } from "@/hooks/react-query/profiles";
 import { Loader } from "../Loader";
 import { capitalizeFirstLetter } from "@/lib/utils";
+import { useRouter } from "next/navigation";
 
 
 
 export function ProfileAvatar() {
   const {data, isLoading, isError, error} = useProfileQuery();
+  const router = useRouter()
 
    if (isLoading) {
     return <Loader />;
   }
 
   if (isError) {
+    router.replace('/profile/create/welcome')
     return <div>{JSON.stringify(error)}</div>;
   }
 

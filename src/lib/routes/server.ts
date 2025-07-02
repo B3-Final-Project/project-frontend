@@ -11,6 +11,7 @@ export enum RESTServerRoute {
   REST_PROFILE_IMAGE = 'profiles/:profileId/images/:index',
   // USER ROUTES
   REST_ADMIN_BANS = 'users/:userId/bans',
+  REST_USERS = 'users',
   // REPORT ROUTES
   REST_USER_REPORTS = '/reports',
   // BOOSTER ROUTES
