@@ -10,8 +10,6 @@ interface MessageListProps {
     typing: { me: boolean; other: boolean };
     unreadCount: number;
     firstUnreadIndex: number | null;
-    lastReadConversationId: string | null;
-    currentConversationId: string;
     otherName?: string;
     onMarkAsRead?: () => void;
 }

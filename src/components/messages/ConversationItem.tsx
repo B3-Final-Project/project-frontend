@@ -10,7 +10,6 @@ interface ConversationItemProps {
   readonly isExpanded: boolean;
   readonly onClick: () => void;
   readonly isOnline?: boolean;
-  readonly lastSeen?: Date;
   readonly unreadCount?: number;
 }
 

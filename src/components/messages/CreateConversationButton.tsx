@@ -43,8 +43,7 @@ export const CreateConversationButton: React.FC<CreateConversationButtonProps> =
         location.includes(searchTerm.toLowerCase());
 
       // Exclude current user
-      const isNotCurrentUser = user.id !== authUser?.profile?.sub &&
-                              user.id !== authUser?.profile?.sub;
+      const isNotCurrentUser = user.id !== authUser?.profile?.sub;
 
       return matchesSearch && isNotCurrentUser;
     });
