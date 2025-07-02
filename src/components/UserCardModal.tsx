@@ -40,7 +40,6 @@ export function UserCardModal({
   onCloseAction,
 }: UserCardModalProps) {
   const [isFlipped, setIsFlipped] = useState(false);
-  const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isReportModalOpen, setIsReportModalOpen] = useState(false);
   const modalRef = useRef<HTMLDivElement>(null);
 
@@ -167,10 +166,6 @@ export function UserCardModal({
                     }}
                     modules={[Pagination]}
                     className="w-full h-full relative z-10"
-                    // typeof Swiper
-                    onSlideChange={(swiper: { activeIndex: number }) =>
-                      setCurrentImageIndex(swiper.activeIndex)
-                    }
                   >
                     {imageList.map((image, index) => (
                       <SwiperSlide
