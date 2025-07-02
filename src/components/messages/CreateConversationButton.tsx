@@ -3,7 +3,7 @@
 import { IoAdd, IoClose, IoSearch } from "react-icons/io5";
 import React, { useState } from "react";
 
-import { User } from "@/lib/routes/profiles/interfaces/user.interface";
+import { MatchDto } from "@/lib/routes/matches/dto/match.dto";
 import { useAuth } from "react-oidc-context";
 import { useCreateConversation } from "@/hooks/react-query/messages";
 import { useMatchesQuery } from "@/hooks/react-query/matches";
@@ -33,17 +33,17 @@ export const CreateConversationButton: React.FC<CreateConversationButtonProps> =
   const filteredUsers = React.useMemo(() => {
     if (!Array.isArray(matches)) return [];
 
-    return matches.filter((user: User) => {
+    return matches.filter((match: MatchDto) => {
       // Handle search matching
-      const fullName = `${user.name} ${user.surname ?? ''}`.toLowerCase().trim();
-      const location = user.location?.toLowerCase() ?? '';
+      const fullName = match.name.toLowerCase().trim();
+      const bio = match.bio?.toLowerCase() ?? '';
 
       const matchesSearch = !searchTerm ||
         fullName.includes(searchTerm.toLowerCase()) ||
-        location.includes(searchTerm.toLowerCase());
+        bio.includes(searchTerm.toLowerCase());
 
       // Exclude current user
-      const isNotCurrentUser = user.id !== authUser?.profile?.sub;
+      const isNotCurrentUser = match.id !== authUser?.profile?.sub;
 
       return matchesSearch && isNotCurrentUser;
     });
@@ -85,29 +85,29 @@ export const CreateConversationButton: React.FC<CreateConversationButtonProps> =
   } else {
     usersListContent = (
       <div className="divide-y divide-gray-100">
-        {filteredUsers.map((user: User) => (
+        {filteredUsers.map((match: MatchDto) => (
           <button
-            key={user.id}
-            onClick={() => setSelectedUserId(user.id)}
+            key={match.id}
+            onClick={() => setSelectedUserId(match.id)}
             className={`w-full p-4 text-left hover:bg-gray-50 transition-colors ${
-              selectedUserId === user.id ? 'bg-blue-50 border-l-4 border-blue-500' : ''
+              selectedUserId === match.id ? 'bg-blue-50 border-l-4 border-blue-500' : ''
             }`}
           >
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center">
                 <span className="text-gray-600 font-medium">
-                  {user.name.charAt(0)}{user.surname.charAt(0)}
+                  {match.name.charAt(0)}
                 </span>
               </div>
               <div className="flex-1 min-w-0">
                 <h3 className="font-medium text-gray-900 truncate">
-                  {user.name} {user.surname}
+                  {match.name}
                 </h3>
-                {user.location && (
-                  <p className="text-sm text-gray-500 truncate">{user.location}</p>
+                {match.bio && (
+                  <p className="text-sm text-gray-500 truncate">{match.bio}</p>
                 )}
               </div>
-              {selectedUserId === user.id && (
+              {selectedUserId === match.id && (
                 <div className="w-5 h-5 bg-blue-500 rounded-full flex items-center justify-center">
                   <IoAdd className="w-3 h-3 text-white" />
                 </div>

@@ -142,7 +142,7 @@ const handleProcessedMessage = (messageId: string | undefined) => {
 };
 
 // Création des handlers
-const createMessageHandlers = (queryClient: ReturnType<typeof useQueryClient>, toast: (props: { title: string; description?: string; variant?: "default" | "destructive" | null | undefined }) => void) => {
+const createMessageHandlers = (queryClient: ReturnType<typeof useQueryClient>, toast: (props: { title: string; description?: string; variant?: "default" | "destructive" | null }) => void) => {
   const updateMessagesData = createUpdateMessagesData(queryClient);
   const updateConversationsData = createUpdateConversationsData(queryClient);
   const updateConversationsForRead = createUpdateConversationsForRead(queryClient);
