@@ -10,11 +10,9 @@ import { EmptyState } from './EmptyState';
 import { useMessagesSocket } from '../../hooks/useMessagesSocket';
 import { useConversations, useMessages, useMarkMessagesAsRead, useDeleteConversation } from '../../hooks/react-query/messages';
 import { useQueryClient } from '@tanstack/react-query';
+import Image from 'next/image';
 
-// Constantes pour les classes CSS communes
-const COMMON_TRANSITION = 'transition-all duration-300 ease-in-out';
-const COMMON_BUTTON_CLASSES = 'flex items-center justify-center rounded-full transition-colors';
-const COMMON_ICON_CLASSES = 'w-5 h-5 text-gray-600';
+// Constantes pour les classes CSS communes - supprimées car non utilisées
 
 interface ConversationPageProps {
     readonly initialConversationId?: string;
@@ -84,7 +82,7 @@ export default function ConversationPage({ initialConversationId }: Conversation
                 leaveConversation(selectedConversation);
             }
         };
-    }, [selectedConversation, isConnected, joinConversation, leaveConversation, markAsRead]);
+    }, [selectedConversation, isConnected, joinConversation, leaveConversation, markAsRead, markAsReadMutation]);
 
     // Effet pour obtenir les utilisateurs en ligne au chargement
     useEffect(() => {
@@ -113,7 +111,7 @@ export default function ConversationPage({ initialConversationId }: Conversation
             console.log('✅ Message envoyé via WebSocket');
             
         } catch (error) {
-            console.error('❌ Erreur lors de l\'envoi du message:', error);
+            console.error('❌ Erreur lors de l&apos;envoi du message:', error);
             // Remettre le message dans le champ en cas d'erreur
             setNewMessage(messageContent);
         }
@@ -342,9 +340,11 @@ export default function ConversationPage({ initialConversationId }: Conversation
                     <div className="flex items-center gap-3">
                         {selectedConversationData && (
                             <div className="relative">
-                                <img
+                                <Image
                                     src={selectedConversationData.avatar ?? '/img.png'}
                                     alt={selectedConversationData.name}
+                                    width={40}
+                                    height={40}
                                     className={`w-10 h-10 rounded-full object-cover border-2 ${isOtherUserOnline ? 'border-green-500' : 'border-gray-300'}`}
                                 />
                                 <div className="absolute -bottom-1 -right-1">
@@ -437,7 +437,7 @@ export default function ConversationPage({ initialConversationId }: Conversation
                         </div>
                         <p className="text-gray-700 mb-6">
                             Êtes-vous sûr de vouloir supprimer cette conversation ? 
-                            Tous les messages seront définitivement supprimés et l'autre utilisateur sera notifié.
+                            Tous les messages seront définitivement supprimés et l&apos;autre utilisateur sera notifié.
                         </p>
                         <div className="flex gap-3">
                             <button

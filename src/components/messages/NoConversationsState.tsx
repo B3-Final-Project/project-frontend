@@ -12,7 +12,7 @@ export const NoConversationsState: React.FC = () => {
           Aucune conversation
         </h3>
         <p className="text-gray-500 mb-6 max-w-sm">
-          Pour discuter, il faut d'abord obtenir des matchs en ouvrant des boosters.
+          Pour discuter, il faut d&apos;abord obtenir des matchs en ouvrant des boosters.
         </p>
         <a
           href="/booster"

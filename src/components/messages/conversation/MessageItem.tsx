@@ -24,7 +24,10 @@ export const MessageItem: React.FC<MessageItemProps> = ({ message }) => {
                     <p className={`text-[10px] md:text-xs ${
                         message.isMe ? 'text-blue-100' : 'text-gray-500'
                     }`}>
-                        {message.timestamp.split(' ')[1]}
+                        {new Date(message.timestamp).toLocaleTimeString('fr-FR', {
+                            hour: '2-digit',
+                            minute: '2-digit'
+                        })}
                     </p>
                     {message.isMe && (
                         <span className={`text-[10px] md:text-xs ${

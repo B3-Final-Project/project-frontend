@@ -58,7 +58,7 @@ export default function MessagesList() {
     };
 
     // Fonction pour vérifier si l'autre utilisateur est en ligne
-    const isOtherUserOnline = (conversation: any) => {
+    const isOtherUserOnline = (conversation: { otherUserId?: string }) => {
         if (!conversation.otherUserId) return false;
         return isUserOnline(conversation.otherUserId);
     };

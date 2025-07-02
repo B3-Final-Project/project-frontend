@@ -28,9 +28,12 @@ export function SocketProvider({ children, token }: SocketProviderProps) {
       return;
     }
 
-    console.log('🔌 Tentative de connexion WebSocket avec token:', token.substring(0, 20) + '...');
+    // Log seulement si on n'a pas déjà une connexion
+    if (!socket) {
+      console.log('🔌 Tentative de connexion WebSocket avec token:', token.substring(0, 20) + '...');
+    }
 
-    const socketInstance = io(`${process.env.NEXT_PUBLIC_WS_URL ?? 'http://localhost:8080'}/messages`, {
+    const socketInstance = io(`${process.env.NEXT_PUBLIC_WS_URL ?? 'http://localhost:8080/api'}/ws/messages`, {
       auth: { token },
       transports: ['websocket', 'polling'],
       autoConnect: true,

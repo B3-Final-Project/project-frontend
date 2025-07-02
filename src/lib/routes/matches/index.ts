@@ -3,9 +3,7 @@ import { RESTServerRoute } from "@/lib/routes/server";
 import { MatchActionResponse } from "./response/match-action.response";
 import { Profile } from "@/lib/routes/profiles/interfaces/profile.interface";
 import { User } from "@/lib/routes/profiles/interfaces/user.interface";
-import {
-  GetProfileResponse
-} from "@/lib/routes/profiles/response/get-profile.response";
+// GetProfileResponse supprimé car non utilisé
 export class MatchRouter {
   // Get all matches
   public static readonly getMatches = createFetcher<User[]>(

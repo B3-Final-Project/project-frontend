@@ -4,10 +4,11 @@ import { Message } from '../lib/routes/messages/interfaces/message.interface';
 
 interface NotificationMessage {
   id: string;
-  content: string;
-  sender: string;
-  conversationId: string;
+  title: string;
+  body: string;
   timestamp: Date;
+  conversationId: string;
+  senderName: string;
 }
 
 interface UnreadNotification {
@@ -19,137 +20,96 @@ interface UnreadNotification {
 export const useMessageNotifications = () => {
   const [notifications, setNotifications] = useState<NotificationMessage[]>([]);
   const [unreadNotifications, setUnreadNotifications] = useState<UnreadNotification[]>([]);
-  const { socket, isConnected } = useMessagesSocket();
+  const { isConnected } = useMessagesSocket();
+
+  // Fonction pour envoyer une notification push
+  const sendPushNotification = useCallback((notification: NotificationMessage) => {
+    if ('Notification' in window && Notification.permission === 'granted') {
+      new Notification(notification.title, {
+        body: notification.body,
+        icon: '/favicon.ico',
+        tag: notification.conversationId,
+      });
+    }
+  }, []);
 
   // Fonction pour ajouter une notification
   const addNotification = useCallback((message: Message, senderName: string) => {
     const notification: NotificationMessage = {
-      id: message.id,
-      content: message.content,
-      sender: senderName,
+      id: message.id ?? `notification-${Date.now()}`,
+      title: `Nouveau message de ${senderName}`,
+      body: message.content,
+      timestamp: new Date(),
       conversationId: message.conversationId,
-      timestamp: message.timestamp,
+      senderName,
     };
 
-    setNotifications(prev => [...prev, notification]);
-    
+    setNotifications(prev => [notification, ...prev.slice(0, 9)]); // Garder max 10 notifications
+
     // Envoyer une notification push si autorisé
     sendPushNotification(notification);
-  }, []);
+  }, [sendPushNotification]);
 
   // Fonction pour ajouter une notification de message non lu
-  const addUnreadNotification = useCallback((data: UnreadNotification) => {
+  const addUnreadNotification = useCallback((conversationId: string, messageCount: number = 1) => {
     setUnreadNotifications(prev => {
-      const existing = prev.find(n => n.conversationId === data.conversationId);
+      const existing = prev.find(n => n.conversationId === conversationId);
       if (existing) {
-        // Mettre à jour le compteur
         return prev.map(n => 
-          n.conversationId === data.conversationId 
-            ? { ...n, messageCount: n.messageCount + data.messageCount, timestamp: data.timestamp }
+          n.conversationId === conversationId 
+            ? { ...n, messageCount: n.messageCount + messageCount }
             : n
         );
-      } else {
-        // Ajouter une nouvelle notification
-        return [...prev, data];
       }
+      return [...prev, { conversationId, messageCount, timestamp: new Date() }];
     });
   }, []);
 
-  // Fonction pour supprimer une notification
-  const removeNotification = useCallback((messageId: string) => {
-    setNotifications(prev => prev.filter(n => n.id !== messageId));
-  }, []);
-
-  // Fonction pour supprimer toutes les notifications d'une conversation
+  // Fonction pour supprimer les notifications d'une conversation
   const removeConversationNotifications = useCallback((conversationId: string) => {
     setNotifications(prev => prev.filter(n => n.conversationId !== conversationId));
     setUnreadNotifications(prev => prev.filter(n => n.conversationId !== conversationId));
   }, []);
 
-  // Écouter les nouveaux messages pour créer des notifications
-  useEffect(() => {
-    if (!socket || !isConnected) return;
+  // Fonction pour demander la permission de notification
+  const requestNotificationPermission = useCallback(async (): Promise<boolean> => {
+    if (!('Notification' in window)) {
+      console.warn('Notifications non supportées par ce navigateur');
+      return false;
+    }
 
-    const handleNewMessage = (message: Message) => {
-      // Ne pas créer de notification si le message est de l'utilisateur actuel
-      if (message.isMe) return;
+    if (Notification.permission === 'granted') {
+      return true;
+    }
 
-      // Vérifier si la page est visible (pour ne pas notifier si l'utilisateur est sur la page)
-      if (document.visibilityState === 'visible') {
-        // Vérifier si l'utilisateur est sur la page des messages
-        const isOnMessagesPage = window.location.pathname.startsWith('/messages');
-        if (isOnMessagesPage) return;
-      }
+    if (Notification.permission === 'denied') {
+      console.warn('Permission de notification refusée');
+      return false;
+    }
 
-      // Créer une notification
-      // Note: Il faudrait récupérer le nom de l'expéditeur depuis les données de conversation
-      addNotification(message, 'Utilisateur');
-    };
-
-    const handleUnreadMessage = (data: UnreadNotification) => {
-      console.log('🔔 Notification de message non lu reçue dans useMessageNotifications:', data);
-      
-      // Vérifier si l'utilisateur n'est pas sur la page des messages
-      const isOnMessagesPage = window.location.pathname.startsWith('/messages');
-      console.log('📍 Utilisateur sur la page des messages:', isOnMessagesPage);
-      
-      if (!isOnMessagesPage) {
-        console.log('✅ Ajout de la notification (utilisateur pas sur la page messages)');
-        addUnreadNotification(data);
-        
-        // Envoyer une notification push
-        if ('Notification' in window && Notification.permission === 'granted') {
-          console.log('📱 Envoi de notification push');
-          new Notification('Nouveau message', {
-            body: `Vous avez ${data.messageCount} nouveau(x) message(s)`,
-            icon: '/logo.svg',
-            tag: data.conversationId,
-          });
-        } else {
-          console.log('⚠️ Notifications push non autorisées ou non supportées');
-        }
-      } else {
-        console.log('⏭️ Notification ignorée (utilisateur sur la page messages)');
-      }
-    };
-
-    socket.on('newMessage', handleNewMessage);
-    socket.on('unreadMessage', handleUnreadMessage);
-
-    return () => {
-      socket.off('newMessage', handleNewMessage);
-      socket.off('unreadMessage', handleUnreadMessage);
-    };
-  }, [socket, isConnected, addNotification, addUnreadNotification]);
-
-  // Demander la permission pour les notifications push
-  const requestNotificationPermission = useCallback(async () => {
-    if ('Notification' in window) {
+    try {
       const permission = await Notification.requestPermission();
       return permission === 'granted';
+    } catch (error) {
+      console.error('Erreur lors de la demande de permission:', error);
+      return false;
     }
-    return false;
   }, []);
 
-  // Envoyer une notification push native
-  const sendPushNotification = useCallback((message: NotificationMessage) => {
-    if ('Notification' in window && Notification.permission === 'granted') {
-      new Notification(`Nouveau message de ${message.sender}`, {
-        body: message.content,
-        icon: '/logo.svg', // Remplacer par le chemin de votre icône
-        tag: message.conversationId, // Pour éviter les doublons
-      });
-    }
-  }, []);
+  // Effet pour écouter les nouveaux messages via WebSocket
+  useEffect(() => {
+    if (!isConnected) return;
+
+    // Les listeners WebSocket sont gérés dans useMessagesSocket
+    // Ici on peut ajouter des listeners spécifiques aux notifications si nécessaire
+  }, [isConnected]);
 
   return {
     notifications,
     unreadNotifications,
     addNotification,
     addUnreadNotification,
-    removeNotification,
     removeConversationNotifications,
     requestNotificationPermission,
-    sendPushNotification,
   };
 }; 

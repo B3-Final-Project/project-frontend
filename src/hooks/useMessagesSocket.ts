@@ -4,17 +4,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { useToast } from './use-toast';
 import { Message, Conversation } from '../lib/routes/messages/interfaces/message.interface';
 
-interface TypingUser {
-  userId: string;
-  conversationId: string;
-  isTyping: boolean;
-}
-
-interface OnlineUser {
-  userId: string;
-  isOnline: boolean;
-  lastSeen?: Date;
-}
+// Interfaces supprimées car non utilisées
 
 // Set global pour tracker les messages déjà traités
 const processedMessages = new Set<string>();
@@ -34,7 +24,7 @@ const getCurrentUserIdFromToken = (): string | null => {
 };
 
 // Fonctions utilitaires pour les mises à jour des données
-const createUpdateMessagesData = (queryClient: any) => {
+const createUpdateMessagesData = (queryClient: ReturnType<typeof useQueryClient>) => {
   return (conversationId: string, correctedMessage: Message) => {
     queryClient.setQueryData(['messages', conversationId], (oldData: Message[] | undefined) => {
       if (!oldData) return [correctedMessage];
@@ -50,7 +40,7 @@ const createUpdateMessagesData = (queryClient: any) => {
   };
 };
 
-const createUpdateConversationsData = (queryClient: any) => {
+const createUpdateConversationsData = (queryClient: ReturnType<typeof useQueryClient>) => {
   return (conversationId: string, correctedMessage: Message, isMe: boolean) => {
     queryClient.setQueryData(['conversations'], (oldData: Conversation[] | undefined) => {
       if (!oldData) return [];
@@ -70,7 +60,7 @@ const createUpdateConversationsData = (queryClient: any) => {
   };
 };
 
-const createUpdateConversationsForRead = (queryClient: any) => {
+const createUpdateConversationsForRead = (queryClient: ReturnType<typeof useQueryClient>) => {
   return (conversationId: string) => {
     queryClient.setQueryData(['conversations'], (oldData: Conversation[] | undefined) => {
       if (!oldData) return [];
@@ -88,7 +78,7 @@ const createUpdateConversationsForRead = (queryClient: any) => {
   };
 };
 
-const createUpdateMessagesForRead = (queryClient: any) => {
+const createUpdateMessagesForRead = (queryClient: ReturnType<typeof useQueryClient>) => {
   return (conversationId: string) => {
     queryClient.setQueryData(['messages', conversationId], (oldData: Message[] | undefined) => {
       if (!oldData) return [];
@@ -101,7 +91,7 @@ const createUpdateMessagesForRead = (queryClient: any) => {
   };
 };
 
-const createUpdateConversationsForUnread = (queryClient: any) => {
+const createUpdateConversationsForUnread = (queryClient: ReturnType<typeof useQueryClient>) => {
   return (conversationId: string, messageCount: number) => {
     queryClient.setQueryData(['conversations'], (oldData: Conversation[] | undefined) => {
       if (!oldData) return [];
@@ -120,7 +110,7 @@ const createUpdateConversationsForUnread = (queryClient: any) => {
   };
 };
 
-const createRemoveConversation = (queryClient: any) => {
+const createRemoveConversation = (queryClient: ReturnType<typeof useQueryClient>) => {
   return (conversationId: string) => {
     queryClient.setQueryData(['conversations'], (oldData: Conversation[] | undefined) => {
       if (!oldData) return [];
@@ -152,7 +142,7 @@ const handleProcessedMessage = (messageId: string | undefined) => {
 };
 
 // Création des handlers
-const createMessageHandlers = (queryClient: any, toast: any) => {
+const createMessageHandlers = (queryClient: ReturnType<typeof useQueryClient>, toast: (props: { title: string; description?: string; variant?: "default" | "destructive" | null | undefined }) => void) => {
   const updateMessagesData = createUpdateMessagesData(queryClient);
   const updateConversationsData = createUpdateConversationsData(queryClient);
   const updateConversationsForRead = createUpdateConversationsForRead(queryClient);
@@ -237,7 +227,6 @@ const createMessageHandlers = (queryClient: any, toast: any) => {
     },
 
     handleOnlineUsers: (data: { users: string[] }) => {
-      console.log('📋 Liste des utilisateurs en ligne reçue:', data.users);
       const uniqueUsers = Array.from(new Set(data.users));
       return new Set(uniqueUsers);
     },
@@ -277,7 +266,7 @@ export const useMessagesSocket = () => {
   const [onlineUsers, setOnlineUsers] = useState<Set<string>>(new Set());
   const [currentConversationId, setCurrentConversationId] = useState<string | null>(null);
   const listenersInitialized = useRef(false);
-  const handlersRef = useRef<any>(null);
+  const handlersRef = useRef<ReturnType<typeof createMessageHandlers> | null>(null);
 
   // Fonction pour envoyer un message via socket
   const sendMessage = useCallback((messageData: {
@@ -407,7 +396,7 @@ export const useMessagesSocket = () => {
       listenersInitialized.current = false;
       handlersRef.current = null;
     };
-  }, [socket, queryClient, toast]);
+  }, [socket]);
 
   // Effet pour réinitialiser le flag quand le socket change
   useEffect(() => {
@@ -474,14 +463,14 @@ export const useMessagesSocket = () => {
       console.log('🔍 Récupération du statut des utilisateurs en ligne...');
       getOnlineUsers();
     }
-  }, [isConnected, getOnlineUsers]);
+  }, [isConnected]);
 
   // Effet pour obtenir les utilisateurs en ligne quand on rejoint une conversation
   useEffect(() => {
     if (isConnected && currentConversationId) {
       getOnlineUsers();
     }
-  }, [isConnected, currentConversationId, getOnlineUsers]);
+  }, [isConnected, currentConversationId]);
 
   return {
     // État

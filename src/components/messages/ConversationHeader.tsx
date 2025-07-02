@@ -2,6 +2,7 @@
 
 import { IoChevronBack, IoMenu } from 'react-icons/io5';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 
 interface ConversationHeaderProps {
     readonly name: string;
@@ -44,10 +45,12 @@ export default function ConversationHeader({
                             </>
                         )}
                         <div className="flex-shrink-0">
-                            <img
+                            <Image
                                 src={avatar}
                                 alt={name}
-                                className="w-8 h-8 md:w-10 md:h-10 rounded-full"
+                                width={40}
+                                height={40}
+                                className="w-10 h-10 rounded-full object-cover border-2"
                             />
                         </div>
                         <div className="min-w-0">

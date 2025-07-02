@@ -2,6 +2,7 @@
 
 import { Conversation } from '../../lib/routes/messages/interfaces/message.interface';
 import { OnlineStatus } from './OnlineStatus';
+import Image from 'next/image';
 
 interface ConversationItemProps {
   readonly conversation: Conversation;
@@ -19,7 +20,6 @@ export default function ConversationItem({
   isExpanded,
   onClick,
   isOnline = false,
-  lastSeen,
   unreadCount = 0
 }: ConversationItemProps) {
   // Obtenir le texte du dernier message
@@ -66,15 +66,12 @@ export default function ConversationItem({
         ${!isExpanded ? 'justify-center' : ''}
       `}>
         <div className="relative flex-shrink-0">
-          <img
+          <Image
             src={conversation.avatar || '/img.png'}
             alt={conversation.name}
-            className={`
-              rounded-full
-              w-10 h-10 sm:w-12 sm:h-12
-              object-cover
-              border-2 ${isOnline ? 'border-green-500' : 'border-gray-300'}
-            `}
+            width={48}
+            height={48}
+            className={`rounded-full w-10 h-10 sm:w-12 sm:h-12 object-cover border-2 ${isOnline ? 'border-green-500' : 'border-gray-300'}`}
           />
           <div className="absolute -bottom-1 -right-1">
             <OnlineStatus isOnline={isOnline} size="sm" />
@@ -101,7 +98,7 @@ export default function ConversationItem({
                 <div className="text-xs sm:text-sm">
                   {conversation.isTyping ? (
                     <div className="flex items-center text-blue-500">
-                      <span className="animate-pulse">En train d'écrire</span>
+                      <span className="animate-pulse">En train d&apos;écrire</span>
                       <span className="ml-1 animate-bounce delay-0">.</span>
                       <span className="animate-bounce delay-150">.</span>
                       <span className="animate-bounce delay-300">.</span>

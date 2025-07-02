@@ -12,7 +12,7 @@ export function MessagesClientWrapper({ children }: MessagesClientWrapperProps) 
   const {user} = useAuth();
 
   return (
-    <SocketProvider token={user?.access_token ?? ''}>w
+    <SocketProvider token={user?.access_token ?? ''}>
       {children}
     </SocketProvider>
   );

@@ -50,7 +50,7 @@ export const ConnectionStatus: React.FC = () => {
         
         {typingUsers.size > 0 && (
           <div className="text-gray-600">
-            <p className="font-medium">Utilisateurs en train d'écrire:</p>
+            <p className="font-medium">Utilisateurs en train d&apos;écrire:</p>
             <ul className="ml-2 text-xs">
               {Array.from(typingUsers.entries()).map(([conversationId, users]) => (
                 <li key={conversationId}>

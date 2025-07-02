@@ -30,7 +30,10 @@ export default function MessageBubble({ message, isLastMessage = false }: Messag
                     <p className={`text-[10px] md:text-xs ${
                         message.isMe ? 'text-blue-100' : 'text-gray-500'
                     }`}>
-                        {message.timestamp}
+                        {new Date(message.timestamp).toLocaleTimeString('fr-FR', {
+                            hour: '2-digit',
+                            minute: '2-digit'
+                        })}
                     </p>
                     {message.isMe && (
                         <IoCheckmarkDone 

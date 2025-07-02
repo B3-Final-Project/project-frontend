@@ -21,8 +21,6 @@ export const MessageList: React.FC<MessageListProps> = ({
     typing,
     unreadCount,
     firstUnreadIndex,
-    lastReadConversationId,
-    currentConversationId,
     otherName,
     onMarkAsRead
 }) => {
@@ -69,7 +67,7 @@ export const MessageList: React.FC<MessageListProps> = ({
                 }
                 
                 const showDateSeparator = index > 0 && 
-                    messages[index - 1].timestamp.split(' ')[0] !== message.timestamp.split(' ')[0];
+                    messages[index - 1].timestamp.toDateString() !== message.timestamp.toDateString();
 
                 return (
                     <div key={message.id}>
@@ -80,7 +78,7 @@ export const MessageList: React.FC<MessageListProps> = ({
                             />
                         )}
                         {showDateSeparator && (
-                            <DateSeparator date={message.timestamp.split(' ')[0]} />
+                            <DateSeparator date={message.timestamp.toDateString()} />
                         )}
                         <MessageItem message={message} />
                     </div>
