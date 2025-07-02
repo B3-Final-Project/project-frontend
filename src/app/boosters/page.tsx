@@ -60,7 +60,7 @@ const BoosterVerificationPage = () => {
           {new Date(countdown).toISOString().substring(11, 19)}
         </p>
         <p className="text-base sm:text-lg text-slate-500">
-          Vous serez redirigé automatiquement.
+          You will be redirected automatically.
         </p>
       </div>
     );

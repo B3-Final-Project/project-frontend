@@ -19,7 +19,7 @@ export default function RejectAnimation({
       exit={{ y: -50, opacity: 0 }}
     >
       <span className="text-primary-foreground text-sm sm:text-base font-medium">
-        Profil passé
+        Profile skipped
       </span>
     </motion.div>
   );

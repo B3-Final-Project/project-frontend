@@ -81,7 +81,7 @@ export default function ProfileCard({
                 }}
                 className="mt-2 px-3 py-1 bg-white/20 backdrop-blur-md rounded-full text-primary-foreground text-xs hover:bg-white/30 transition-colors"
               >
-                Voir plus de détails
+                See more details
               </button>
             </div>
           </div>

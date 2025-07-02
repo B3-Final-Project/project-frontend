@@ -54,7 +54,7 @@ export function UserCardModal({
   const flipToFront = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    console.log("flipToFront appelé!", new Date().toISOString());
+    console.log("flipToFront called!", new Date().toISOString());
     setIsFlipped(false);
     if (isReportModalOpen) return;
     setIsFlipped((f) => !f);
@@ -156,7 +156,7 @@ export function UserCardModal({
                 }}
               >
                 <div className="w-full h-full rounded-lg overflow-hidden relative">
-                  {/* Swiper pour le slider d'images */}
+                  {/* Swiper for image slider */}
                   <Swiper
                     pagination={{
                       clickable: true,
@@ -167,7 +167,7 @@ export function UserCardModal({
                     modules={[Pagination]}
                     className="w-full h-full relative z-10"
                     // Swiper configuration
-                    // Nous n'avons pas besoin de suivre l'index d'image actuellement
+                    // We don't need to track the current image index
                   >
                     {imageList.map((image, index) => (
                       <SwiperSlide

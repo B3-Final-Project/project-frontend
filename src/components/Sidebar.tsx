@@ -36,9 +36,9 @@ export function SidebarComponent() {
                   className={`flex flex-col items-center justify-center mb-1`}
                 >
                   <IconComponent size={24} />
+                  <p className={`text-xs font-medium ${isActive(item.url) ? 'text-primary' : 'text-muted-foreground'}`}>{item.title}</p>
                 </Link>
 
-                <p className={`text-xs font-medium ${isActive(item.url) ? 'text-primary' : 'text-muted-foreground'}`}>{item.title}</p>
               </div>
             )
           })
