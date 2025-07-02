@@ -2,18 +2,18 @@
 
 import { ReactNode } from "react";
 import { SocketProvider } from "../../providers/SocketProvider";
-import { useAuthToken } from "@/hooks/useAuthToken";
+import { useAuth } from "react-oidc-context";
 
 interface MessagesClientWrapperProps {
   readonly children: ReactNode;
 }
 
 export function MessagesClientWrapper({ children }: MessagesClientWrapperProps) {
-  const token = useAuthToken();
+  const {user} = useAuth();
 
   return (
-    <SocketProvider token={token ?? ''}>
+    <SocketProvider token={user?.access_token ?? ''}>w
       {children}
     </SocketProvider>
   );
-} 
+}

@@ -1,12 +1,13 @@
 'use client';
 
-import React, { useState } from 'react';
-import { IoAdd, IoClose, IoSearch } from 'react-icons/io5';
-import { useMessagesSocket } from '../../hooks/useMessagesSocket';
-import { useCreateConversation } from '../../hooks/react-query/messages';
-import { useMatches, useAllUsersAsMatches } from '../../hooks/react-query/match';
-import { useCurrentUserId } from '../../hooks/useAuthToken';
-import { User } from '../../lib/routes/profiles/interfaces/user.interface';
+import { IoAdd, IoClose, IoSearch } from "react-icons/io5";
+import React, { useState } from "react";
+
+import { User } from "@/lib/routes/profiles/interfaces/user.interface";
+import { useAuth } from "react-oidc-context";
+import { useCreateConversation } from "@/hooks/react-query/messages";
+import { useMatchesQuery } from "@/hooks/react-query/matches";
+import { useMessagesSocket } from "@/hooks/useMessagesSocket";
 
 interface CreateConversationButtonProps {
   readonly onConversationCreated?: (conversationId: string) => void;
@@ -18,50 +19,36 @@ export const CreateConversationButton: React.FC<CreateConversationButtonProps> =
   const [isOpen, setIsOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
-  
+  const { user: authUser } = useAuth()
+
   const { createConversation } = useMessagesSocket();
   const createConversationMutation = useCreateConversation();
-  
-  // Essayer d'abord l'API matches, puis fallback sur tous les profils
-  const { data: matches, isLoading: matchesLoading } = useMatches();
-  const { data: allProfiles, isLoading: profilesLoading } = useAllUsersAsMatches();
-  
-  const currentUserId = useCurrentUserId();
 
-  // Fonction pour extraire un tableau d'un objet ou d'un tableau
-  const extractArrayFromData = (data: any): any[] => {
-    if (Array.isArray(data)) {
-      return data;
-    }
-    if (data && typeof data === 'object') {
-      // Chercher une propriété qui contient un tableau
-      const arrayProps = Object.values(data).filter(val => Array.isArray(val));
-      if (arrayProps.length > 0) {
-        return arrayProps[0];
-      }
-    }
-    return [];
-  };
+  // Query for matches only
+  const { data: matches, isLoading: matchesLoading } = useMatchesQuery();
 
-  // Utiliser les matches si disponibles et non vides, sinon tous les profils
-  const matchesArray = extractArrayFromData(matches);
-  const allProfilesArray = extractArrayFromData(allProfiles);
-  
-  // Utiliser matches si non vide, sinon fallback sur allProfiles
-  const availableUsers = matchesArray.length > 0 ? matchesArray : allProfilesArray;
-  
-  const isLoading = matchesLoading ?? profilesLoading;
+  const isLoading = matchesLoading;
 
-  // Filtrer les utilisateurs basés sur la recherche et exclure l'utilisateur actuel
-  // S'assurer que availableUsers est bien un tableau avant d'appeler filter
-  const filteredUsers = Array.isArray(availableUsers) ? availableUsers.filter((user: User) => {
-    const fullName = `${user.name} ${user.surname}`.toLowerCase();
-    const matchesSearch = fullName.includes(searchTerm.toLowerCase()) ||
-                         user.location?.toLowerCase().includes(searchTerm.toLowerCase());
-    const isNotCurrentUser = user.id !== currentUserId;
-    
-    return matchesSearch && isNotCurrentUser;
-  }) : [];
+  // Filter users based on search term and exclude current user
+  const filteredUsers = React.useMemo(() => {
+    if (!Array.isArray(matches)) return [];
+
+    return matches.filter((user: User) => {
+      // Handle search matching
+      const fullName = `${user.name} ${user.surname ?? ''}`.toLowerCase().trim();
+      const location = user.location?.toLowerCase() ?? '';
+
+      const matchesSearch = !searchTerm ||
+        fullName.includes(searchTerm.toLowerCase()) ||
+        location.includes(searchTerm.toLowerCase());
+
+      // Exclude current user
+      const isNotCurrentUser = user.id !== authUser?.profile?.sub &&
+                              user.id !== authUser?.profile?.sub;
+
+      return matchesSearch && isNotCurrentUser;
+    });
+  }, [matches, searchTerm, authUser?.profile?.sub]);
 
   const handleCreateConversation = async () => {
     if (!selectedUserId) return;
@@ -69,14 +56,14 @@ export const CreateConversationButton: React.FC<CreateConversationButtonProps> =
     try {
       // Créer la conversation via socket
       createConversation({ user2_id: selectedUserId });
-      
+
       // Créer aussi via API pour avoir l'ID de la conversation
       const conversation = await createConversationMutation.mutateAsync({ user2_id: selectedUserId });
-      
+
       if (conversation && onConversationCreated) {
         onConversationCreated(conversation.id);
       }
-      
+
       // Fermer le modal
       setIsOpen(false);
       setSelectedUserId(null);
@@ -198,4 +185,4 @@ export const CreateConversationButton: React.FC<CreateConversationButtonProps> =
       )}
     </>
   );
-}; 
+};
