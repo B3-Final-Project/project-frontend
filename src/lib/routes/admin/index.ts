@@ -1,5 +1,7 @@
+import { ReportResponseDto, ReportsListResponseDto } from "./dto/reports.dto";
+import { createFetcher, createPaginatedFetcher } from "@/lib/utils";
+
 import { RESTServerRoute } from "@/lib/routes/server";
-import { createFetcher } from "@/lib/utils";
 import { ReportDto } from "./dto/report.dto";
 
 export interface AdminActionResponse {
@@ -25,4 +27,22 @@ export class AdminRouter {
     AdminActionResponse,
     ReportDto
   >(RESTServerRoute.REST_USER_REPORTS, "POST");
+
+  // Get all reports with pagination and filtering
+  public static readonly getReports = createPaginatedFetcher<ReportsListResponseDto>(
+    RESTServerRoute.REST_USER_REPORTS,
+    "GET",
+  );
+
+  // Get a specific report by ID
+  public static readonly getReport = createFetcher<ReportResponseDto>(
+    RESTServerRoute.REST_USER_REPORT,
+    "GET",
+  );
+
+  // Delete a report by ID
+  public static readonly deleteReport = createFetcher<AdminActionResponse>(
+    RESTServerRoute.REST_USER_REPORT,
+    "DELETE",
+  );
 }
