@@ -1,5 +1,5 @@
 import { ReactNode } from "react";
-import { MessagesClientWrapper } from "./MessagesClientWrapper";
+import { MessagesClientWrapper } from "../../providers/MessagesClientWrapper";
 import { NotificationsContainer } from "../../components/messages/NotificationsContainer";
 import { ConnectionStatus } from "../../components/messages/ConnectionStatus";
 

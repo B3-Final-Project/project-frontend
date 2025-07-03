@@ -28,10 +28,12 @@ export function SocketProvider({ children, token }: SocketProviderProps) {
       return;
     }
 
-    // Log seulement si on n'a pas déjà une connexion
-    if (!socket) {
-      console.log('🔌 Tentative de connexion WebSocket avec token:', token.substring(0, 20) + '...');
+    // Éviter de recréer la connexion si on a déjà un socket connecté
+    if (socket && socket.connected) {
+      return;
     }
+
+    console.log('🔌 Tentative de connexion WebSocket avec token:', token.substring(0, 20) + '...');
 
     const socketInstance = io(`${process.env.NEXT_PUBLIC_WS_URL ?? 'http://localhost:8080/api'}/ws/messages`, {
       auth: { token },
@@ -64,7 +66,7 @@ export function SocketProvider({ children, token }: SocketProviderProps) {
       console.log('🔌 Déconnexion WebSocket');
       socketInstance.disconnect();
     };
-  }, [token]);
+  }, [token]); // Retirer socket des dépendances pour éviter la boucle infinie
 
   const contextValue = useMemo(() => ({
     socket,

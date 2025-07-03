@@ -1,40 +1,37 @@
-import { authenticatedAxios } from '../../auth-axios';
+import { createFetcher } from "@/lib/utils";
+import { RESTServerRoute } from "@/lib/routes/server";
+import { Message, Conversation } from './interfaces/message.interface';
 import { CreateMessageDto } from './dto/create-message.dto';
 import { CreateConversationDto } from './dto/create-conversation.dto';
-import { Message, Conversation } from './interfaces/message.interface';
 
-export const messagesApi = {
-  // Récupérer toutes les conversations
-  getConversations: async (): Promise<Conversation[]> => {
-    const response = await authenticatedAxios.get('/messages/conversations');
-    return response.data;
-  },
-
-  // Récupérer les messages d'une conversation
-  getMessages: async (conversationId: string): Promise<Message[]> => {
-    const response = await authenticatedAxios.get(`/messages/conversations/${conversationId}`);
-    return response.data;
-  },
-
-  // Créer une nouvelle conversation
-  createConversation: async (dto: CreateConversationDto): Promise<Conversation> => {
-    const response = await authenticatedAxios.post('/messages/conversations', dto);
-    return response.data;
-  },
-
-  // Envoyer un message
-  sendMessage: async (dto: CreateMessageDto): Promise<Message> => {
-    const response = await authenticatedAxios.post('/messages', dto);
-    return response.data;
-  },
-
-  // Marquer les messages comme lus
-  markMessagesAsRead: async (conversationId: string): Promise<void> => {
-    await authenticatedAxios.post(`/messages/conversations/${conversationId}/read`);
-  },
-
-  // Supprimer une conversation
-  deleteConversation: async (conversationId: string): Promise<void> => {
-    await authenticatedAxios.delete(`/messages/conversations/${conversationId}`);
-  },
-}; 
+export class MessageRouter {
+  public static readonly getConversations = createFetcher<Conversation[]>(
+    RESTServerRoute.REST_MESSAGES_CONVERSATIONS,
+    "GET"
+  );
+  
+  public static readonly getMessages = createFetcher<Message[]>(
+    RESTServerRoute.REST_MESSAGES_CONVERSATION,
+    "GET"
+  );
+  
+  public static readonly createConversation = createFetcher<
+    Conversation,
+    CreateConversationDto
+  >(RESTServerRoute.REST_MESSAGES_CONVERSATIONS, "POST");
+  
+  public static readonly sendMessage = createFetcher<
+    Message,
+    CreateMessageDto
+  >(RESTServerRoute.REST_MESSAGES, "POST");
+  
+  public static readonly markMessagesAsRead = createFetcher<void>(
+    RESTServerRoute.REST_MESSAGES_CONVERSATION_READ,
+    "POST"
+  );
+  
+  public static readonly deleteConversation = createFetcher<void>(
+    RESTServerRoute.REST_MESSAGES_CONVERSATION,
+    "DELETE"
+  );
+} 

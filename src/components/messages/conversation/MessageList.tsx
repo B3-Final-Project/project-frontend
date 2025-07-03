@@ -25,14 +25,6 @@ export const MessageList: React.FC<MessageListProps> = ({
     const messagesEndRef = useRef<HTMLDivElement>(null);
     const prevMessagesLengthRef = useRef<number>(0);
 
-    // Debug pour voir les valeurs
-    console.log('MessageList Debug:', {
-        unreadCount,
-        firstUnreadIndex,
-        messagesLength: messages.length,
-        hasUnreadMessages: messages.some(msg => !msg.isRead && !msg.isMe)
-    });
-
     // Auto-scroll vers le bas quand de nouveaux messages arrivent
     useLayoutEffect(() => {
         const shouldAutoScroll = messages.length > prevMessagesLengthRef.current;
@@ -52,17 +44,6 @@ export const MessageList: React.FC<MessageListProps> = ({
             {messages.map((message, index) => {
                 // Afficher la barre de messages non lus si il y en a et qu'on est au bon index
                 const showUnreadBar = unreadCount > 0 && index === firstUnreadIndex;
-                
-                // Debug pour chaque message
-                if (index === firstUnreadIndex) {
-                    console.log('Message at firstUnreadIndex:', {
-                        index,
-                        messageId: message.id,
-                        isRead: message.isRead,
-                        isMe: message.isMe,
-                        showUnreadBar
-                    });
-                }
                 
                 const showDateSeparator = index > 0 && 
                     messages[index - 1].timestamp.toDateString() !== message.timestamp.toDateString();

@@ -1,4 +1,4 @@
-'use client';
+
 
 import { IoSend, IoImage } from 'react-icons/io5';
 

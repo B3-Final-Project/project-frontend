@@ -38,4 +38,9 @@ export enum RESTServerRoute {
   REST_STATS_ENGAGEMENT = 'stats/engagement',
   REST_STATS_ACTIVITY = 'stats/activity',
   REST_STATS_COMPREHENSIVE = 'stats/comprehensive',
+  // MESSAGES ROUTES
+  REST_MESSAGES = 'messages',
+  REST_MESSAGES_CONVERSATIONS = 'messages/conversations',
+  REST_MESSAGES_CONVERSATION = 'messages/conversations/:id',
+  REST_MESSAGES_CONVERSATION_READ = 'messages/conversations/:id/read',
 }

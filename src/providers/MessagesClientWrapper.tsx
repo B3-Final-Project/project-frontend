@@ -1,7 +1,7 @@
 "use client";
 
 import { ReactNode } from "react";
-import { SocketProvider } from "../../providers/SocketProvider";
+import { SocketProvider } from "./SocketProvider";
 import { useAuth } from "react-oidc-context";
 
 interface MessagesClientWrapperProps {
@@ -16,4 +16,4 @@ export function MessagesClientWrapper({ children }: MessagesClientWrapperProps) 
       {children}
     </SocketProvider>
   );
-}
+} 

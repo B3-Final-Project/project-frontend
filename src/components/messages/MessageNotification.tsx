@@ -1,5 +1,8 @@
+'use client';
+
 import React, { useEffect, useState } from 'react';
 import { IoClose } from 'react-icons/io5';
+import { formatNotificationTimestamp } from '../../lib/utils/timestamp-utils';
 
 interface MessageNotificationProps {
   message: {
@@ -51,10 +54,7 @@ export const MessageNotification: React.FC<MessageNotificationProps> = ({
               {message.content}
             </p>
             <p className="text-xs text-gray-500 mt-2">
-              {new Date(message.timestamp).toLocaleTimeString('fr-FR', {
-                hour: '2-digit',
-                minute: '2-digit'
-              })}
+              {formatNotificationTimestamp(message.timestamp)}
             </p>
           </div>
           <button

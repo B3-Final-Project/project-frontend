@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
+import { NotificationPermission, NotificationAPI } from '../lib/utils/notification-utils';
 import { useMessagesSocket } from './useMessagesSocket';
 import { Message } from '../lib/routes/messages/interfaces/message.interface';
 
@@ -24,7 +25,7 @@ export const useMessageNotifications = () => {
 
   // Fonction pour envoyer une notification push
   const sendPushNotification = useCallback((notification: NotificationMessage) => {
-    if ('Notification' in window && Notification.permission === 'granted') {
+    if (NotificationAPI.NOTIFICATION in window && Notification.permission === NotificationPermission.GRANTED) {
       new Notification(notification.title, {
         body: notification.body,
         icon: '/favicon.ico',
@@ -73,23 +74,23 @@ export const useMessageNotifications = () => {
 
   // Fonction pour demander la permission de notification
   const requestNotificationPermission = useCallback(async (): Promise<boolean> => {
-    if (!('Notification' in window)) {
+    if (!(NotificationAPI.NOTIFICATION in window)) {
       console.warn('Notifications non supportées par ce navigateur');
       return false;
     }
 
-    if (Notification.permission === 'granted') {
+    if (Notification.permission === NotificationPermission.GRANTED) {
       return true;
     }
 
-    if (Notification.permission === 'denied') {
+    if (Notification.permission === NotificationPermission.DENIED) {
       console.warn('Permission de notification refusée');
       return false;
     }
 
     try {
       const permission = await Notification.requestPermission();
-      return permission === 'granted';
+      return permission === NotificationPermission.GRANTED;
     } catch (error) {
       console.error('Erreur lors de la demande de permission:', error);
       return false;
