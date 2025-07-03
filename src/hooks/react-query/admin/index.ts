@@ -45,8 +45,6 @@ export function useReportsQuery(
       return allPages.length * limit;
     },
     initialPageParam: 0,
-    staleTime: 30000, // 30 seconds
-    retry: 2,
   });
 }
 
