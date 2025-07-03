@@ -179,7 +179,7 @@ const createMessageHandlers = (queryClient: ReturnType<typeof useQueryClient>, t
         // Récupérer le nom de l'expéditeur à partir de la conversation
         const conversations = queryClient.getQueryData(['conversations']) as Conversation[] | undefined;
         const conversation = conversations?.find(conv => conv.id === message.conversationId);
-        const senderName = conversation?.name || 'Quelqu\'un';
+        const senderName = conversation?.name ?? 'Quelqu\'un';
         
         toast({
           title: `Nouveau message de ${senderName}`,
