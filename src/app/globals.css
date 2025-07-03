@@ -102,5 +102,26 @@
   .rotate-y-180 {
     transform: rotateY(180deg);
   }
+
+  /* Effet de brillance diagonale (shimmer) */
+  .shimmer-effect {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 250%;
+    height: 100%;
+    background: linear-gradient(135deg, transparent 0%, transparent 40%, rgba(255,255,255,0.4) 50%, transparent 60%, transparent 100%);
+    transform: translateX(-75%);
+    background-size: 100% 100%;
+    animation: shimmer 2.5s linear infinite;
+    z-index: 5;
+    pointer-events: none;
+    overflow: hidden;
+    border-radius: inherit;
+  }
   
+  @keyframes shimmer {
+    0% { transform: translateX(-75%) translateY(-100%); }
+    100% { transform: translateX(25%) translateY(100%); }
+  }
 }

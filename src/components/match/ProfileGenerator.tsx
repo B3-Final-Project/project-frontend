@@ -2,6 +2,7 @@ import { useGetBooster } from "@/hooks/react-query/boosters";
 import {
   ProfileCardType
 } from "@/lib/routes/profiles/dto/profile-card-type.dto";
+import { RelationshipTypeEnum } from "@/lib/routes/profiles/enums";
 import { mapBoosterToProfileCardType } from "@/lib/utils/card-utils";
 import React, { useEffect } from "react";
 
@@ -9,7 +10,7 @@ interface ProfileGeneratorProps {
   count: number;
   onProfilesLoaded: (boosters: ProfileCardType[]) => void;
   onError: (err: Error) => void;
-  boosterType?: string | null;
+  boosterType?: RelationshipTypeEnum | null;
 }
 
 const ProfileGenerator: React.FC<ProfileGeneratorProps> = ({
@@ -18,7 +19,7 @@ const ProfileGenerator: React.FC<ProfileGeneratorProps> = ({
   onError,
   boosterType,
 }) => {
-  const { data: boosterData, isError, error, mutate } = useGetBooster(count, boosterType);
+  const { data: boosterData, isError, error, mutate } = useGetBooster(count, boosterType ? String(boosterType) : null);
 
   useEffect(() => {
     mutate();
