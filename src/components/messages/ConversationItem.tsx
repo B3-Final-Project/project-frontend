@@ -30,14 +30,6 @@ export default function ConversationItem({
     return "Aucun message";
   };
 
-  // Obtenir le timestamp formaté
-  const getFormattedTimestamp = () => {
-    const timestamp = conversation.lastMessage?.timestamp || conversation.lastActive;
-    if (!timestamp) return "";
-    
-    return formatMessageTimestamp(timestamp);
-  };
-
   // Obtenir le nombre total de messages non lus
   const totalUnread = (conversation.unread || 0) + unreadCount;
 
@@ -104,7 +96,7 @@ export default function ConversationItem({
                 </div>
               </div>
               <div className="text-xs text-gray-500 text-right flex-shrink-0 ml-2 self-start">
-                <p className="text-xs">{getFormattedTimestamp()}</p>
+                <p className="text-xs">{formatMessageTimestamp(conversation.lastMessage?.timestamp || conversation.lastActive)}</p>
                 {totalUnread > 0 && (
                   <div className="mt-1">
                     <span className="inline-block w-2 h-2 bg-blue-500 rounded-full"></span>
