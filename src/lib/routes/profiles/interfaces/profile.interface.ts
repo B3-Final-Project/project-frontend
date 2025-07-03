@@ -9,6 +9,7 @@ import {
 } from "@/lib/routes/profiles/enums";
 
 import { Interest } from "@/lib/routes/profiles/interfaces/interest.interface";
+import { User } from "@/lib/routes/profiles/interfaces/user.interface";
 
 export interface Profile {
   id: number;
@@ -26,6 +27,7 @@ export interface Profile {
   religion?: ReligionEnum;
   politics?: PoliticsEnum;
   zodiac?: ZodiacEnum;
+  userProfile: User;
   interests?: Interest[];
   created_at: Date;
   updated_at: Date;

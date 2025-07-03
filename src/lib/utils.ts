@@ -45,8 +45,8 @@ export const createPaginatedFetcher = <T = unknown>(
       params: queryParams,
     };
 
-    const response = await authenticatedAxios<T>(config);
-    return response.data;
+    const response = await authenticatedAxios<{data: T}>(config);
+    return response.data.data;
   };
 };
 

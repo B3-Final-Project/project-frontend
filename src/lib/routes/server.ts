@@ -14,6 +14,7 @@ export enum RESTServerRoute {
   REST_USERS = 'users',
   // REPORT ROUTES
   REST_USER_REPORTS = '/reports',
+  REST_USER_REPORT = '/reports/:reportId',
   // BOOSTER ROUTES
   REST_BOOSTER = 'booster',
   REST_TEN_BOOSTERS = 'booster/10',
