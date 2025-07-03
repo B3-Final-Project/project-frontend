@@ -111,7 +111,7 @@ export default function BoosterList() {
         effect={'cards'}
         grabCursor={true}
         modules={[EffectCards]}
-        className="h-[min(350px,60vh)] w-[min(250px,80vw)] p-2 mb-[75px]"
+        className="h-[min(420px,70vh)] w-[min(280px,85vw)] p-2 mb-[75px]"
       >
         {packs?.map((pack: BoosterPackDto) => (
           <SwiperSlide key={pack.id} className="rounded-xl overflow-hidden">
