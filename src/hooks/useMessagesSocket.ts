@@ -173,6 +173,20 @@ const createMessageHandlers = (queryClient: ReturnType<typeof useQueryClient>, t
       
       queryClient.invalidateQueries({ queryKey: ['messages', message.conversationId] });
       queryClient.invalidateQueries({ queryKey: ['conversations'] });
+
+      // Ajout du toast si ce n'est pas moi l'expéditeur
+      if (!isMe) {
+        // Récupérer le nom de l'expéditeur à partir de la conversation
+        const conversations = queryClient.getQueryData(['conversations']) as Conversation[] | undefined;
+        const conversation = conversations?.find(conv => conv.id === message.conversationId);
+        const senderName = conversation?.name || 'Quelqu\'un';
+        
+        toast({
+          title: `Nouveau message de ${senderName}`,
+          description: message.content?.slice(0, 80) || '',
+          variant: "default",
+        });
+      }
     },
 
     handleNewConversation: (conversation: Conversation) => {
@@ -182,6 +196,12 @@ const createMessageHandlers = (queryClient: ReturnType<typeof useQueryClient>, t
           return oldData;
         }
         return [conversation, ...oldData];
+      });
+      // Ajout du toast pour nouvelle conversation
+      toast({
+        title: `Nouvelle conversation`,
+        description: conversation.name ? `Avec ${conversation.name}` : undefined,
+        variant: "default",
       });
     },
 
