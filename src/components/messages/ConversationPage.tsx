@@ -82,33 +82,34 @@ export default function ConversationPage({ initialConversationId }: Conversation
                 leaveConversation(selectedConversation);
             }
         };
-    }, [selectedConversation, isConnected, joinConversation, leaveConversation, markAsRead, markAsReadMutation]);
+    }, [selectedConversation, isConnected]);
 
     // Effet pour obtenir les utilisateurs en ligne au chargement
     useEffect(() => {
         if (isConnected) {
             getOnlineUsers();
         }
-    }, [isConnected, getOnlineUsers]);
+    }, [isConnected]);
+
+    // Effet pour réinitialiser l'état de frappe quand on change de conversation
+    useEffect(() => {
+        isTypingRef.current = false;
+    }, [selectedConversation]);
 
     const handleSendMessage = async () => {
         if (!newMessage.trim() || !selectedConversation) return;
 
         const messageContent = newMessage.trim();
-        console.log('📤 Envoi de message:', { conversationId: selectedConversation, content: messageContent });
         
         setNewMessage(''); // Vider le champ immédiatement pour l'UX
         stopTyping(selectedConversation);
 
         try {
             // Envoyer le message via socket (le serveur gère la persistance)
-            console.log('🔌 Envoi via WebSocket...');
             sendMessage({
                 conversation_id: selectedConversation,
                 content: messageContent
             });
-            
-            console.log('✅ Message envoyé via WebSocket');
             
         } catch (error) {
             console.error('❌ Erreur lors de l&apos;envoi du message:', error);
@@ -135,8 +136,6 @@ export default function ConversationPage({ initialConversationId }: Conversation
         setIsDeleting(true);
         
         try {
-            console.log('🗑️ Suppression de la conversation:', selectedConversation);
-            
             // Envoyer la demande de suppression via WebSocket pour notifier l'autre utilisateur
             deleteConversation(selectedConversation);
             
@@ -157,7 +156,6 @@ export default function ConversationPage({ initialConversationId }: Conversation
                 }
             }
             
-            console.log('✅ Conversation supprimée avec succès');
             setShowDeleteConfirm(false);    
             
         } catch (error) {
@@ -199,6 +197,9 @@ export default function ConversationPage({ initialConversationId }: Conversation
         };
     }, [showDeleteConfirm, isDeleting]);
 
+    // Ref pour éviter les appels multiples de startTyping
+    const isTypingRef = useRef(false);
+
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const value = e.target.value;
         setNewMessage(value);
@@ -206,9 +207,13 @@ export default function ConversationPage({ initialConversationId }: Conversation
         // Gérer l'indicateur de frappe
         if (selectedConversation) {
             if (value.length > 0) {
+                // Toujours démarrer la frappe si on a du contenu
                 startTyping(selectedConversation);
+                isTypingRef.current = true;
             } else {
+                // Arrêter la frappe si le champ est vide
                 stopTyping(selectedConversation);
+                isTypingRef.current = false;
             }
         }
     };
@@ -221,26 +226,15 @@ export default function ConversationPage({ initialConversationId }: Conversation
         ? isUserOnline(selectedConversationData.otherUserId) 
         : false;
 
-    // Debug: afficher les informations de statut en ligne
-    console.log('🔍 Debug statut en ligne:', {
-        conversationId: selectedConversation,
-        otherUserId: selectedConversationData?.otherUserId,
-        isOtherUserOnline,
-        conversationName: selectedConversationData?.name
-    });
+    
 
     // Rediriger si la conversation affichée est supprimée par l'autre utilisateur
     useEffect(() => {
         if (!selectedConversation || !conversations) return;
         
-        console.log('🔍 Vérification conversation:', selectedConversation);
-        console.log('📋 Conversations disponibles:', conversations.map(c => c.id));
-        
         const conversationExists = conversations.some(c => c.id === selectedConversation);
-        console.log('🔍 Conversation existe:', conversationExists);
         
         if (!conversationExists) {
-            console.log('🚨 Conversation supprimée, redirection...');
             router.push('/messages');
         }
     }, [selectedConversation, conversations, router]);
@@ -296,7 +290,7 @@ export default function ConversationPage({ initialConversationId }: Conversation
                     className={`flex ${getMessageAlignment(message.isMe)}`}
                 >
                     <div className={getMessageClasses(message.isMe)}>
-                        <p className="text-[13px] md:text-[15px] leading-relaxed break-words">
+                        <p className="text-[13px] md:text-[15px] leading-relaxed break-words" style={{ color: message.isMe ? 'white' : 'black' }}>
                             {message.content}
                         </p>
                         <div className="flex items-center justify-end space-x-1 mt-1">
@@ -325,9 +319,9 @@ export default function ConversationPage({ initialConversationId }: Conversation
     const userStatus = selectedConversationData ? getUserStatus(isOtherUserOnline) : null;
 
     return (
-        <div className="flex flex-col md:h-full h-[calc(100vh-50px)] bg-white">
+        <div className="flex flex-col md:h-full h-[calc(100vh-50px)]">
             {/* Header avec bouton retour */}
-            <div className="flex items-center justify-between p-4 border-b border-gray-200">
+            <div className="flex items-center justify-between p-4 border-b border-gray-200 bg-white bg-opacity-50">
                 <div className="flex items-center gap-3">
                     <button 
                         onClick={() => router.push('/messages')}
@@ -383,7 +377,7 @@ export default function ConversationPage({ initialConversationId }: Conversation
                 {messagesContent}
             </div>
             {/* Barre de saisie */}
-            <div className="p-4 border-t border-gray-200">
+            <div className="p-4 border-t border-gray-200 bg-white bg-opacity-50">
                 <div className="flex gap-2">
                     <input 
                         type="text"

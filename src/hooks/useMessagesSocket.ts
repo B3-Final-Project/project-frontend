@@ -11,16 +11,29 @@ const processedMessages = new Set<string>();
 
 // Fonctions utilitaires pour la gestion des tokens
 const getCurrentUserIdFromToken = (): string | null => {
-  const token = localStorage.getItem('auth_token');
-  if (!token) return null;
-  
+  if (typeof window === "undefined") return null;
+
   try {
-    const payload = JSON.parse(atob(token.split('.')[1]));
-    return payload.sub ?? payload.username;
+    // Scan all sessionStorage keys for any oidc.user entry
+    const keys = Object.keys(sessionStorage);
+    for (const key of keys) {
+      if (key.startsWith("oidc.user:")) {
+        const userJson = sessionStorage.getItem(key);
+        if (userJson) {
+          const user = JSON.parse(userJson);
+          if (user?.access_token) {
+            // Décoder le token JWT pour extraire l'ID utilisateur
+            const payload = JSON.parse(atob(user.access_token.split('.')[1]));
+            return payload.sub ?? payload.username;
+          }
+        }
+      }
+    }
   } catch (error) {
     console.error('❌ Erreur lors du décodage du token:', error);
-    return null;
   }
+
+  return null;
 };
 
 // Fonctions utilitaires pour les mises à jour des données
@@ -152,13 +165,9 @@ const createMessageHandlers = (queryClient: ReturnType<typeof useQueryClient>, t
 
   return {
     handleNewMessage: (message: Message) => {
-      console.log('🔄 Nouveau message reçu via WebSocket:', message);
-      
       if (handleProcessedMessage(message.id)) {
         return;
       }
-      
-      console.log('✅ Message ajouté à la conversation:', message.id ?? 'ID manquant');
       
       const currentUserId = getCurrentUserIdFromToken();
       const isMe = Boolean(currentUserId && message.sender_id === currentUserId);
@@ -171,9 +180,6 @@ const createMessageHandlers = (queryClient: ReturnType<typeof useQueryClient>, t
       updateMessagesData(message.conversationId, correctedMessage);
       updateConversationsData(message.conversationId, correctedMessage, isMe);
       
-      queryClient.invalidateQueries({ queryKey: ['messages', message.conversationId] });
-      queryClient.invalidateQueries({ queryKey: ['conversations'] });
-
       // Ajout du toast si ce n'est pas moi l'expéditeur
       if (!isMe) {
         // Récupérer le nom de l'expéditeur à partir de la conversation
@@ -233,12 +239,10 @@ const createMessageHandlers = (queryClient: ReturnType<typeof useQueryClient>, t
     },
 
     handleUserOnline: (data: { userId: string }) => {
-      console.log('🟢 Utilisateur en ligne:', data.userId);
       return (prev: Set<string>) => new Set([...prev, data.userId]);
     },
 
     handleUserOffline: (data: { userId: string }) => {
-      console.log('🔴 Utilisateur hors ligne:', data.userId);
       return (prev: Set<string>) => {
         const newSet = new Set(prev);
         newSet.delete(data.userId);
@@ -252,14 +256,11 @@ const createMessageHandlers = (queryClient: ReturnType<typeof useQueryClient>, t
     },
 
     handleUnreadMessage: (data: { conversationId: string; messageCount: number; timestamp: Date }) => {
-      console.log('🔔 Notification de message non lu reçue:', data);
-      
       updateConversationsForUnread(data.conversationId, data.messageCount);
       queryClient.invalidateQueries({ queryKey: ['conversations'] });
     },
 
     handleConversationDeleted: (data: { conversationId: string; deletedBy: string; timestamp: Date }) => {
-      console.log('🗑 Conversation supprimée:', data.conversationId);
       
       const currentUserId = getCurrentUserIdFromToken();
       
@@ -285,6 +286,7 @@ export const useMessagesSocket = () => {
   const [typingUsers, setTypingUsers] = useState<Map<string, Set<string>>>(new Map());
   const [onlineUsers, setOnlineUsers] = useState<Set<string>>(new Set());
   const [currentConversationId, setCurrentConversationId] = useState<string | null>(null);
+  const currentConversationRef = useRef<string | null>(null);
   const listenersInitialized = useRef(false);
   const handlersRef = useRef<ReturnType<typeof createMessageHandlers> | null>(null);
 
@@ -293,54 +295,51 @@ export const useMessagesSocket = () => {
     conversation_id: string;
     content: string;
   }) => {
-    console.log('🔌 Tentative d\'envoi WebSocket:', { isConnected, socket: !!socket, messageData });
-    
     if (!socket || !isConnected) {
-      console.error('❌ Impossible d\'envoyer via WebSocket:', { 
-        socket: !!socket, 
-        isConnected, 
-        messageData 
-      });
+      console.error('❌ Impossible d\'envoyer via WebSocket: socket non connecté');
       return;
     }
     
-    console.log('✅ Envoi WebSocket en cours...');
     socket.emit('sendMessage', messageData);
-    
-    socket.once('messageSent', (data) => {
-      console.log('✅ Message confirmé par le serveur WebSocket:', data);
-    });
-    
-    socket.once('error', (error) => {
-      console.error('❌ Erreur WebSocket lors de l\'envoi:', error);
-    });
   }, [socket, isConnected]);
 
   // Fonction pour rejoindre une conversation
   const joinConversation = useCallback((conversationId: string) => {
     if (!socket || !isConnected) return;
     
-    if (currentConversationId) {
-      socket.emit('leaveConversation', currentConversationId);
+    if (currentConversationRef.current) {
+      socket.emit('leaveConversation', currentConversationRef.current);
     }
     
     socket.emit('joinConversation', conversationId);
+    currentConversationRef.current = conversationId;
     setCurrentConversationId(conversationId);
-  }, [socket, isConnected, currentConversationId]);
+  }, [socket, isConnected]);
 
   // Fonction pour quitter une conversation
   const leaveConversation = useCallback((conversationId: string) => {
     if (!socket || !isConnected) return;
     
     socket.emit('leaveConversation', conversationId);
-    if (currentConversationId === conversationId) {
+    if (currentConversationRef.current === conversationId) {
+      currentConversationRef.current = null;
       setCurrentConversationId(null);
     }
-  }, [socket, isConnected, currentConversationId]);
+  }, [socket, isConnected]);
 
-  // Fonction pour gérer l'indicateur de frappe
+  // Ref pour tracker le dernier état de frappe envoyé
+  const lastTypingStateRef = useRef<string>('');
+
+  // Fonction pour gérer l'indicateur de frappe avec debounce
   const handleTyping = useCallback((conversationId: string, isTyping: boolean) => {
     if (socket && isConnected) {
+      // Éviter d'envoyer le même état plusieurs fois de suite
+      const key = `${conversationId}-${isTyping}`;
+      if (lastTypingStateRef.current === key) {
+        return;
+      }
+      lastTypingStateRef.current = key;
+      
       socket.emit('typing', { conversationId, isTyping });
     }
   }, [socket, isConnected]);
@@ -364,7 +363,6 @@ export const useMessagesSocket = () => {
   // Fonction pour supprimer une conversation
   const deleteConversation = useCallback((conversationId: string) => {
     if (socket && isConnected) {
-      console.log('🗑️ Demande de suppression de conversation via WebSocket:', conversationId);
       socket.emit('deleteConversation', conversationId);
     }
   }, [socket, isConnected]);
@@ -380,7 +378,6 @@ export const useMessagesSocket = () => {
   useEffect(() => {
     if (!socket || listenersInitialized.current) return;
 
-    console.log('🔌 Initialisation des listeners WebSocket...');
     listenersInitialized.current = true;
 
     // Créer les handlers
@@ -400,7 +397,6 @@ export const useMessagesSocket = () => {
 
     // Nettoyer les listeners
     return () => {
-      console.log('🔌 Nettoyage des listeners WebSocket...');
       if (handlersRef.current) {
         const handlers = handlersRef.current;
         socket.off('newMessage', handlers.handleNewMessage);
@@ -427,15 +423,19 @@ export const useMessagesSocket = () => {
 
   // Fonction pour gérer la frappe avec délai
   const startTyping = useCallback((conversationId: string) => {
-    handleTyping(conversationId, true);
-    
+    // Si on a déjà un timeout en cours, le réinitialiser
     if (typingTimeoutRef.current) {
       clearTimeout(typingTimeoutRef.current);
     }
     
+    // Envoyer l'état "en train de taper"
+    handleTyping(conversationId, true);
+    
+    // Programmer l'arrêt de la frappe dans 3 secondes
     typingTimeoutRef.current = setTimeout(() => {
       handleTyping(conversationId, false);
-    }, 5000);
+      typingTimeoutRef.current = null;
+    }, 3000);
   }, [handleTyping]);
 
   const stopTyping = useCallback((conversationId: string) => {
@@ -467,6 +467,8 @@ export const useMessagesSocket = () => {
     
     const currentUserId = getCurrentUserIdFromToken();
     
+
+    
     return typingUserIds
       .filter(userId => userId !== currentUserId)
       .map(() => conversation.name ?? 'Quelqu\'un');
@@ -480,7 +482,6 @@ export const useMessagesSocket = () => {
   // Effet pour obtenir les utilisateurs en ligne au chargement
   useEffect(() => {
     if (isConnected) {
-      console.log('🔍 Récupération du statut des utilisateurs en ligne...');
       getOnlineUsers();
     }
   }, [isConnected]);
@@ -490,7 +491,7 @@ export const useMessagesSocket = () => {
     if (isConnected && currentConversationId) {
       getOnlineUsers();
     }
-  }, [isConnected, currentConversationId]);
+  }, [isConnected]);
 
   return {
     // État

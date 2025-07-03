@@ -25,7 +25,10 @@ export default function RootLayout({
             <ProfileGuard>
               <SidebarProvider>
                 <SidebarComponent />
-                <main className={"h-screen w-full"}>{children}</main>
+                <main className={"h-[calc(100vh-130px)] w-full"}>
+                  {children}
+                  <div className="h-[130px] w-full"></div>
+                </main>
                 <Toaster />
               </SidebarProvider>
             </ProfileGuard>

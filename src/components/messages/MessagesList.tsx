@@ -4,7 +4,6 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import ConversationItem from './ConversationItem';
 import { LoadingState } from './LoadingState';
-import { CreateConversationButton } from './CreateConversationButton';
 import { NoConversationsState } from './NoConversationsState';
 import { useConversations } from '../../hooks/react-query/messages';
 import { useMessagesSocket } from '../../hooks/useMessagesSocket';
@@ -101,16 +100,13 @@ export default function MessagesList() {
     }
 
     return (
-        <div className="flex flex-col h-full bg-white">
+        <div className="flex flex-col h-full">
             {/* Header */}
-            <div className="border-b border-gray-200 p-3 sm:p-4">
+            <div className="border-b border-gray-200 p-3 sm:p-4 bg-white bg-opacity-50">
                 <div className="flex items-center justify-between gap-2 sm:gap-3">
                     <div className="flex items-center gap-2 sm:gap-3">
                         <h1 className="text-xl sm:text-2xl font-bold text-gray-900">Messages</h1>
                         <div className="w-2 h-2 sm:w-3 sm:h-3 rounded-full bg-green-500" />
-                    </div>
-                    <div className="w-auto">
-                        <CreateConversationButton onConversationCreated={handleConversationCreated} />
                     </div>
                 </div>
                 <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-3 mt-2">

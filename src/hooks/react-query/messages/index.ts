@@ -17,7 +17,7 @@ export const useConversations = () => {
       }
     },
     staleTime: 30000, // 30 secondes
-    refetchInterval: 30000, // Rafraîchir toutes les 30 secondes
+    refetchOnWindowFocus: false,
   });
 };
 
@@ -27,6 +27,9 @@ export const useMessages = (conversationId: string) => {
     queryFn: async () => {
       try {
         const result = await MessageRouter.getMessages(undefined, { id: conversationId });
+        
+
+        
         return result || [];
       } catch (error) {
         console.error('Erreur lors de la récupération des messages:', error);
@@ -56,12 +59,27 @@ export const useSendMessage = () => {
   return useMutation({
     mutationFn: (dto: CreateMessageDto) => MessageRouter.sendMessage(dto),
     onSuccess: (data, variables) => {
-      // Mettre à jour les messages de la conversation
-      queryClient.invalidateQueries({ 
-        queryKey: ['messages', variables.conversation_id] 
+      // Mettre à jour les messages de la conversation directement
+      queryClient.setQueryData(['messages', variables.conversation_id], (oldData: any[] | undefined) => {
+        if (!oldData) return [data];
+        return [...oldData, data];
       });
-      // Mettre à jour la liste des conversations
-      queryClient.invalidateQueries({ queryKey: ['conversations'] });
+      
+      // Mettre à jour la liste des conversations directement
+      queryClient.setQueryData(['conversations'], (oldData: any[] | undefined) => {
+        if (!oldData) return [];
+        return oldData.map(conv => {
+          if (conv.id === variables.conversation_id) {
+            return {
+              ...conv,
+              lastMessage: data,
+              lastActive: data.timestamp,
+              unread: conv.unread + 1,
+            };
+          }
+          return conv;
+        });
+      });
     },
   });
 };
