@@ -36,7 +36,7 @@ export class MatchRouter {
   );
 
   // Pass on a match
-  public static readonly passMatch = createFetcher(
+  public static readonly passMatch = createFetcher<MatchActionResponse>(
     RESTServerRoute.REST_MATCHES_PASS,
     "POST",
   );
