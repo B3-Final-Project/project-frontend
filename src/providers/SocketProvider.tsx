@@ -29,7 +29,7 @@ export function SocketProvider({ children, token }: SocketProviderProps) {
     }
 
     // Éviter de recréer la connexion si on a déjà un socket connecté
-    if (socket && socket.connected) {
+    if (socket?.connected) {
       return;
     }
 
