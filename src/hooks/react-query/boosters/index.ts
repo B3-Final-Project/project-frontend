@@ -8,13 +8,13 @@ export function useGetAvailablePacksQuery() {
   });
 }
 
-export function useGetBooster(count: number) {
+export function useGetBooster(count: number, boosterType?: string | null) {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationKey: ["booster"],
-    mutationFn: () => BoosterRouter.getBoosters(),
+    mutationKey: ["booster", boosterType],
+    mutationFn: () => BoosterRouter.getBoosters({ boosterType: boosterType ? Number(boosterType) : undefined }),
     onSuccess: (data) => {
-      queryClient.setQueryData(["booster", count], data);
+      queryClient.setQueryData(["booster", count, boosterType], data);
     },
   });
 }

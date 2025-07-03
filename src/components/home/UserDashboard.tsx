@@ -1,4 +1,4 @@
-import BoosterList from "./BoosterList";
+import BoosterList from "../boosters/BoosterList";
 import MatchList from "./MatchList";
 
 export default function UserDashboard() {
