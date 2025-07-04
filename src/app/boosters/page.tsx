@@ -1,6 +1,5 @@
 "use client";
 
-import { useGetAvailablePacksQuery } from "@/hooks/react-query/boosters";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Loader } from "../../components/Loader";
