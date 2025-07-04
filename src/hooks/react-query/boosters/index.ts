@@ -11,7 +11,7 @@ export function useGetAvailablePacksQuery() {
 export function useGetBooster(count: number, boosterType?: string | null) {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationKey: ["booster", boosterType],
+    mutationKey: ["booster", count, boosterType],
     mutationFn: () => BoosterRouter.getBoosters({ 
       boosterType: boosterType ? Number(boosterType) : undefined 
     }),
