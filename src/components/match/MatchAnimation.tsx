@@ -50,7 +50,7 @@ export default function MatchAnimation({
             </motion.div>
           </div>
           <h2 className="text-xl sm:text-2xl  text-primary-foreground mb-2">
-            It's a match!
+            It&apos;s a match!
           </h2>
           <p className="text-gray-300 text-center mb-4">
             You matched with{" "}

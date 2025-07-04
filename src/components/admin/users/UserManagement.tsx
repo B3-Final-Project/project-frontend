@@ -49,12 +49,12 @@ function UserManagement() {
   const allUsers = useMemo(() => {
     if (!query.data?.pages) return [];
     return query.data.pages.reduce((acc: UserManagementDto[], page) => {
-      return [...acc, ...page.data.profiles];
+      return [...acc, ...page.profiles];
     }, []);
   }, [query.data?.pages]);
 
   // Get total count from the first page
-  const totalCount = query.data?.pages?.[0]?.data?.totalCount ?? 0;
+  const totalCount = query.data?.pages?.[0]?.totalCount ?? 0;
 
   if (query.isError) {
     return (

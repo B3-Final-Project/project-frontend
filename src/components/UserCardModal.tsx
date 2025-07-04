@@ -1,10 +1,13 @@
 "use client";
 
-import { getRarityGradient } from "@/utils/rarityHelper";
-import { motion } from "framer-motion";
+import "swiper/css";
+import "swiper/css/pagination";
+import "../styles/card-flip.css";
+
 import {
   ArrowLeft,
   Cigarette,
+  Flag,
   Info,
   Languages,
   MapPin,
@@ -12,19 +15,16 @@ import {
   User,
   Wine
 } from "lucide-react";
-import { useCallback, useEffect, useRef, useState } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
-
-import "swiper/css";
-import "swiper/css/pagination";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 import { Pagination } from "swiper/modules";
-
-import "../styles/card-flip.css";
-import { ReportUserModal } from "@/components/ReportUserModal";
 import {
   ProfileCardType
 } from "@/lib/routes/profiles/dto/profile-card-type.dto";
+import { ReportUserModal } from "@/components/ReportUserModal";
+import { getRarityGradient } from "@/utils/rarityHelper";
+import { motion } from "framer-motion";
 
 interface UserCardModalProps {
   user: ProfileCardType
@@ -38,14 +38,19 @@ export function UserCardModal({
   isOpen,
   isConnectedUser = false,
   onCloseAction,
-}: UserCardModalProps) {
+}: Readonly<UserCardModalProps>) {
   const [isFlipped, setIsFlipped] = useState(false);
   const [isReportModalOpen, setIsReportModalOpen] = useState(false);
   const modalRef = useRef<HTMLDivElement>(null);
 
-  const imageList = user.images && user.images.length > 0
-    ? user.images
-    : user.image_url ? [user.image_url] : ['/vintage.png', '/vintage.png', '/vintage.png'];
+  let imageList: string[];
+  if (user.images && user.images.length > 0) {
+    imageList = user.images;
+  } else if (user.image_url) {
+    imageList = [user.image_url];
+  } else {
+    imageList = ['/vintage.png', '/vintage.png', '/vintage.png'];
+  }
 
   const handleCardFlip = () => {
     setIsFlipped(!isFlipped);
@@ -116,14 +121,13 @@ export function UserCardModal({
   };
 
   return (
-    <>
-      <motion.div
-        className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center mt-0"
-        initial="hidden"
-        animate="visible"
-        exit="hidden"
-        variants={backdropVariants}
-      >
+    <motion.div
+      className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center mt-0"
+      initial="hidden"
+      animate="visible"
+      exit="hidden"
+      variants={backdropVariants}
+    >
         <motion.div
           ref={modalRef}
           initial="hidden"
@@ -166,12 +170,10 @@ export function UserCardModal({
                     }}
                     modules={[Pagination]}
                     className="w-full h-full relative z-10"
-                    // Swiper configuration
-                    // We don't need to track the current image index
                   >
                     {imageList.map((image, index) => (
                       <SwiperSlide
-                        key={index}
+                        key={`swiper-slide-${image}-${index}`}
                         className="bg-black flex items-center justify-center"
                       >
                         <div
@@ -256,8 +258,8 @@ export function UserCardModal({
                   background: getRarityGradient(user.rarity),
                 }}
               >
-                <div className="w-full h-full rounded-lg bg-gradient-to-b from-black/90 to-black/70 flex flex-col justify-start p-5 text-primary-foreground">
-                  <div className="absolute top-5 left-5 z-50">
+                <div className="w-full h-full rounded-lg bg-gradient-to-b from-black/90 to-black/70 flex flex-col justify-start p-5 text-primary-foreground relative">
+                  <div className="absolute top-5 left-5 z-50 pointer-events-auto">
                     <button
                       onClick={flipToFront}
                       className="flex items-center justify-center w-10 h-10 rounded-full bg-black/60 text-white cursor-pointer transition-all duration-200 ease-in-out z-50 shadow-md hover:bg-black/80 hover:scale-110 active:scale-95"
@@ -266,14 +268,24 @@ export function UserCardModal({
                     >
                       <ArrowLeft size={18} />
                     </button>
-                    { isConnectedUser &&
-                    <ReportUserModal
-                      open={isReportModalOpen}
-                      setIsOpen={setIsReportModalOpen}
-                      user={user}
-                    />
-                    }
                   </div>
+
+                  {!isConnectedUser && (
+                    <div className="absolute top-5 right-5 z-50 pointer-events-auto">
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setIsReportModalOpen(true);
+                        }}
+                        className="flex items-center gap-1 text-sm bg-red-500/80 hover:bg-red-600/90 text-white px-2 py-1 rounded-full transition-all duration-200 ease-in-out cursor-pointer pointer-events-auto shadow-lg z-50 hover:scale-110 active:scale-95"
+                        aria-label="Report user"
+                        type="button"
+                      >
+                        <Flag size={14} />
+                        Report
+                      </button>
+                    </div>
+                  )}
 
                   <div className="mt-2 mb-6 text-center pt-3">
                     <h3 className="bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-500 flex items-center justify-center gap-2 text-lg">
@@ -304,7 +316,13 @@ export function UserCardModal({
             </motion.div>
           </motion.div>
         </motion.div>
+
+        {/* Report Modal - Outside the card structure */}
+        <ReportUserModal
+          open={isReportModalOpen}
+          setIsOpen={setIsReportModalOpen}
+          user={user}
+        />
       </motion.div>
-    </>
   );
 }

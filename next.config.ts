@@ -8,7 +8,6 @@ const nextConfig: NextConfig = {
       {
         protocol: "https",
         hostname: "tf--holomatch-images.s3.eu-west-3.amazonaws.com",
-        pathname: "/**",
       }
     ]
   },

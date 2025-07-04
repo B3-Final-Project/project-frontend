@@ -15,6 +15,7 @@ import { getRarityGradient } from "@/utils/rarityHelper";
 import { motion } from "framer-motion";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useRouter } from "next/navigation";
+import { RelationshipTypeEnum } from "@/lib/routes/profiles/enums";
 
 interface MatchPageProps {
   boosterType?: string | null;
@@ -193,7 +194,7 @@ const MatchPage = ({ boosterType }: MatchPageProps) => {
                 count={5}
                 onProfilesLoaded={handleProfilesLoadedFromGenerator}
                 onError={handleProfileLoadingError}
-                boosterType={boosterType}
+                boosterType={boosterType ? boosterType as unknown as RelationshipTypeEnum : null}
               />
             </>
           ) : isVerified ? (

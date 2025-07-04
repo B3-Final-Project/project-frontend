@@ -36,6 +36,7 @@ export function ProfileGuard({ children }: ProfileGuardProps) {
   useEffect(() => {
     // Only proceed if user is authenticated
     if (!auth.user) {
+      router.replace('/')
       return;
     }
 

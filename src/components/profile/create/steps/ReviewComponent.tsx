@@ -15,11 +15,12 @@ import {
   formatZodiacEnum,
 } from "@/lib/utils/enum-utils";
 import { useProfileCreation } from "@/providers/ProfileCreationProvider";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { useState } from "react";
 import { PROFILE_STEPS } from "../StepComponent";
 
 export function ReviewComponent() {
+  const router = useRouter()
   const {
     personalInfo,
     preferenceInfo,
@@ -42,6 +43,11 @@ export function ReviewComponent() {
     setIsSubmitting(true);
     try {
       await saveProfile();
+      router.push("/");
+      toast({
+        title: "Profile Created",
+        description: "Your profile has been successfully created!",
+      });
     } catch (error: unknown) {
       toast({
         title: "Error",
@@ -181,14 +187,23 @@ export function ReviewComponent() {
                 </>
               )}
             </div>
-            <Separator />
             <div className="space-y-2 pt-2">
-              <h4 className="text-md font-medium">Interests</h4>
+              <div className="flex items-center justify-between">
+                <h3 className="text-lg font-medium">Interests</h3>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => handleEditSection(5)}
+                >
+                  Edit
+                </Button>
+              </div>
+              <Separator />
               {interestInfo.interests.length > 0 ? (
                 interestInfo.interests.map((interest, index) => (
                   <div key={index} className="flex flex-col space-y-1">
-                    <p className="text-gray-500">{interest.prompt}</p>
-                    <p>{interest.answer}</p>
+                    <p className="text-gray-600">{interest.prompt}</p>
+                    <p>  | {interest.answer}</p>
                   </div>
                 ))
               ) : (

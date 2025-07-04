@@ -53,7 +53,7 @@ export default function MatchListModal({
           {matches.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-8 text-center">
               <p className="text-gray-400 mb-2">
-                You don't have any matches yet
+                You don&apos;t have any matches yet
               </p>
               <p className="text-gray-500 text-sm">
                 Keep swiping to find matches!

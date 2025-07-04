@@ -13,7 +13,6 @@ const BoosterVerificationPage = () => {
   const router = useRouter();
   const [status, setStatus] = useState<StatusEnum>(StatusEnum.CHECKING);
   const [countdown, setCountdown] = useState(0);
-  const { data: availablePacks, isLoading: isPacksLoading } = useGetAvailablePacksQuery();
 
   useEffect(() => {
     const { canOpen, timeUntilNextOpenMs } = checkPackAvailability();
@@ -38,7 +37,7 @@ const BoosterVerificationPage = () => {
       setStatus(StatusEnum.REDIRECTING);
       router.push('/boosters/list');
     }
-  }, [status, countdown]);
+  }, [status, countdown, router]);
 
 
   if (status === StatusEnum.CHECKING || status === StatusEnum.REDIRECTING) {

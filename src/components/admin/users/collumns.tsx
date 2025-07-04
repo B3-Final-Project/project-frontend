@@ -130,7 +130,7 @@ function UserActionsCell({ user }: { readonly user: UserManagementDto }) {
       </Button>
 
       <UserProfileModalLoader
-        user={user}
+        userId={user.userId}
         isOpen={showProfileModal}
         onClose={() => setShowProfileModal(false)}
       />

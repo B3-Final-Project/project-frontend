@@ -64,7 +64,9 @@ export function getBoosterBackgroundColor(type: RelationshipTypeEnum, packName: 
     }
 }
 
-export default {
+const boosterUtils = {
     getBoosterIcon,
     getBoosterBackgroundColor
 };
+
+export default boosterUtils;

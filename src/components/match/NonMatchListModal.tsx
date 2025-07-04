@@ -50,7 +50,7 @@ export default function NonMatchListModal({
           {nonMatches.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-8 text-center">
               <p className="text-gray-400 mb-2">
-                You haven't skipped any profiles yet
+                You haven&apos;t skipped any profiles yet
               </p>
               <p className="text-gray-500 text-sm">
                 Swipe left to skip a profile
