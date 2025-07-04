@@ -121,7 +121,7 @@ export function useMatchActions() {
   const passMutation = usePassMatchMutation();
 
   return {
-    likeMatch: likeMutation.mutate,
+    likeMatch: likeMutation.mutateAsync,
     passMatch: passMutation.mutate,
     isLiking: likeMutation.isPending,
     isPassing: passMutation.isPending,

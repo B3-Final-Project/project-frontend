@@ -135,27 +135,9 @@ export default function MatchSystem({ profiles }: MatchSystemProps) {
   useEffect(() => {
     const handleResize = () => setCardSize(getCardSize());
     window.addEventListener("resize", handleResize);
+    handleResize();
     return () => window.removeEventListener("resize", handleResize);
   }, []);
-
-  const handleMatch = (profile: ProfileCardType) => {
-    if (isProcessing) return;
-    setIsProcessing(true);
-
-    likeMatch(profile.id);
-
-    setMatchedProfile(profile);
-    setShowMatchAnimation(true);
-    const updatedMatches = [...matches, profile];
-    setMatches(updatedMatches);
-
-    setTimeout(() => {
-      setShowMatchAnimation(false);
-      setMatchedProfile(null);
-      moveToNextCard();
-      setIsProcessing(false);
-    }, 1500);
-  };
 
   const handleReject = (profile: ProfileCardType) => {
     if (isProcessing) return;
@@ -172,7 +154,7 @@ export default function MatchSystem({ profiles }: MatchSystemProps) {
     }, 1000);
   };
 
-  const moveToNextCard = () => {
+  const moveToNextCard = useCallback(() => {
     setCurrentIndex((current) => {
       let nextIdx = current + 1;
       while (nextIdx < profiles.length) {
@@ -187,7 +169,36 @@ export default function MatchSystem({ profiles }: MatchSystemProps) {
       x.set(0);
       return nextIdx;
     });
-  };
+  }, [matches, nonMatches, profiles, x]);
+
+  const handleMatch = useCallback(
+    async (profile: ProfileCardType) => {
+      if (isProcessing) return;
+      setIsProcessing(true);
+
+      const response = await likeMatch(profile.id);
+
+      if (response.isMatch) {
+        setMatchedProfile(profile);
+        setShowMatchAnimation(true);
+        const updatedMatches = [...matches, profile];
+        setMatches(updatedMatches);
+
+        setTimeout(() => {
+          setShowMatchAnimation(false);
+          setMatchedProfile(null);
+          moveToNextCard();
+          setIsProcessing(false);
+        }, 1500);
+      } else {
+        setTimeout(() => {
+          moveToNextCard();
+          setIsProcessing(false);
+        }, 1000);
+      }
+    },
+    [isProcessing, likeMatch, matches, moveToNextCard]
+  );
 
   const handleDragEnd = (_event: Event, info: { offset: { x: number } }) => {
     const offset = info.offset.x;
