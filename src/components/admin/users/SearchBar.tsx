@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { UserManagementDto } from "@/lib/routes/admin/dto/user-management.dto";
 import { toast } from "@/hooks/use-toast";
 import { useState } from "react";
+import { useSeedBoosters, useSeedUsers } from "@/hooks/react-query/seed";
 
 interface SearchBarProps {
   readonly userData?: UserManagementDto[];
@@ -19,6 +20,8 @@ function SearchBar({
   searchTerm = "",
   isSearching = false,
 }: SearchBarProps) {
+  const userMutation = useSeedUsers()
+  const boosterMutation = useSeedBoosters()
   const [isExporting, setIsExporting] = useState(false);
   const handleSearchChange = (value: string) => {
     onSearch?.(value);
@@ -27,6 +30,10 @@ function SearchBar({
   const clearSearch = () => {
     onSearch?.("");
   };
+  const handleSeed = (count: number) => userMutation.mutate(count)
+
+  const handleSeedBoosters = () => boosterMutation.mutate();
+
   const handleExport = async () => {
     if (!userData || userData.length === 0) {
       toast({
@@ -105,6 +112,27 @@ function SearchBar({
             Manage users, view profiles, and handle reports
           </p>
         </div>
+        <Button
+          onClick={() => handleSeedBoosters()}
+          className="ml-auto flex items-center gap-2"
+          variant="outline"
+        >
+          Seed Booster Packs
+        </Button>
+        <Button
+          onClick={() => handleSeed(50)}
+          className="flex items-center gap-2"
+          variant="outline"
+        >
+          Seed 50 Users
+        </Button>
+        <Button
+          onClick={() => handleSeed(2000)}
+          className="flex items-center gap-2"
+          variant="outline"
+        >
+          Seed 2000 Users
+        </Button>
         <Button
           onClick={handleExport}
           className="flex items-center gap-2"
