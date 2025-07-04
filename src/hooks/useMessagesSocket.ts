@@ -251,6 +251,14 @@ const createMessageHandlers = (queryClient: ReturnType<typeof useQueryClient>, t
     handleConversationDeleted: (data: { conversationId: string; deletedBy: string; timestamp: Date }) => {
       removeConversation(data.conversationId);
       queryClient.invalidateQueries({ queryKey: ['conversations'] });
+    },
+
+    handleMessageReactionUpdated: (message: Message) => {
+      queryClient.setQueryData(['messages', message.conversationId], (oldData: Message[] | undefined) => {
+        if (!oldData) return [message];
+        
+        return oldData.map(m => m.id === message.id ? message : m);
+      });
     }
   };
 };
@@ -272,6 +280,7 @@ export const useMessagesSocket = () => {
   const sendMessage = useCallback((messageData: {
     conversation_id: string;
     content: string;
+    reply_to_id?: string;
   }) => {
     if (!socket || !isConnected) {
       console.error('❌ Impossible d\'envoyer via WebSocket: socket non connecté');
@@ -352,6 +361,20 @@ export const useMessagesSocket = () => {
     }
   }, [socket, isConnected]);
 
+  // Fonction pour ajouter une réaction
+  const addReaction = useCallback((data: { message_id: string; emoji: string }) => {
+    if (socket && isConnected) {
+      socket.emit('addReaction', data);
+    }
+  }, [socket, isConnected]);
+
+  // Fonction pour supprimer une réaction
+  const removeReaction = useCallback((data: { message_id: string; emoji: string }) => {
+    if (socket && isConnected) {
+      socket.emit('removeReaction', data);
+    }
+  }, [socket, isConnected]);
+
   // Gestion des événements socket - ne se remonte qu'une seule fois
   useEffect(() => {
     if (!socket || listenersInitialized.current) return;
@@ -372,6 +395,8 @@ export const useMessagesSocket = () => {
     socket.on('onlineUsers', (data) => setOnlineUsers(handlers.handleOnlineUsers(data)));
     socket.on('unreadMessage', handlers.handleUnreadMessage);
     socket.on('conversationDeleted', handlers.handleConversationDeleted);
+    socket.on('messageReactionAdded', handlers.handleMessageReactionUpdated);
+    socket.on('messageReactionRemoved', handlers.handleMessageReactionUpdated);
 
     // Nettoyer les listeners
     return () => {
@@ -386,6 +411,8 @@ export const useMessagesSocket = () => {
         socket.off('onlineUsers', handlers.handleOnlineUsers);
         socket.off('unreadMessage', handlers.handleUnreadMessage);
         socket.off('conversationDeleted', handlers.handleConversationDeleted);
+        socket.off('messageReactionAdded', handlers.handleMessageReactionUpdated);
+        socket.off('messageReactionRemoved', handlers.handleMessageReactionUpdated);
       }
       listenersInitialized.current = false;
       handlersRef.current = null;
@@ -488,6 +515,8 @@ export const useMessagesSocket = () => {
     createConversation,
     deleteConversation,
     getOnlineUsers,
+    addReaction,
+    removeReaction,
     
     // Utilitaires
     getTypingUsers,

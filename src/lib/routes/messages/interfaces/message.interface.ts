@@ -7,6 +7,12 @@ export interface Message {
   conversationId: string;
   sender_id?: string;
   senderName?: string;
+  replyTo?: {
+    id: string;
+    content: string;
+    sender_id: string;
+  } | null;
+  reactions?: Record<string, string[]>; // emoji -> array of user IDs
 }
 
 export interface Conversation {

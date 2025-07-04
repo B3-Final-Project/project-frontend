@@ -44,4 +44,5 @@ export enum RESTServerRoute {
   REST_MESSAGES_CONVERSATIONS = 'messages/conversations',
   REST_MESSAGES_CONVERSATION = 'messages/conversations/:id',
   REST_MESSAGES_CONVERSATION_READ = 'messages/conversations/:id/read',
+  REST_MESSAGES_REACTIONS = 'messages/reactions',
 }

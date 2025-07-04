@@ -7,7 +7,7 @@ export default function ProfilePage() {
     <div className="h-full w-full flex flex-col justify-between">
       <ProfileHeader />
       <div
-        className={"w-full h-full shadow-lg flex flex-col items-center mt-8"}
+        className={"w-full h-full flex flex-col items-center mt-8"}
       >
         <ProfileAvatar />
         <ProfileDialogContent />

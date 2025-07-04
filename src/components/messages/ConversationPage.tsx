@@ -7,10 +7,13 @@ import { TypingIndicator } from './TypingIndicator';
 import { OnlineStatus } from './OnlineStatus';
 import { LoadingState } from './LoadingState';
 import { EmptyState } from './EmptyState';
+import { MessageReactions } from './MessageReactions';
+import { MessageReply } from './MessageReply';
 import { useMessagesSocket } from '../../hooks/useMessagesSocket';
 import { useConversations, useMessages, useMarkMessagesAsRead, useDeleteConversation } from '../../hooks/react-query/messages';
 import { useQueryClient } from '@tanstack/react-query';
 import Image from 'next/image';
+import { Message } from '../../lib/routes/messages/interfaces/message.interface';
 
 // Constantes pour les classes CSS communes - supprimées car non utilisées
 
@@ -23,6 +26,7 @@ export default function ConversationPage({ initialConversationId }: Conversation
     const [newMessage, setNewMessage] = useState('');
     const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
     const [isDeleting, setIsDeleting] = useState(false);
+    const [replyToMessage, setReplyToMessage] = useState<Message | null>(null);
     const router = useRouter();
     const messagesEndRef = useRef<HTMLDivElement>(null);
     const lastMarkedConversation = useRef<string | null>(null);
@@ -96,19 +100,46 @@ export default function ConversationPage({ initialConversationId }: Conversation
         isTypingRef.current = false;
     }, [selectedConversation]);
 
+    // Fonction pour obtenir l'ID utilisateur actuel
+    const getCurrentUserId = (): string | null => {
+        if (typeof window === "undefined") return null;
+        
+        try {
+            const keys = Object.keys(sessionStorage);
+            for (const key of keys) {
+                if (key.startsWith("oidc.user:")) {
+                    const userJson = sessionStorage.getItem(key);
+                    if (userJson) {
+                        const user = JSON.parse(userJson);
+                        if (user?.access_token) {
+                            const payload = JSON.parse(atob(user.access_token.split('.')[1]));
+                            return payload.sub ?? payload.username;
+                        }
+                    }
+                }
+            }
+        } catch (error) {
+            console.error('❌ Erreur lors du décodage du token:', error);
+        }
+        
+        return null;
+    };
+
     const handleSendMessage = async () => {
         if (!newMessage.trim() || !selectedConversation) return;
 
         const messageContent = newMessage.trim();
         
         setNewMessage(''); // Vider le champ immédiatement pour l'UX
+        setReplyToMessage(null); // Réinitialiser la réponse
         stopTyping(selectedConversation);
 
         try {
             // Envoyer le message via socket (le serveur gère la persistance)
             sendMessage({
                 conversation_id: selectedConversation,
-                content: messageContent
+                content: messageContent,
+                reply_to_id: replyToMessage?.id
             });
             
         } catch (error) {
@@ -287,12 +318,16 @@ export default function ConversationPage({ initialConversationId }: Conversation
             {messages.map((message) => (
                 <div
                     key={message.id}
-                    className={`flex ${getMessageAlignment(message.isMe)}`}
+                    className={`flex ${getMessageAlignment(message.isMe)} group relative`}
                 >
                     <div className={getMessageClasses(message.isMe)}>
+                        {/* Afficher la réponse si elle existe */}
+                        <MessageReply replyTo={message.replyTo} isMe={message.isMe} />
+                        
                         <p className="text-[13px] md:text-[15px] leading-relaxed break-words" style={{ color: message.isMe ? 'white' : 'black' }}>
                             {message.content}
                         </p>
+                        
                         <div className="flex items-center justify-end space-x-1 mt-1">
                             <p className={`text-[10px] md:text-xs ${getTimestampClasses(message.isMe)}`}>
                                 {new Date(message.timestamp).toLocaleTimeString('fr-FR', {
@@ -305,6 +340,25 @@ export default function ConversationPage({ initialConversationId }: Conversation
                                     {getReadIndicator(message.isRead)}
                                 </span>
                             )}
+                        </div>
+                        
+                        {/* Afficher les réactions */}
+                        <MessageReactions 
+                            message={message} 
+                            currentUserId={getCurrentUserId() || ''} 
+                        />
+                        
+                        {/* Menu contextuel pour répondre */}
+                        <div className={`absolute top-0 ${message.isMe ? '-left-16' : '-right-16'} opacity-0 group-hover:opacity-100 transition-opacity`}>
+                            <button
+                                onClick={() => setReplyToMessage(message)}
+                                className="p-1 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded transition-colors"
+                                title="Répondre à ce message"
+                            >
+                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6" />
+                                </svg>
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -378,13 +432,34 @@ export default function ConversationPage({ initialConversationId }: Conversation
             </div>
             {/* Barre de saisie */}
             <div className="p-4 border-t border-gray-200 bg-white bg-opacity-50">
+                {/* Indicateur de réponse */}
+                {replyToMessage && (
+                    <div className="mb-2 p-2 bg-blue-50 border border-blue-200 rounded-lg">
+                        <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-2">
+                                <span className="text-xs font-medium text-blue-700">Répondre à :</span>
+                                <span className="text-sm text-blue-600 truncate">{replyToMessage.content}</span>
+                            </div>
+                            <button
+                                onClick={() => setReplyToMessage(null)}
+                                className="text-blue-500 hover:text-blue-700 p-1"
+                                title="Annuler la réponse"
+                            >
+                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                )}
+                
                 <div className="flex gap-2">
                     <input 
                         type="text"
                         value={newMessage}
                         onChange={handleInputChange}
                         onKeyDown={handleKeyPress}
-                        placeholder="Écrivez votre message..."
+                        placeholder={replyToMessage ? "Écrivez votre réponse..." : "Écrivez votre message..."}
                         className="flex-1 p-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                         disabled={!isConnected}
                     />

@@ -113,4 +113,28 @@ export const useDeleteConversation = () => {
       router.push('/messages');
     },
   });
+};
+
+export const useAddReaction = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (data: { message_id: string; emoji: string }) =>
+      MessageRouter.addReaction(data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['messages'] });
+    },
+  });
+};
+
+export const useRemoveReaction = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (data: { message_id: string; emoji: string }) =>
+      MessageRouter.removeReaction(data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['messages'] });
+    },
+  });
 }; 
