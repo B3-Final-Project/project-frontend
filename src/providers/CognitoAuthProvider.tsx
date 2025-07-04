@@ -38,8 +38,6 @@ export function CognitoAuthProvider({ children }: CognitoAuthProviderProps) {
     if (isLoading || !config) {
       return {
         ...baseOIDCConfig,
-        authority: "",
-        client_id: "",
         redirect_uri:
           typeof window !== "undefined" ? window.location.origin : "",
         scope: "email openid profile",
@@ -51,7 +49,7 @@ export function CognitoAuthProvider({ children }: CognitoAuthProviderProps) {
 
     return {
       ...baseOIDCConfig,
-      authority: config.hostedDomain,
+      authority: config.userPool,
       client_id: config.userPoolClient,
       redirect_uri: config.callbackUrl,
       post_logout_redirect_uri: config.callbackUrl,
