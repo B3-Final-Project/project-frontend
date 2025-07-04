@@ -13,7 +13,7 @@ export const MessageItem: React.FC<MessageItemProps> = ({ message }) => {
                     max-w-[90%] md:max-w-[75%] rounded-2xl 
                     ${message.isMe 
                         ? 'bg-blue-500 text-white p-2 md:p-3' 
-                        : 'bg-white text-gray-900 shadow-sm border border-gray-100 p-2.5 md:p-3.5'
+                        : ' text-gray-900 shadow-sm border border-gray-100 p-2.5 md:p-3.5'
                     }
                 `}
             >

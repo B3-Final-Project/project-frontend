@@ -11,7 +11,7 @@ export const DateSeparator: React.FC<DateSeparatorProps> = ({ date }) => {
                 <div className="w-full border-t border-gray-200"></div>
             </div>
             <div className="relative flex justify-center">
-                <span className="bg-white px-4 text-xs text-gray-500">
+                <span className=" px-4 text-xs text-gray-500">
                     {date}
                 </span>
             </div>

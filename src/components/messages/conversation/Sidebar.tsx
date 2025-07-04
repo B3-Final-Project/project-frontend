@@ -18,12 +18,12 @@ export const Sidebar: React.FC<SidebarProps> = ({
     return (
         <div className={`
             transition-all duration-300 ease-in-out
-            fixed md:static inset-0 z-40 bg-white h-[calc(100vh-50px)] md:h-full
+            fixed md:static inset-0 z-40  h-[calc(100vh-50px)] md:h-full
             ${isExpanded ? 'translate-x-0' : '-translate-x-full'} md:translate-x-0
             md:${isExpanded ? 'w-[35%] lg:w-[30%] 2xl:w-[25%] max-w-[450px]' : 'w-[60px] max-w-[60px]'}
             min-w-0 border-r border-gray-200
         `}>
-            <div className="flex items-center p-4 h-[50px] border-b border-gray-200 bg-white">
+            <div className="flex items-center p-4 h-[50px] border-b border-gray-200 ">
                 {isExpanded ? (
                     <h1 className="text-xl font-semibold text-gray-800">Conversations</h1>
                 ) : (

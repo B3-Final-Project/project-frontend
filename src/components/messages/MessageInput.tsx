@@ -11,7 +11,7 @@ interface MessageInputProps {
 
 export default function MessageInput({ value, onChange, onSend, onKeyPress }: MessageInputProps) {
     return (
-        <footer className="border-t border-gray-100 bg-white">
+        <footer className="border-t border-gray-100 ">
             <div className="px-2 py-2 md:px-4 md:py-3">
                 <div className="flex items-end gap-2 bg-gray-50 rounded-xl p-2">
                     <button className="p-1.5 md:p-2 text-gray-400 hover:text-gray-600 transition-colors">

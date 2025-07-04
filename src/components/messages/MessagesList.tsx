@@ -101,7 +101,7 @@ export default function MessagesList() {
     }
 
     return (
-        <div className="flex flex-col h-full bg-white">
+        <div className="flex flex-col h-full ">
             {/* Header */}
             <div className="border-b border-gray-200 p-3 sm:p-4">
                 <div className="flex items-center justify-between gap-2 sm:gap-3">

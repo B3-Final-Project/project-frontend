@@ -22,7 +22,7 @@ export default function ConversationHeader({
     const router = useRouter();
 
     return (
-        <header className="sticky top-0 z-10 bg-white shadow-sm">
+        <header className="sticky top-0 z-10  shadow-sm">
             <div className="px-3 py-2 md:px-6 md:py-4">
                 <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-2 md:space-x-4 min-w-0">

@@ -14,7 +14,7 @@ export const MessageInput: React.FC<MessageInputProps> = ({
     onKeyPress,
 }) => {
     return (
-        <div className="border-t border-gray-200 bg-white">
+        <div className="border-t border-gray-200 ">
             {/* Zone d'input */}
             <div className="p-4">
                 <div className="flex gap-2">

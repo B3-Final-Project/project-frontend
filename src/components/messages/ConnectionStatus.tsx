@@ -12,7 +12,7 @@ export const ConnectionStatus: React.FC = () => {
     return (
       <button
         onClick={() => setIsExpanded(true)}
-        className="fixed bottom-4 left-4 z-40 p-2 bg-white rounded-lg shadow-lg border border-gray-200 hover:bg-gray-50 transition-colors"
+        className="fixed bottom-4 left-4 z-40 p-2  rounded-lg shadow-lg border border-gray-200 hover:bg-gray-50 transition-colors"
         title="Statut de connexion"
       >
         <div className={`w-3 h-3 rounded-full ${isConnected ? 'bg-green-500' : 'bg-red-500'}`} />
@@ -21,7 +21,7 @@ export const ConnectionStatus: React.FC = () => {
   }
 
   return (
-    <div className="fixed bottom-4 left-4 z-40 bg-white rounded-lg shadow-lg border border-gray-200 p-4 max-w-sm">
+    <div className="fixed bottom-4 left-4 z-40  rounded-lg shadow-lg border border-gray-200 p-4 max-w-sm">
       <div className="flex items-center justify-between mb-3">
         <h3 className="text-sm font-semibold text-gray-900">Statut de connexion</h3>
         <button

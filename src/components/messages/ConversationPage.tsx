@@ -68,7 +68,7 @@ export default function ConversationPage({ initialConversationId }: Conversation
     useEffect(() => {
         if (selectedConversation && isConnected) {
             joinConversation(selectedConversation);
-            
+
             // Marquer les messages comme lus seulement si on n'a pas déjà marqué cette conversation
             if (lastMarkedConversation.current !== selectedConversation) {
                 markAsRead(selectedConversation);
@@ -96,7 +96,7 @@ export default function ConversationPage({ initialConversationId }: Conversation
 
         const messageContent = newMessage.trim();
         console.log('📤 Envoi de message:', { conversationId: selectedConversation, content: messageContent });
-        
+
         setNewMessage(''); // Vider le champ immédiatement pour l'UX
         stopTyping(selectedConversation);
 
@@ -107,9 +107,9 @@ export default function ConversationPage({ initialConversationId }: Conversation
                 conversation_id: selectedConversation,
                 content: messageContent
             });
-            
+
             console.log('✅ Message envoyé via WebSocket');
-            
+
         } catch (error) {
             console.error('❌ Erreur lors de l&apos;envoi du message:', error);
             // Remettre le message dans le champ en cas d'erreur
@@ -131,22 +131,22 @@ export default function ConversationPage({ initialConversationId }: Conversation
 
     const confirmDeleteConversation = async () => {
         if (!selectedConversation) return;
-        
+
         setIsDeleting(true);
-        
+
         try {
             console.log('🗑️ Suppression de la conversation:', selectedConversation);
-            
+
             // Envoyer la demande de suppression via WebSocket pour notifier l'autre utilisateur
             deleteConversation(selectedConversation);
-            
+
             // Attendre un peu pour que le WebSocket traite la suppression
             await new Promise(resolve => setTimeout(resolve, 500));
-            
+
             // Vérifier si la conversation existe encore avant d'appeler l'API REST
             const conversations = queryClient.getQueryData(['conversations']);
             const conversationStillExists = Array.isArray(conversations) && conversations.some(c => c.id === selectedConversation);
-            
+
             if (conversationStillExists) {
                 // La conversation existe encore, essayer l'API REST
                 try {
@@ -156,10 +156,10 @@ export default function ConversationPage({ initialConversationId }: Conversation
                     // La suppression WebSocket a probablement déjà fonctionné
                 }
             }
-            
+
             console.log('✅ Conversation supprimée avec succès');
-            setShowDeleteConfirm(false);    
-            
+            setShowDeleteConfirm(false);
+
         } catch (error) {
             console.error('❌ Erreur lors de la suppression de la conversation:', error);
             alert('Erreur lors de la suppression de la conversation');
@@ -186,7 +186,7 @@ export default function ConversationPage({ initialConversationId }: Conversation
             document.addEventListener('keydown', handleEscape);
             // Empêcher le scroll du body
             document.body.style.overflow = 'hidden';
-            
+
             // Focus sur la modal quand elle s'ouvre
             setTimeout(() => {
                 modalRef.current?.focus();
@@ -202,7 +202,7 @@ export default function ConversationPage({ initialConversationId }: Conversation
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const value = e.target.value;
         setNewMessage(value);
-        
+
         // Gérer l'indicateur de frappe
         if (selectedConversation) {
             if (value.length > 0) {
@@ -217,8 +217,8 @@ export default function ConversationPage({ initialConversationId }: Conversation
     const selectedConversationData = conversations.find(c => c.id === selectedConversation);
 
     // Vérifier si l'autre utilisateur est en ligne
-    const isOtherUserOnline = selectedConversationData?.otherUserId 
-        ? isUserOnline(selectedConversationData.otherUserId) 
+    const isOtherUserOnline = selectedConversationData?.otherUserId
+        ? isUserOnline(selectedConversationData.otherUserId)
         : false;
 
     // Debug: afficher les informations de statut en ligne
@@ -232,13 +232,13 @@ export default function ConversationPage({ initialConversationId }: Conversation
     // Rediriger si la conversation affichée est supprimée par l'autre utilisateur
     useEffect(() => {
         if (!selectedConversation || !conversations) return;
-        
+
         console.log('🔍 Vérification conversation:', selectedConversation);
         console.log('📋 Conversations disponibles:', conversations.map(c => c.id));
-        
+
         const conversationExists = conversations.some(c => c.id === selectedConversation);
         console.log('🔍 Conversation existe:', conversationExists);
-        
+
         if (!conversationExists) {
             console.log('🚨 Conversation supprimée, redirection...');
             router.push('/messages');
@@ -248,15 +248,15 @@ export default function ConversationPage({ initialConversationId }: Conversation
     // Méthodes pour l'alignement des messages
     const getMessageAlignmentForSender = () => 'justify-end';
     const getMessageAlignmentForReceiver = () => 'justify-start';
-    
+
     // Méthodes pour les classes CSS des messages
     const getMessageClassesForSender = () => 'max-w-[90%] md:max-w-[75%] rounded-2xl bg-blue-500 text-white p-2 md:p-3';
-    const getMessageClassesForReceiver = () => 'max-w-[90%] md:max-w-[75%] rounded-2xl bg-white text-gray-900 shadow-sm border border-gray-100 p-2.5 md:p-3.5';
-    
+    const getMessageClassesForReceiver = () => 'max-w-[90%] md:max-w-[75%] rounded-2xl  text-gray-900 shadow-sm border border-gray-100 p-2.5 md:p-3.5';
+
     // Méthodes pour les classes CSS des timestamps
     const getTimestampClassesForSender = () => 'text-blue-100';
     const getTimestampClassesForReceiver = () => 'text-gray-500';
-    
+
     // Méthodes pour les indicateurs de lecture
     const getReadIndicatorForRead = () => '✓✓';
     const getReadIndicatorForUnread = () => '✓';
@@ -325,11 +325,11 @@ export default function ConversationPage({ initialConversationId }: Conversation
     const userStatus = selectedConversationData ? getUserStatus(isOtherUserOnline) : null;
 
     return (
-        <div className="flex flex-col md:h-full h-[calc(100vh-50px)] bg-white">
+        <div className="flex flex-col md:h-full h-[calc(100vh-50px)]">
             {/* Header avec bouton retour */}
             <div className="flex items-center justify-between p-4 border-b border-gray-200">
                 <div className="flex items-center gap-3">
-                    <button 
+                    <button
                         onClick={() => router.push('/messages')}
                         className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
                         aria-label="Retour aux conversations"
@@ -365,7 +365,7 @@ export default function ConversationPage({ initialConversationId }: Conversation
                 <div className="flex items-center gap-2">
                     {/* Bouton de suppression */}
                     {selectedConversation && (
-                        <button 
+                        <button
                             onClick={handleDeleteConversation}
                             className="p-2 hover:bg-red-100 rounded-lg transition-colors text-red-600"
                             aria-label="Supprimer la conversation"
@@ -385,7 +385,7 @@ export default function ConversationPage({ initialConversationId }: Conversation
             {/* Barre de saisie */}
             <div className="p-4 border-t border-gray-200">
                 <div className="flex gap-2">
-                    <input 
+                    <input
                         type="text"
                         value={newMessage}
                         onChange={handleInputChange}
@@ -394,7 +394,7 @@ export default function ConversationPage({ initialConversationId }: Conversation
                         className="flex-1 p-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                         disabled={!isConnected}
                     />
-                    <button 
+                    <button
                         onClick={handleSendMessage}
                         disabled={!selectedConversation || !newMessage.trim() || !isConnected}
                         className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed"
@@ -405,22 +405,22 @@ export default function ConversationPage({ initialConversationId }: Conversation
             </div>
             {/* Popup de confirmation de suppression */}
             {showDeleteConfirm && (
-                <dialog 
+                <dialog
                     open
                     className="fixed inset-0 bg-opacity-50 flex items-center justify-center z-50 p-4"
                     aria-modal="true"
                     aria-labelledby="delete-dialog-title"
                 >
-                    <button 
+                    <button
                         type="button"
                         className="fixed inset-0 bg-black bg-opacity-50 border-0 cursor-default"
                         onClick={!isDeleting ? cancelDeleteConversation : undefined}
                         onKeyDown={handlePopupKeyDown}
                         aria-label="Fermer la modal"
                     />
-                    <div 
+                    <div
                         ref={modalRef}
-                        className="relative bg-white border border-gray-200 rounded-xl shadow-2xl max-w-md w-full p-6 animate-in fade-in-0 zoom-in-95 duration-200" 
+                        className="relative border border-gray-200 rounded-xl shadow-2xl max-w-md w-full p-6 animate-in fade-in-0 zoom-in-95 duration-200"
                     >
                         <div className="flex items-center gap-3 mb-4">
                             <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center">
@@ -436,7 +436,7 @@ export default function ConversationPage({ initialConversationId }: Conversation
                             </div>
                         </div>
                         <p className="text-gray-700 mb-6">
-                            Êtes-vous sûr de vouloir supprimer cette conversation ? 
+                            Êtes-vous sûr de vouloir supprimer cette conversation ?
                             Tous les messages seront définitivement supprimés et l&apos;autre utilisateur sera notifié.
                         </p>
                         <div className="flex gap-3">
