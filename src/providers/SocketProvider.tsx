@@ -66,7 +66,7 @@ export function SocketProvider({ children, token }: SocketProviderProps) {
       console.log('🔌 Déconnexion WebSocket');
       socketInstance.disconnect();
     };
-  }, [token]); // Retirer socket des dépendances pour éviter la boucle infinie
+  }, [token, socket?.connected]); // Ajout de socket?.connected comme dépendance
 
   const contextValue = useMemo(() => ({
     socket,

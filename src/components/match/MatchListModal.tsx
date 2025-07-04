@@ -40,7 +40,7 @@ export default function MatchListModal({
                 className="w-4 h-4 sm:w-5 sm:h-5 text-pink-500"
                 fill="#ec4899"
               />
-              Vos matches ({matches.length})
+              Your matches ({matches.length})
             </h2>
             <button
               onClick={() => setShowMatchList(false)}
@@ -53,10 +53,10 @@ export default function MatchListModal({
           {matches.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-8 text-center">
               <p className="text-gray-400 mb-2">
-                Vous n&#39;avez pas encore de matches
+                You don&apos;t have any matches yet
               </p>
               <p className="text-gray-500 text-sm">
-                Continuez à swiper pour trouver des matches!
+                Keep swiping to find matches!
               </p>
             </div>
           ) : (

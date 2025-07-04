@@ -18,38 +18,38 @@ export enum DialogContentChoices {
 export const editProfileData = [
   {
     key: DialogContentChoices.PICTURES,
-    title: "Photos",
+    title: "Pictures",
     description: "1/6",
     icon: Camera,
   },
   {
     key: DialogContentChoices.PREFERENCES,
-    title: "Préférences",
+    title: "Preferences",
     description: "Description",
     icon: Circle,
   },
   {
     key: DialogContentChoices.PERSONAL_INFO,
-    title: "Informations personnelles",
+    title: "Personal info",
     description: "Description",
     icon: MoreHorizontal,
   },
   {
     key: DialogContentChoices.LOCATION_WORK,
-    title: "Ville / Travail",
+    title: "Location / Work",
     description: "Description",
     icon: Book,
   },
   {
     key: DialogContentChoices.LIFESTYLE,
-    title: "Style de vie",
+    title: "Lifestyle",
     description: "Description",
     icon: Circle,
   },
   {
     key: DialogContentChoices.INTERESTS,
-    title: "Centres d'intérêt",
-    description: "Prompts personnalisés",
+    title: "Interests",
+    description: "Custom prompts",
     icon: Heart,
   },
 ];
