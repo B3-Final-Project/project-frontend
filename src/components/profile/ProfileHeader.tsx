@@ -54,6 +54,7 @@ export function ProfileHeader() {
           isOpen={isUserCardModalOpen}
           onCloseAction={handleCloseUserCardModal}
           user={mapUserProfileToProfileCardType(query.data)}
+          isConnectedUser={true}
         />
       )}
 

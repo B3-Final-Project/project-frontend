@@ -128,8 +128,11 @@ export function UserCardModal({
       exit="hidden"
       variants={backdropVariants}
     >
+      <div
+        className={'flex flex-col-reverse gap-2'}
+        ref={modalRef}
+      >
         <motion.div
-          ref={modalRef}
           initial="hidden"
           animate="visible"
           exit="exit"
@@ -270,23 +273,6 @@ export function UserCardModal({
                     </button>
                   </div>
 
-                  {!isConnectedUser && (
-                    <div className="absolute top-5 right-5 z-50 pointer-events-auto">
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setIsReportModalOpen(true);
-                        }}
-                        className="flex items-center gap-1 text-sm bg-red-500/80 hover:bg-red-600/90 text-white px-2 py-1 rounded-full transition-all duration-200 ease-in-out cursor-pointer pointer-events-auto shadow-lg z-50 hover:scale-110 active:scale-95"
-                        aria-label="Report user"
-                        type="button"
-                      >
-                        <Flag size={14} />
-                        Report
-                      </button>
-                    </div>
-                  )}
-
                   <div className="mt-2 mb-6 text-center pt-3">
                     <h3 className="bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-500 flex items-center justify-center gap-2 text-lg">
                       <Info className="text-purple-300 w-5 h-5 sm:w-6 sm:h-6" />
@@ -323,6 +309,18 @@ export function UserCardModal({
           setIsOpen={setIsReportModalOpen}
           user={user}
         />
+      {!isConnectedUser && (
+        <button
+          onClick={() => setIsReportModalOpen(true)}
+          className="ml-auto pointer-events-auto flex items-center w-fit gap-1 text-sm bg-red-500/80 hover:bg-red-600/90 text-white px-2 py-1 rounded-full transition-all duration-200 ease-in-out cursor-pointer shadow-lg hover:scale-110 active:scale-95"
+          aria-label="Report user"
+          type="button"
+        >
+          <Flag size={14} />
+          <p className={'text-white'}>Report Problem</p>
+        </button>
+      )}
+      </div>
       </motion.div>
   );
 }

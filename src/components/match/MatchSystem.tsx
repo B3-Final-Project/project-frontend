@@ -228,7 +228,7 @@ export default function MatchSystem({ profiles }: MatchSystemProps) {
 
   return (
     <div className="relative min-h-screen w-full overflow-hidden">
-      <div className="container mx-auto px-4 py-6 sm:py-10 relative z-10 flex flex-col items-center w-full h-screen">
+      <div className="container mx-auto px-4 py-6 sm:py-10 relative z-10 flex flex-col justify-center items-center w-full h-screen">
 
         <MatchCounters
           matchesCount={matches.length}
