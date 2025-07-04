@@ -2,9 +2,13 @@
 import { Heart, Home, MessageSquare, User } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useAuth } from "react-oidc-context";
+import { FiShield } from "react-icons/fi";
+import { clsx } from "clsx";
 
 
 export function SidebarComponent() {
+  const auth = useAuth()
   const pathname = usePathname()
 
   const isActive = (itemUrl: string) => {
@@ -21,6 +25,9 @@ export function SidebarComponent() {
     { title: "Profile", url: '/profile', icon: User },
   ]
 
+  const groups = auth.user?.profile['cognito:groups'] as string[];
+  const isAdmin = groups?.includes('admin') ?? false;
+
   return (
     <>
       <nav className="fixed bottom-0 left-0 right-0 bg-background border border-border px-4 py-2 z-50 mx-5 mb-8 rounded-2xl md:max-w-[750px] md:mx-auto" >
@@ -36,13 +43,21 @@ export function SidebarComponent() {
                   className={`flex flex-col items-center justify-center mb-1`}
                 >
                   <IconComponent size={24} />
-                  <p className={`text-xs font-medium ${isActive(item.url) ? 'text-primary' : 'text-muted-foreground'}`}>{item.title}</p>
+                <p className={clsx(`text-xs font-medium mt-2`, isActive(item.url) ? 'text-primary' : 'text-muted-foreground')}>{item.title}</p>
                 </Link>
-
               </div>
             )
           })
           }
+          {isAdmin && (
+            // admin?dashboard or admin?users
+            <div className={`flex flex-col items-center justify-center py-2 px-3 rounded-lg ${pathname.startsWith('/admin') ? 'bg-primary/10 text-primary' : 'text-muted-foreground'}`}>
+              <Link href="/admin?dashboard" className="flex flex-col items-center justify-center mb-1">
+                <FiShield size={24} />
+              <p className={clsx(`text-xs font-medium mt-2`, pathname.startsWith('/admin') ? 'text-primary' : 'text-muted-foreground')}>Admin</p>
+              </Link>
+            </div>
+          )}
         </div>
       </nav>
     </>

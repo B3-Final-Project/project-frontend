@@ -11,8 +11,10 @@ export enum RESTServerRoute {
   REST_PROFILE_IMAGE = 'profiles/:profileId/images/:index',
   // USER ROUTES
   REST_ADMIN_BANS = 'users/:userId/bans',
+  REST_USERS = 'users',
   // REPORT ROUTES
   REST_USER_REPORTS = '/reports',
+  REST_USER_REPORT = '/reports/:reportId',
   // BOOSTER ROUTES
   REST_BOOSTER = 'booster',
   REST_TEN_BOOSTERS = 'booster/10',
@@ -37,4 +39,9 @@ export enum RESTServerRoute {
   REST_STATS_ENGAGEMENT = 'stats/engagement',
   REST_STATS_ACTIVITY = 'stats/activity',
   REST_STATS_COMPREHENSIVE = 'stats/comprehensive',
+  // MESSAGES ROUTES
+  REST_MESSAGES = 'messages',
+  REST_MESSAGES_CONVERSATIONS = 'messages/conversations',
+  REST_MESSAGES_CONVERSATION = 'messages/conversations/:id',
+  REST_MESSAGES_CONVERSATION_READ = 'messages/conversations/:id/read',
 }

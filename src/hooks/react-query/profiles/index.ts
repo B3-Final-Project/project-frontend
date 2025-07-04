@@ -88,7 +88,7 @@ export function useAllProfilesQuery(
     },
     getNextPageParam: (lastPage, allPages) => {
       // If the last page has fewer items than the limit, we've reached the end
-      if (lastPage.data.profiles.length < 10) {
+      if (lastPage.profiles.length < 10) {
         return undefined;
       }
       // Return the next offset
@@ -108,7 +108,7 @@ export function useUpdatePartialProfileMutation<
       return ProfileRouter.updatePartialProfile(data);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["profiles"] });
+      queryClient.invalidateQueries({ queryKey: ["profile"] });
       toast({
         title: "Profile saved",
         description: "Your profile profiles have been saved successfully.",
@@ -135,7 +135,7 @@ export function useCreateProfileMutation() {
       return ProfileRouter.createProfile(data);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["profiles"] });
+      queryClient.invalidateQueries({ queryKey: ["profile"] });
       toast({
         title: "Profile saved",
         description: "Your profile profiles have been saved successfully.",
