@@ -7,6 +7,8 @@ import { CognitoAuthProvider } from "@/providers/CognitoAuthProvider";
 import ReactQueryClientProvider from "@/providers/ReactQueryClientProvider";
 import type { Metadata } from "next";
 import { ProfileGuard } from "@/components/guards/ProfileGuard";
+import { MessagesClientWrapper } from "@/providers/MessagesClientWrapper";
+import { GlobalMessageNotifications } from "@/providers/GlobalMessageNotifications";
 
 export const metadata: Metadata = {
   title: "Holomatch",
@@ -22,16 +24,20 @@ export default function RootLayout({
       <body>
         <ReactQueryClientProvider>
           <CognitoAuthProvider>
-            <ProfileGuard>
-              <SidebarProvider>
-                <SidebarComponent />
-                <main className={"h-[calc(100vh-130px)] w-full"}>
-                  {children}
-                  <div className="h-[130px] w-full"></div>
-                </main>
-                <Toaster />
-              </SidebarProvider>
-            </ProfileGuard>
+            <MessagesClientWrapper>
+              <GlobalMessageNotifications>
+                <ProfileGuard>
+                  <SidebarProvider>
+                    <SidebarComponent />
+                    <main className={"h-[calc(100vh-130px)] w-full"}>
+                      {children}
+                      <div className="h-[130px] w-full"></div>
+                    </main>
+                    <Toaster />
+                  </SidebarProvider>
+                </ProfileGuard>
+              </GlobalMessageNotifications>
+            </MessagesClientWrapper>
           </CognitoAuthProvider>
         </ReactQueryClientProvider>
       </body>

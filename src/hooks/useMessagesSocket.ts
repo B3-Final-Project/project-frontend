@@ -1,8 +1,9 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
+import { useRouter } from 'next/navigation';
 import { useSocket } from '../providers/SocketProvider';
 import { useQueryClient } from '@tanstack/react-query';
 import { useToast } from './use-toast';
-import { Message, Conversation } from '../lib/routes/messages/interfaces/message.interface';
+import { Message, Conversation, NewMatchData } from '../lib/routes/messages/interfaces/message.interface';
 
 // Interfaces supprimées car non utilisées
 
@@ -155,7 +156,7 @@ const handleProcessedMessage = (messageId: string | undefined) => {
 };
 
 // Création des handlers
-const createMessageHandlers = (queryClient: ReturnType<typeof useQueryClient>, toast: (props: { title: string; description?: string; variant?: "default" | "destructive" | null }) => void) => {
+const createMessageHandlers = (queryClient: ReturnType<typeof useQueryClient>, toast: (props: { title: string; description?: string; variant?: "default" | "destructive" | null; onClick?: () => void }) => void, router: any) => {
   const updateMessagesData = createUpdateMessagesData(queryClient);
   const updateConversationsData = createUpdateConversationsData(queryClient);
   const updateConversationsForRead = createUpdateConversationsForRead(queryClient);
@@ -179,37 +180,9 @@ const createMessageHandlers = (queryClient: ReturnType<typeof useQueryClient>, t
       
       updateMessagesData(message.conversationId, correctedMessage);
       updateConversationsData(message.conversationId, correctedMessage, isMe);
-      
-      // Ajout du toast si ce n'est pas moi l'expéditeur
-      if (!isMe) {
-        // Récupérer le nom de l'expéditeur à partir de la conversation
-        const conversations = queryClient.getQueryData(['conversations']) as Conversation[] | undefined;
-        const conversation = conversations?.find(conv => conv.id === message.conversationId);
-        const senderName = conversation?.name ?? 'Quelqu\'un';
-        
-        toast({
-          title: `Nouveau message de ${senderName}`,
-          description: message.content?.slice(0, 80) || '',
-          variant: "default",
-        });
-      }
     },
 
-    handleNewConversation: (conversation: Conversation) => {
-      queryClient.setQueryData(['conversations'], (oldData: Conversation[] | undefined) => {
-        if (!oldData) return [conversation];
-        if (oldData.some(conv => conv.id === conversation.id)) {
-          return oldData;
-        }
-        return [conversation, ...oldData];
-      });
-      // Ajout du toast pour nouvelle conversation
-      toast({
-        title: `Nouvelle conversation`,
-        description: conversation.name ? `Avec ${conversation.name}` : undefined,
-        variant: "default",
-      });
-    },
+
 
     handleMessagesRead: (data: { conversationId: string; readBy: string; timestamp: Date }) => {
       updateMessagesForRead(data.conversationId);
@@ -260,18 +233,22 @@ const createMessageHandlers = (queryClient: ReturnType<typeof useQueryClient>, t
       queryClient.invalidateQueries({ queryKey: ['conversations'] });
     },
 
+    // Gestion des nouveaux matches - mise à jour du cache uniquement
+    // Les notifications sont gérées dans GlobalMessageNotifications.tsx
+    handleNewMatch: (data: NewMatchData) => {
+      console.log('Nouveau match reçu dans useMessagesSocket', data);
+      
+      // Mettre à jour le cache des conversations
+      queryClient.setQueryData(['conversations'], (oldData: Conversation[] | undefined) => {
+        if (!oldData) return [data.conversation];
+        if (oldData.some(conv => conv.id === data.conversation.id)) {
+          return oldData;
+        }
+        return [data.conversation, ...oldData];
+      });
+    },
+
     handleConversationDeleted: (data: { conversationId: string; deletedBy: string; timestamp: Date }) => {
-      
-      const currentUserId = getCurrentUserIdFromToken();
-      
-      if (currentUserId && data.deletedBy !== currentUserId) {
-        toast({
-          title: "Conversation supprimée",
-          description: "L'autre utilisateur a supprimé cette conversation.",
-          variant: "destructive",
-        });
-      }
-      
       removeConversation(data.conversationId);
       queryClient.invalidateQueries({ queryKey: ['conversations'] });
     }
@@ -282,6 +259,7 @@ export const useMessagesSocket = () => {
   const { socket, isConnected } = useSocket();
   const queryClient = useQueryClient();
   const { toast } = useToast();
+  const router = useRouter();
   const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const [typingUsers, setTypingUsers] = useState<Map<string, Set<string>>>(new Map());
   const [onlineUsers, setOnlineUsers] = useState<Set<string>>(new Set());
@@ -381,12 +359,12 @@ export const useMessagesSocket = () => {
     listenersInitialized.current = true;
 
     // Créer les handlers
-    const handlers = createMessageHandlers(queryClient, toast);
+    const handlers = createMessageHandlers(queryClient, toast, router);
     handlersRef.current = handlers;
 
     // Écouter les événements
     socket.on('newMessage', handlers.handleNewMessage);
-    socket.on('newConversation', handlers.handleNewConversation);
+    socket.on('newMatch', handlers.handleNewMatch);
     socket.on('messagesRead', handlers.handleMessagesRead);
     socket.on('userTyping', (data) => setTypingUsers(handlers.handleUserTyping(data)));
     socket.on('userOnline', (data) => setOnlineUsers(handlers.handleUserOnline(data)));
@@ -400,7 +378,7 @@ export const useMessagesSocket = () => {
       if (handlersRef.current) {
         const handlers = handlersRef.current;
         socket.off('newMessage', handlers.handleNewMessage);
-        socket.off('newConversation', handlers.handleNewConversation);
+        socket.off('newMatch', handlers.handleNewMatch);
         socket.off('messagesRead', handlers.handleMessagesRead);
         socket.off('userTyping', handlers.handleUserTyping);
         socket.off('userOnline', handlers.handleUserOnline);
