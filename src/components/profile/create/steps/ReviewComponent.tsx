@@ -18,7 +18,7 @@ import { useProfileCreation } from "@/providers/ProfileCreationProvider";
 import { useParams } from "next/navigation";
 import { useState } from "react";
 import { PROFILE_STEPS } from "../StepComponent";
-import { useRouter } from "next/router";
+import { useRouter } from "next/navigation";
 
 export function ReviewComponent() {
   const router = useRouter()
