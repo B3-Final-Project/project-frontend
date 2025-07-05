@@ -94,45 +94,4 @@ export const UserStatus = {
     getStatus: (isOnline: boolean): string => isOnline ? USER_STATUS.ONLINE : USER_STATUS.OFFLINE
 } as const;
 
-// Fonctions de compatibilité pour maintenir l'API existante
-/**
- * @deprecated Utilisez MessageAlignment.getAlignment() à la place
- */
-export function getMessageAlignment(isMe: boolean): string {
-    return MessageAlignment.getAlignment(isMe);
-}
-
-/**
- * @deprecated Utilisez MessageClasses.getClasses() à la place
- */
-export function getMessageClasses(isMe: boolean): string {
-    return MessageClasses.getClasses(isMe);
-}
-
-/**
- * @deprecated Utilisez TimestampClasses.getClasses() à la place
- */
-export function getTimestampClasses(isMe: boolean): string {
-    return TimestampClasses.getClasses(isMe);
-}
-
-/**
- * @deprecated Utilisez ReadIndicators.getIndicator() à la place
- */
-export function getReadIndicator(isRead: boolean): string {
-    return ReadIndicators.getIndicator(isRead);
-}
-
-/**
- * @deprecated Utilisez ReadIndicatorClasses.getClasses() à la place
- */
-export function getReadIndicatorClasses(isRead: boolean): string {
-    return ReadIndicatorClasses.getClasses(isRead);
-}
-
-/**
- * @deprecated Utilisez UserStatus.getStatus() à la place
- */
-export function getUserStatus(isOnline: boolean): string {
-    return UserStatus.getStatus(isOnline);
-} 
+ 

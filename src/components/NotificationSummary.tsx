@@ -2,75 +2,55 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
 import { Badge } from './ui/badge';
-import { Bell, CheckCircle, AlertCircle, Info } from 'lucide-react';
+import { Bell, CheckCircle, AlertCircle } from 'lucide-react';
+import { NotificationStatus, getStatusConfig, getStatusText } from '../lib/utils/notification-status';
 
 interface NotificationSummaryProps {
   readonly className?: string;
 }
 
+const IMPROVEMENTS = [
+  {
+    title: 'Notifications natives du navigateur',
+    description: 'Support complet des notifications push natives avec gestion des permissions',
+    status: NotificationStatus.COMPLETED,
+    icon: Bell
+  },
+  {
+    title: 'Gestion d&apos;état robuste',
+    description: 'Persistance des paramètres et gestion des états de permission',
+    status: NotificationStatus.COMPLETED,
+    icon: CheckCircle
+  },
+  {
+    title: 'Paramètres personnalisables',
+    description: 'Son, vibration, aperçu des messages et autres options',
+    status: NotificationStatus.COMPLETED,
+    icon: CheckCircle
+  },
+  {
+    title: 'Interface utilisateur intuitive',
+    description: 'Interface dédiée pour la gestion des notifications',
+    status: NotificationStatus.COMPLETED,
+    icon: CheckCircle
+  },
+  {
+    title: 'Gestion des erreurs',
+    description: 'Fallbacks et messages d&apos;erreur informatifs',
+    status: NotificationStatus.COMPLETED,
+    icon: AlertCircle
+  },
+  {
+    title: 'Intégration WebSocket',
+    description: 'Notifications en temps réel pour messages et matches',
+    status: NotificationStatus.COMPLETED,
+    icon: CheckCircle
+  }
+] as const;
+
 export function NotificationSummary({ className }: NotificationSummaryProps) {
-  const improvements = [
-    {
-      title: 'Notifications natives du navigateur',
-      description: 'Support complet des notifications push natives avec gestion des permissions',
-      status: 'completed',
-      icon: Bell
-    },
-    {
-      title: 'Gestion d&apos;état robuste',
-      description: 'Persistance des paramètres et gestion des états de permission',
-      status: 'completed',
-      icon: CheckCircle
-    },
-    {
-      title: 'Paramètres personnalisables',
-      description: 'Son, vibration, aperçu des messages et autres options',
-      status: 'completed',
-      icon: CheckCircle
-    },
-    {
-      title: 'Interface utilisateur intuitive',
-      description: 'Interface dédiée pour la gestion des notifications',
-      status: 'completed',
-      icon: CheckCircle
-    },
-    {
-      title: 'Gestion des erreurs',
-      description: 'Fallbacks et messages d&apos;erreur informatifs',
-      status: 'completed',
-      icon: AlertCircle
-    },
-    {
-      title: 'Intégration WebSocket',
-      description: 'Notifications en temps réel pour messages et matches',
-      status: 'completed',
-      icon: CheckCircle
-    }
-  ];
 
-  const getStatusConfig = (status: string) => {
-    switch (status) {
-      case 'completed':
-        return { color: 'bg-green-100 text-green-700', icon: CheckCircle };
-      case 'in-progress':
-        return { color: 'bg-yellow-100 text-yellow-700', icon: AlertCircle };
-      case 'planned':
-        return { color: 'bg-blue-100 text-blue-700', icon: Info };
-      default:
-        return { color: 'bg-gray-100 text-gray-700', icon: Info };
-    }
-  };
 
-  const getStatusText = (status: string) => {
-    switch (status) {
-      case 'completed':
-        return 'Terminé';
-      case 'in-progress':
-        return 'En cours';
-      default:
-        return 'Prévu';
-    }
-  };
 
   return (
     <Card className={className}>
@@ -85,7 +65,7 @@ export function NotificationSummary({ className }: NotificationSummaryProps) {
       </CardHeader>
       <CardContent>
         <div className="space-y-3">
-          {improvements.map((improvement) => {
+          {IMPROVEMENTS.map((improvement) => {
             const statusConfig = getStatusConfig(improvement.status);
             const StatusIcon = statusConfig.icon;
             

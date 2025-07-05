@@ -3,7 +3,7 @@
 import { useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { useSocket } from "./SocketProvider";
-import { useToast } from "@/hooks/use-toast";
+import { toast } from "@/hooks/use-toast";
 import { useQueryClient } from "@tanstack/react-query";
 import { Message, Conversation, NewMatchData } from "@/lib/routes/messages/interfaces/message.interface";
 import { useMessageNotifications } from "@/hooks/useMessageNotifications";
@@ -11,65 +11,11 @@ import { getCurrentUserIdFromToken } from "@/lib/utils/user-utils";
 
 export function GlobalMessageNotifications({ children }: { readonly children: React.ReactNode }) {
   const { socket, isConnected } = useSocket();
-  const { toast } = useToast();
   const queryClient = useQueryClient();
   const router = useRouter();
   const { addNotification, notificationState } = useMessageNotifications();
 
-  // Fonction pour créer une notification native de match
-  const createMatchNotification = useCallback((data: NewMatchData, matchName: string, ageText: string) => {
-    const matchNotification = new Notification('🎉 Nouveau match !', {
-      body: `Vous avez matché avec ${matchName}${ageText} ! Commencez à discuter maintenant.`,
-      icon: '/favicon.ico',
-      tag: 'new-match',
-      requireInteraction: true,
-      silent: !notificationState.settings?.sound,
-      ...(notificationState.settings?.vibration && { vibrate: [200, 100, 200] }),
-    });
 
-    matchNotification.onclick = () => {
-      matchNotification.close();
-      window.focus();
-      router.push(`/messages/${data.conversation.id}`);
-    };
-  }, [notificationState.settings?.sound, notificationState.settings?.vibration, router]);
-
-  // Fonction pour créer un toast de match
-  const createMatchToast = useCallback((data: NewMatchData, matchName: string, ageText: string) => {
-    const toastInstance = toast({
-      title: "🎉 Nouveau match !",
-      description: `Vous avez matché avec ${matchName}${ageText} ! Commencez à discuter maintenant.`,
-      variant: "default",
-      onClick: () => {
-        router.push(`/messages/${data.conversation.id}`);
-        toastInstance.dismiss();
-      },
-    });
-  }, [toast, router]);
-
-  // Fonction pour créer une notification native de suppression
-  const createDeleteNotification = useCallback((message: string) => {
-    const deleteNotification = new Notification('Conversation supprimée', {
-      body: message,
-      icon: '/favicon.ico',
-      tag: 'conversation-deleted',
-      silent: !notificationState.settings?.sound,
-    });
-
-    deleteNotification.onclick = () => {
-      deleteNotification.close();
-      window.focus();
-    };
-  }, [notificationState.settings?.sound]);
-
-  // Fonction pour créer un toast de suppression
-  const createDeleteToast = useCallback((message: string) => {
-    toast({
-      title: "Conversation supprimée",
-      description: message,
-      variant: "destructive",
-    });
-  }, [toast]);
 
   // Fonction pour gérer le clic sur un toast de nouveau message
   const handleNewMessageToastClick = useCallback((message: Message, toastInstance: { dismiss: () => void }) => {
@@ -103,35 +49,23 @@ export function GlobalMessageNotifications({ children }: { readonly children: Re
   useEffect(() => {
     if (!socket || !isConnected) return;
 
-    // ===== GESTION DES NOTIFICATIONS GLOBALES =====
-    // Ce composant gère toutes les notifications toast pour les événements socket
-    // Les mises à jour de cache sont gérées dans useMessagesSocket.ts
-    
     // Écouter les nouveaux messages
     const handleNewMessage = (message: Message) => {
       const currentUserId = getCurrentUserIdFromToken();
       const isMe = Boolean(currentUserId && message.sender_id === currentUserId);
       
-      // Ne pas afficher de toast pour ses propres messages
       if (isMe) return;
       
-      // Vérifier si l'utilisateur est actuellement sur la page de cette conversation
       const currentPath = window.location.pathname;
       const conversationPath = `/messages/${message.conversationId}`;
       const isOnConversationPage = currentPath === conversationPath;
       
-      // Ne pas afficher de toast si l'utilisateur est déjà sur la page de cette conversation
-      if (isOnConversationPage) {
-        return;
-      }
+      if (isOnConversationPage) return;
       
-      // Ajouter une notification native si autorisée
       if (notificationState.permission === 'granted' && notificationState.settings?.enabled) {
         addNotification(message, message.senderName ?? 'Quelqu\'un');
       }
 
-      // Afficher un toast en plus des notifications natives (ou à la place si pas de notifications natives)
-      // Cela garantit que l'utilisateur voit toujours une notification
       const toastInstance = toast({
         title: `Nouveau message de ${message.senderName ?? 'Quelqu\'un'}`,
         description: message.content?.slice(0, 80) ?? '',
@@ -142,68 +76,86 @@ export function GlobalMessageNotifications({ children }: { readonly children: Re
 
     // Écouter les nouveaux matches
     const handleNewMatch = (data: NewMatchData) => {
-      // Mettre à jour le cache des conversations
       queryClient.setQueryData(['conversations'], updateConversationsCacheWithMatch(data.conversation));
 
-      // Créer le message du toast avec les informations enrichies
       const matchName = data.matchedWith.name;
       const matchAge = data.matchedWith.age;
       const ageText = matchAge ? `, ${matchAge} ans` : '';
       
-      // Notification native pour les nouveaux matches
       if (notificationState.permission === 'granted' && notificationState.settings?.enabled) {
-        createMatchNotification(data, matchName, ageText);
+        const matchNotification = new Notification('🎉 Nouveau match !', {
+          body: `Vous avez matché avec ${matchName}${ageText} ! Commencez à discuter maintenant.`,
+          icon: '/favicon.ico',
+          tag: 'new-match',
+          requireInteraction: true,
+          silent: !notificationState.settings?.sound,
+          ...(notificationState.settings?.vibration && { vibrate: [200, 100, 200] }),
+        });
+
+        matchNotification.onclick = () => {
+          matchNotification.close();
+          window.focus();
+          router.push(`/messages/${data.conversation.id}`);
+        };
       }
       
-      // Toujours afficher un toast pour les nouveaux matches (en plus ou à la place des notifications natives)
-      createMatchToast(data, matchName, ageText);
+      const toastInstance = toast({
+        title: "🎉 Nouveau match !",
+        description: `Vous avez matché avec ${matchName}${ageText} ! Commencez à discuter maintenant.`,
+        variant: "default",
+        onClick: () => {
+          router.push(`/messages/${data.conversation.id}`);
+          toastInstance.dismiss();
+        },
+      });
     };
 
     // Écouter les suppressions de conversation
     const handleConversationDeleted = (data: { conversationId: string; deletedBy: string; timestamp: Date }) => {
       const currentUserId = getCurrentUserIdFromToken();
       
-      // Récupérer les informations de la conversation supprimée AVANT de la supprimer du cache
       const conversations = queryClient.getQueryData(['conversations']) as Conversation[] | undefined;
       const deletedConversation = conversations?.find(conv => conv.id === data.conversationId);
       
-      // Mettre à jour le cache des conversations - retirer la conversation supprimée
       queryClient.setQueryData(['conversations'], updateConversationsCacheWithDeletion(data.conversationId));
       
-      // Ne pas afficher de toast si c'est l'utilisateur actuel qui a supprimé la conversation
-      if (currentUserId && data.deletedBy === currentUserId) {
-        return;
-      }
+      if (currentUserId && data.deletedBy === currentUserId) return;
       
       if (currentUserId && data.deletedBy !== currentUserId) {
-        // Créer le message avec le nom de l'autre utilisateur si disponible
         const otherUserName = deletedConversation?.name ?? 'Quelqu\'un';
-
         const message = deletedConversation?.name ? `${otherUserName} a supprimé cette conversation.` : 'Vous avez supprimé cette conversation.';
         
-        // Notification native pour la suppression de conversation
         if (notificationState.permission === 'granted' && notificationState.settings?.enabled) {
-          createDeleteNotification(message);
+          const deleteNotification = new Notification('Conversation supprimée', {
+            body: message,
+            icon: '/favicon.ico',
+            tag: 'conversation-deleted',
+            silent: !notificationState.settings?.sound,
+          });
+
+          deleteNotification.onclick = () => {
+            deleteNotification.close();
+            window.focus();
+          };
         }
         
-        // Toujours afficher un toast pour les suppressions (en plus ou à la place des notifications natives)
-        createDeleteToast(message);
+        toast({
+          title: "Conversation supprimée",
+          description: message,
+          variant: "destructive",
+        });
       }
     };
 
     // Écouter les actions de match réussies
     const handleMatchAction = (data: { type: 'like' | 'pass'; matchId: string; isMatch?: boolean }) => {
       if (data.type === 'like') {
-        if (data.isMatch) {
-          // Le match sera géré par l'événement 'newMatch'
-          return;
-        } else {
-          toast({
-            title: "Like envoyé ! 💙",
-            description: "Votre like a été envoyé. En attente d'une réponse...",
-            variant: "default",
-          });
-        }
+        if (data.isMatch) return;
+        toast({
+          title: "Like envoyé ! 💙",
+          description: "Votre like a été envoyé. En attente d'une réponse...",
+          variant: "default",
+        });
       } else if (data.type === 'pass') {
         toast({
           title: "Profil passé",
@@ -222,14 +174,12 @@ export function GlobalMessageNotifications({ children }: { readonly children: Re
       });
     };
 
-    // Ajouter les listeners
     socket.on('newMessage', handleNewMessage);
     socket.on('newMatch', handleNewMatch);
     socket.on('conversationDeleted', handleConversationDeleted);
     socket.on('matchAction', handleMatchAction);
     socket.on('matchError', handleMatchError);
 
-    // Cleanup
     return () => {
       socket.off('newMessage', handleNewMessage);
       socket.off('newMatch', handleNewMatch);
@@ -237,7 +187,7 @@ export function GlobalMessageNotifications({ children }: { readonly children: Re
       socket.off('matchAction', handleMatchAction);
       socket.off('matchError', handleMatchError);
     };
-  }, [socket, isConnected, toast, queryClient, router, addNotification, notificationState, createDeleteNotification, createDeleteToast, createMatchNotification, createMatchToast, handleNewMessageToastClick]);
+  }, [socket, isConnected, queryClient, router, addNotification, notificationState, handleNewMessageToastClick]);
 
   return <>{children}</>;
 }

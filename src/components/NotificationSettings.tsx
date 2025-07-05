@@ -9,7 +9,7 @@ import { Badge } from './ui/badge';
 import { Bell, BellOff, Settings, TestTube, Volume2, VolumeX, Smartphone, Eye, EyeOff, MessageSquare } from 'lucide-react';
 import { useMessageNotifications } from '../hooks/useMessageNotifications';
 import { NotificationPermission } from '../lib/utils/notification-utils';
-import { useToast } from '../hooks/use-toast';
+import { toast } from '../hooks/use-toast';
 
 interface NotificationSettingsProps {
   readonly className?: string;
@@ -24,7 +24,6 @@ export function NotificationSettings({ className }: NotificationSettingsProps) {
     saveNotificationSettings,
   } = useMessageNotifications();
   
-  const { toast } = useToast();
   const [isExpanded, setIsExpanded] = useState(false);
 
   const handlePermissionRequest = async () => {
@@ -39,15 +38,9 @@ export function NotificationSettings({ className }: NotificationSettingsProps) {
     }
   };
 
-  const testToast = () => {
-    toast({
-      title: "Test de toast",
-      description: "Ceci est un test pour vérifier que les toasts fonctionnent correctement.",
-      variant: "default",
-    });
-  };
 
-  const getPermissionStatus = () => {
+
+  const permissionStatus = (() => {
     switch (notificationState.permission) {
       case NotificationPermission.GRANTED:
         return { text: 'Autorisées', color: 'bg-green-100 text-green-700', icon: Bell };
@@ -58,9 +51,7 @@ export function NotificationSettings({ className }: NotificationSettingsProps) {
       default:
         return { text: 'Inconnu', color: 'bg-gray-100 text-gray-700', icon: BellOff };
     }
-  };
-
-  const permissionStatus = getPermissionStatus();
+  })();
   const StatusIcon = permissionStatus.icon;
 
   return (
@@ -163,7 +154,11 @@ export function NotificationSettings({ className }: NotificationSettingsProps) {
                       Tester les toasts
                     </Label>
                   </div>
-                  <Button onClick={testToast} variant="outline" size="sm">
+                  <Button onClick={() => toast({
+                    title: "Test de toast",
+                    description: "Ceci est un test pour vérifier que les toasts fonctionnent correctement.",
+                    variant: "default",
+                  })} variant="outline" size="sm">
                     Tester
                   </Button>
                 </div>

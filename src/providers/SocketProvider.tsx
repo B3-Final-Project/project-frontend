@@ -39,7 +39,7 @@ export function SocketProvider({ children, token }: SocketProviderProps) {
       socketRef.current.disconnect();
     }
 
-    const socketInstance = io(`${process.env.NEXT_PUBLIC_WS_URL ?? 'http://localhost:8080/api'}/ws/messages`, {
+    const socketInstance = io(`${process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:8080/api'}/ws/messages`, {
       auth: { token },
       transports: ['websocket'],
       autoConnect: true,

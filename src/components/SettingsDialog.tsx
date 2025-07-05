@@ -24,9 +24,15 @@ interface SettingsDialogProps {
   onClose(): void;
 }
 
+enum SettingsTab {
+  GENERAL = 'general',
+  NOTIFICATIONS = 'notifications',
+  ACCOUNT = 'account'
+}
+
 export function SettingsDialog({ isOpen, onClose }: SettingsDialogProps) {
   const [isDeleting, setIsDeleting] = useState(false);
-  const [activeTab, setActiveTab] = useState<'general' | 'notifications' | 'account'>('general');
+  const [activeTab, setActiveTab] = useState<SettingsTab>(SettingsTab.GENERAL);
   const auth = useAuth();
   const router = useRouter();
   const { config } = useAuthConfigReady();
@@ -133,9 +139,9 @@ export function SettingsDialog({ isOpen, onClose }: SettingsDialogProps) {
         {/* Onglets */}
         <div className="flex space-x-1 border-b">
           <button
-            onClick={() => setActiveTab('general')}
+            onClick={() => setActiveTab(SettingsTab.GENERAL)}
             className={`px-3 py-2 text-sm font-medium rounded-t-lg transition-colors ${
-              activeTab === 'general'
+              activeTab === SettingsTab.GENERAL
                 ? 'bg-blue-100 text-blue-700 border-b-2 border-blue-700'
                 : 'text-gray-500 hover:text-gray-700'
             }`}
@@ -143,9 +149,9 @@ export function SettingsDialog({ isOpen, onClose }: SettingsDialogProps) {
             Général
           </button>
           <button
-            onClick={() => setActiveTab('notifications')}
+            onClick={() => setActiveTab(SettingsTab.NOTIFICATIONS)}
             className={`px-3 py-2 text-sm font-medium rounded-t-lg transition-colors ${
-              activeTab === 'notifications'
+              activeTab === SettingsTab.NOTIFICATIONS
                 ? 'bg-blue-100 text-blue-700 border-b-2 border-blue-700'
                 : 'text-gray-500 hover:text-gray-700'
             }`}
@@ -153,9 +159,9 @@ export function SettingsDialog({ isOpen, onClose }: SettingsDialogProps) {
             Notifications
           </button>
           <button
-            onClick={() => setActiveTab('account')}
+            onClick={() => setActiveTab(SettingsTab.ACCOUNT)}
             className={`px-3 py-2 text-sm font-medium rounded-t-lg transition-colors ${
-              activeTab === 'account'
+              activeTab === SettingsTab.ACCOUNT
                 ? 'bg-blue-100 text-blue-700 border-b-2 border-blue-700'
                 : 'text-gray-500 hover:text-gray-700'
             }`}
@@ -166,7 +172,7 @@ export function SettingsDialog({ isOpen, onClose }: SettingsDialogProps) {
 
         {/* Contenu des onglets */}
         <div className="py-4">
-          {activeTab === 'general' && (
+          {activeTab === SettingsTab.GENERAL && (
             <div className="space-y-4">
               <div>
                 <h3 className="text-lg font-medium mb-2">Paramètres généraux</h3>
@@ -178,7 +184,7 @@ export function SettingsDialog({ isOpen, onClose }: SettingsDialogProps) {
             </div>
           )}
 
-          {activeTab === 'notifications' && (
+          {activeTab === SettingsTab.NOTIFICATIONS && (
             <div className="space-y-4">
               <div>
                 <h3 className="text-lg font-medium mb-2">Paramètres de notification</h3>
@@ -190,7 +196,7 @@ export function SettingsDialog({ isOpen, onClose }: SettingsDialogProps) {
             </div>
           )}
 
-          {activeTab === 'account' && (
+          {activeTab === SettingsTab.ACCOUNT && (
             <div className="space-y-4">
               <div>
                 <h3 className="text-lg font-medium mb-2">Gestion du compte</h3>

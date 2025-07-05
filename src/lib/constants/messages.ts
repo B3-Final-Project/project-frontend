@@ -70,7 +70,7 @@ export const NOTIFICATION_MESSAGES = {
     DELETE_CONFIRM: 'Êtes-vous sûr de vouloir supprimer cette conversation ?',
     DELETE_CONFIRM_DESC: 'Cette action est irréversible.',
   },
-} as const;
+};
 
 // Textes d'interface
 export const UI_TEXTS = {
@@ -101,4 +101,4 @@ export const UI_TEXTS = {
     MESSAGE_INPUT: 'Saisie de message',
     NOTIFICATION_SETTINGS: 'Paramètres de notification',
   },
-} as const;
+};
