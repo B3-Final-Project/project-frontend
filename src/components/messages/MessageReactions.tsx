@@ -6,9 +6,9 @@ import { Message } from '../../lib/routes/messages/interfaces/message.interface'
 import { useQueryClient } from '@tanstack/react-query';
 
 interface MessageReactionsProps {
-  message: Message;
-  currentUserId: string;
-  isMe: boolean;
+  readonly message: Message;
+  readonly currentUserId: string;
+  readonly isMe: boolean;
 }
 
 const COMMON_EMOJIS = ['👍', '❤️', '😂', '😮', '😢', '😡'];

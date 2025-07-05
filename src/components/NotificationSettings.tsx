@@ -11,7 +11,7 @@ import { useMessageNotifications } from '../hooks/useMessageNotifications';
 import { NotificationPermission } from '../lib/utils/notification-utils';
 
 interface NotificationSettingsProps {
-  className?: string;
+  readonly className?: string;
 }
 
 export function NotificationSettings({ className }: NotificationSettingsProps) {

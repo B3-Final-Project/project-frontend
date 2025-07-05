@@ -6,12 +6,12 @@ import { LoadingState } from '../messages/LoadingState';
 import { EmptyState } from '../messages/EmptyState';
 
 interface StatusStatesProps {
-  isLoading?: boolean;
-  isEmpty?: boolean;
-  loadingMessage?: string;
-  emptyTitle?: string;
-  emptyDescription?: string;
-  children?: React.ReactNode;
+  readonly isLoading?: boolean;
+  readonly isEmpty?: boolean;
+  readonly loadingMessage?: string;
+  readonly emptyTitle?: string;
+  readonly emptyDescription?: string;
+  readonly children?: React.ReactNode;
 }
 
 /**
@@ -53,10 +53,10 @@ export function LoadingWrapper({
   size = "sm" as const,
   children 
 }: { 
-  isLoading: boolean; 
-  message?: string; 
-  size?: "sm" | "lg";
-  children?: React.ReactNode;
+  readonly isLoading: boolean; 
+  readonly message?: string; 
+  readonly size?: "sm" | "lg";
+  readonly children?: React.ReactNode;
 }) {
   if (isLoading) {
     return <LoadingState message={message} size={size} />;
@@ -74,10 +74,10 @@ export function EmptyWrapper({
   description = "Aucune donnée disponible pour le moment.",
   children 
 }: { 
-  isEmpty: boolean; 
-  title?: string; 
-  description?: string;
-  children?: React.ReactNode;
+  readonly isEmpty: boolean; 
+  readonly title?: string; 
+  readonly description?: string;
+  readonly children?: React.ReactNode;
 }) {
   if (isEmpty) {
     return (

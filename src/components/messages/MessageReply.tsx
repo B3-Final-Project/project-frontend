@@ -3,8 +3,8 @@
 import { Message } from '../../lib/routes/messages/interfaces/message.interface';
 
 interface MessageReplyProps {
-  replyTo: Message['replyTo'];
-  isMe: boolean;
+  readonly replyTo: Message['replyTo'];
+  readonly isMe: boolean;
 }
 
 export function MessageReply({ replyTo, isMe }: MessageReplyProps) {

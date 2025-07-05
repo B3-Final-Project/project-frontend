@@ -4,11 +4,10 @@ import {
   Dialog,
   DialogContent,
   DialogDescription,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { KeyRound, Loader2, UserX, Key, LogOut, Trash2 } from "lucide-react";
+import { Loader2, Key, LogOut, Trash2 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { useAuth } from "react-oidc-context";

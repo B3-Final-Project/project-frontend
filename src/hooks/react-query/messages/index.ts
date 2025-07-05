@@ -3,7 +3,6 @@ import { useRouter } from 'next/navigation';
 import { MessageRouter } from '../../../lib/routes/messages';
 import { CreateMessageDto } from '../../../lib/routes/messages/dto/create-message.dto';
 import { CreateConversationDto } from '../../../lib/routes/messages/dto/create-conversation.dto';
-import { getCurrentUserIdFromToken } from '../../useMessagesSocket';
 
 export const useConversations = () => {
   return useQuery({

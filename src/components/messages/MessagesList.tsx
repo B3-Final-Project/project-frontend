@@ -3,7 +3,6 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import ConversationItem from './ConversationItem';
-import { NoConversationsState } from './NoConversationsState';
 import { StatusStates } from '../ui/status-states';
 import { useConversations } from '../../hooks/react-query/messages';
 import { useMessagesSocket } from '../../hooks/useMessagesSocket';
@@ -12,7 +11,6 @@ import { useNotificationHelpers } from '../../hooks/useNotificationHelpers';
 import { NotificationSettings } from '../NotificationSettings';
 import { Button } from '../ui/button';
 import { Bell, BellOff, Settings } from 'lucide-react';
-import { NotificationPermission } from '../../lib/utils/notification-utils';
 import { FLEX_CLASSES } from '../../lib/utils/css-utils';
 import { NOTIFICATION_MESSAGES, UI_TEXTS } from '../../lib/constants/messages';
 
@@ -60,13 +58,6 @@ export default function MessagesList() {
         router.push(`/messages/${conversationId}`);
     };
 
-    const handleConversationCreated = (conversationId: string) => {
-        // Rediriger vers la nouvelle conversation
-        handleConversationSelect(conversationId);
-    };
-
-
-
     // Fonction pour obtenir le nombre de messages non lus pour une conversation
     const getUnreadCount = (conversationId: string) => {
         const notification = unreadNotifications.find(n => n.conversationId === conversationId);
@@ -78,8 +69,6 @@ export default function MessagesList() {
         if (!conversation.otherUserId) return false;
         return isUserOnline(conversation.otherUserId);
     };
-
-
 
     const notificationStatus = getNotificationStatus();
     const StatusIcon = notificationStatus.icon === 'Bell' ? Bell : BellOff;

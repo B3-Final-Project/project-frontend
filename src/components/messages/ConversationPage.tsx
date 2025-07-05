@@ -373,7 +373,7 @@ export default function ConversationPage({ initialConversationId }: Conversation
                         <div className="flex items-center gap-2 mt-1">
                           <MessageReactions 
                               message={message} 
-                              currentUserId={getCurrentUserIdFromToken() || ''} 
+                              currentUserId={getCurrentUserIdFromToken() ?? ''} 
                               isMe={message.isMe}
                           />
                           {/* Bouton répondre UNIQUEMENT pour les messages de l'autre personne */}

@@ -1,7 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { 
   NotificationPermission, 
-  NotificationAPI,
   NotificationOptions,
   NotificationState,
   NOTIFICATION_CONFIG,
@@ -43,7 +42,6 @@ export const useMessageNotifications = () => {
     }
   });
   
-  const { isConnected } = useMessagesSocket();
   const notificationTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   // Initialiser l'état des notifications au chargement
@@ -154,7 +152,7 @@ export const useMessageNotifications = () => {
       }, 5000);
 
     } catch (error) {
-      handleNotificationError(error as Error, 'sendPushNotification');
+      handleNotificationError(error, 'sendPushNotification');
     }
   }, [notificationState]);
 
@@ -236,7 +234,7 @@ export const useMessageNotifications = () => {
 
       return granted;
     } catch (error) {
-      handleNotificationError(error as Error, 'requestNotificationPermission');
+      handleNotificationError(error, 'requestNotificationPermission');
       return false;
     }
   }, [notificationState.isSupported, notificationState.permission]);
@@ -276,7 +274,7 @@ export const useMessageNotifications = () => {
         console.log('✅ Notification de test envoyée avec succès');
       } catch (error) {
         console.error('❌ Erreur lors de l\'envoi de la notification de test:', error);
-        handleNotificationError(error as Error, 'testNotification');
+        handleNotificationError(error, 'testNotification');
       }
     } else {
       console.warn('⚠️ Notifications non autorisées ou désactivées');

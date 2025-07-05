@@ -160,7 +160,6 @@ const createMessageHandlers = (queryClient: ReturnType<typeof useQueryClient>, t
   const updateMessagesData = createUpdateMessagesData(queryClient);
   const updateConversationsData = createUpdateConversationsData(queryClient);
   const updateConversationsForRead = createUpdateConversationsForRead(queryClient);
-  const updateMessagesForRead = createUpdateMessagesForRead(queryClient);
   const updateConversationsForUnread = createUpdateConversationsForUnread(queryClient);
   const removeConversation = createRemoveConversation(queryClient);
 
@@ -522,12 +521,8 @@ export const useMessagesSocket = () => {
     const conversation = conversations.find(c => c.id === conversationId);
     if (!conversation) return typingUserIds.map(() => 'Quelqu\'un');
     
-    const currentUserId = getCurrentUserIdFromToken();
-    
-
-    
     return typingUserIds
-      .filter(userId => userId !== currentUserId)
+      .filter(userId => userId !== getCurrentUserIdFromToken())
       .map(() => conversation.name ?? 'Quelqu\'un');
   }, [typingUsers, queryClient]);
 

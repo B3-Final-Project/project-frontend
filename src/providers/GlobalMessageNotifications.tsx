@@ -9,9 +9,9 @@ import { Message, Conversation, NewMatchData } from "@/lib/routes/messages/inter
 import { useMessageNotifications } from "@/hooks/useMessageNotifications";
 import { getCurrentUserIdFromToken } from "@/lib/utils/user-utils";
 
-export function GlobalMessageNotifications({ children }: { children: React.ReactNode }) {
+export function GlobalMessageNotifications({ children }: { readonly children: React.ReactNode }) {
   const { socket, isConnected } = useSocket();
-  const { toast, dismiss } = useToast();
+  const { toast } = useToast();
   const queryClient = useQueryClient();
   const router = useRouter();
   const { addNotification, notificationState } = useMessageNotifications();
@@ -183,7 +183,7 @@ export function GlobalMessageNotifications({ children }: { children: React.React
       
       toast({
         title: "Erreur lors du match",
-        description: data.message || "Une erreur s'est produite. Veuillez réessayer.",
+        description: data.message ?? "Une erreur s'est produite. Veuillez réessayer.",
         variant: "destructive",
       });
     };

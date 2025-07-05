@@ -5,7 +5,7 @@ import { Badge } from './ui/badge';
 import { Bell, CheckCircle, AlertCircle, Info } from 'lucide-react';
 
 interface NotificationSummaryProps {
-  className?: string;
+  readonly className?: string;
 }
 
 export function NotificationSummary({ className }: NotificationSummaryProps) {
@@ -61,6 +61,17 @@ export function NotificationSummary({ className }: NotificationSummaryProps) {
     }
   };
 
+  const getStatusText = (status: string) => {
+    switch (status) {
+      case 'completed':
+        return 'Terminé';
+      case 'in-progress':
+        return 'En cours';
+      default:
+        return 'Prévu';
+    }
+  };
+
   return (
     <Card className={className}>
       <CardHeader>
@@ -74,12 +85,12 @@ export function NotificationSummary({ className }: NotificationSummaryProps) {
       </CardHeader>
       <CardContent>
         <div className="space-y-3">
-          {improvements.map((improvement, index) => {
+          {improvements.map((improvement) => {
             const statusConfig = getStatusConfig(improvement.status);
             const StatusIcon = statusConfig.icon;
             
             return (
-              <div key={index} className="flex items-start gap-3 p-3 border rounded-lg">
+              <div key={improvement.title} className="flex items-start gap-3 p-3 border rounded-lg">
                 <div className="flex-shrink-0">
                   <StatusIcon className={`w-5 h-5 ${statusConfig.color.split(' ')[1]}`} />
                 </div>
@@ -87,8 +98,7 @@ export function NotificationSummary({ className }: NotificationSummaryProps) {
                   <div className="flex items-center gap-2 mb-1">
                     <h4 className="font-medium text-sm">{improvement.title}</h4>
                     <Badge className={statusConfig.color} variant="secondary">
-                      {improvement.status === 'completed' ? 'Terminé' : 
-                       improvement.status === 'in-progress' ? 'En cours' : 'Prévu'}
+                      {getStatusText(improvement.status)}
                     </Badge>
                   </div>
                   <p className="text-sm text-gray-600">{improvement.description}</p>

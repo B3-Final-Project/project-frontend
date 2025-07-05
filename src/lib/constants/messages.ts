@@ -102,11 +102,3 @@ export const UI_TEXTS = {
     NOTIFICATION_SETTINGS: 'Paramètres de notification',
   },
 } as const;
-
-// Messages de validation
-export const VALIDATION_MESSAGES = {
-  REQUIRED: 'Ce champ est requis',
-  INVALID_EMAIL: 'Adresse email invalide',
-  PASSWORD_TOO_SHORT: 'Le mot de passe doit contenir au moins 8 caractères',
-  PASSWORDS_DONT_MATCH: 'Les mots de passe ne correspondent pas',
-} as const; 
