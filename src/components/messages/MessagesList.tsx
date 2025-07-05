@@ -3,15 +3,18 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import ConversationItem from './ConversationItem';
-import { LoadingState } from './LoadingState';
 import { NoConversationsState } from './NoConversationsState';
+import { StatusStates } from '../ui/status-states';
 import { useConversations } from '../../hooks/react-query/messages';
 import { useMessagesSocket } from '../../hooks/useMessagesSocket';
 import { useMessageNotifications } from '../../hooks/useMessageNotifications';
+import { useNotificationHelpers } from '../../hooks/useNotificationHelpers';
 import { NotificationSettings } from '../NotificationSettings';
 import { Button } from '../ui/button';
 import { Bell, BellOff, Settings } from 'lucide-react';
 import { NotificationPermission } from '../../lib/utils/notification-utils';
+import { FLEX_CLASSES } from '../../lib/utils/css-utils';
+import { NOTIFICATION_MESSAGES, UI_TEXTS } from '../../lib/constants/messages';
 
 export default function MessagesList() {
     const router = useRouter();
@@ -23,11 +26,15 @@ export default function MessagesList() {
     const { isUserOnline } = useMessagesSocket();
     const { 
         unreadNotifications, 
-        removeConversationNotifications, 
-        notificationState,
-        requestNotificationPermission,
-        openNotificationSettings
+        removeConversationNotifications
     } = useMessageNotifications();
+    
+    const {
+        notificationState,
+        getNotificationStatus,
+        handleRequestNotificationPermission,
+        shouldRequestPermission
+    } = useNotificationHelpers();
 
     // Écouter les clics sur les notifications pour la navigation
     useEffect(() => {
@@ -58,17 +65,7 @@ export default function MessagesList() {
         handleConversationSelect(conversationId);
     };
 
-    const handleRequestNotificationPermission = async () => {
-        const granted = await requestNotificationPermission();
-        if (!granted) {
-            // Si la permission est refusée, proposer d'ouvrir les paramètres
-            setTimeout(() => {
-                if (confirm('Voulez-vous ouvrir les paramètres de notification du navigateur ?')) {
-                    openNotificationSettings();
-                }
-            }, 1000);
-        }
-    };
+
 
     // Fonction pour obtenir le nombre de messages non lus pour une conversation
     const getUnreadCount = (conversationId: string) => {
@@ -82,43 +79,20 @@ export default function MessagesList() {
         return isUserOnline(conversation.otherUserId);
     };
 
-    // Fonction pour obtenir le statut des notifications
-    const getNotificationStatus = () => {
-        if (!notificationState.isSupported) {
-            return { text: 'Non supportées', color: 'text-gray-500', icon: BellOff };
-        }
-        
-        switch (notificationState.permission) {
-            case NotificationPermission.GRANTED:
-                return { text: 'Activées', color: 'text-green-600', icon: Bell };
-            case NotificationPermission.DENIED:
-                return { text: 'Refusées', color: 'text-red-600', icon: BellOff };
-            case NotificationPermission.DEFAULT:
-                return { text: 'Non demandées', color: 'text-yellow-600', icon: Bell };
-            default:
-                return { text: 'Inconnu', color: 'text-gray-500', icon: BellOff };
-        }
-    };
+
 
     const notificationStatus = getNotificationStatus();
-    const StatusIcon = notificationStatus.icon;
+    const StatusIcon = notificationStatus.icon === 'Bell' ? Bell : BellOff;
 
     // Préparer le contenu de la liste des conversations
-    let conversationListContent;
-    if (isLoading) {
-        conversationListContent = (
-            <div className="flex items-center justify-center">
-                <LoadingState message="Chargement des conversations..." size="lg" />
-            </div>
-        );
-    } else if (conversations.length === 0) {
-        conversationListContent = (
-            <div className="flex h-full items-center justify-center">
-                <NoConversationsState />
-            </div>
-        );
-    } else {
-        conversationListContent = (
+    const conversationListContent = (
+        <StatusStates
+            isLoading={isLoading}
+            isEmpty={conversations.length === 0}
+            loadingMessage={NOTIFICATION_MESSAGES.LOADING.CONVERSATIONS}
+            emptyTitle={NOTIFICATION_MESSAGES.EMPTY.CONVERSATIONS.TITLE}
+            emptyDescription={NOTIFICATION_MESSAGES.EMPTY.CONVERSATIONS.DESCRIPTION}
+        >
             <div className="divide-y divide-gray-100">
                 {conversations.map((conversation) => {
                     const isOnline = isOtherUserOnline(conversation);
@@ -137,16 +111,16 @@ export default function MessagesList() {
                     );
                 })}
             </div>
-        );
-    }
+        </StatusStates>
+    );
 
     return (
         <div className="flex flex-col h-full">
             {/* Header */}
             <div className="border-b border-gray-200 p-3 sm:p-4 bg-white bg-opacity-50">
-                <div className="flex items-center justify-between gap-2 sm:gap-3">
-                    <div className="flex items-center gap-2 sm:gap-3">
-                        <h1 className="text-xl sm:text-2xl font-bold text-gray-900">Messages</h1>
+                <div className={FLEX_CLASSES.RESPONSIVE_BETWEEN}>
+                    <div className={FLEX_CLASSES.RESPONSIVE_CENTER}>
+                        <h1 className="text-xl sm:text-2xl font-bold text-gray-900">{UI_TEXTS.TITLES.MESSAGES}</h1>
                         <div className="w-2 h-2 sm:w-3 sm:h-3 rounded-full bg-green-500" />
                     </div>
                     
@@ -155,7 +129,7 @@ export default function MessagesList() {
                         variant="ghost"
                         size="sm"
                         onClick={() => setShowNotificationSettings(!showNotificationSettings)}
-                        className="flex items-center gap-2"
+                        className={FLEX_CLASSES.CENTER_GAP_2}
                     >
                         <StatusIcon className={`w-4 h-4 ${notificationStatus.color}`} />
                         <span className="hidden sm:inline text-sm">{notificationStatus.text}</span>
@@ -171,19 +145,18 @@ export default function MessagesList() {
                 )}
 
                 {/* Demande rapide de permission si non demandée */}
-                {notificationState.permission === NotificationPermission.DEFAULT && 
-                 notificationState.isSupported && 
+                {shouldRequestPermission() && 
                  !showNotificationSettings && (
                     <div className="mt-3 p-3 bg-blue-50 border border-blue-200 rounded-lg">
                         <div className="flex items-center justify-between">
-                            <div className="flex items-center gap-2">
+                            <div className={FLEX_CLASSES.CENTER_GAP_2}>
                                 <Bell className="w-4 h-4 text-blue-600" />
                                 <span className="text-sm text-blue-700">
-                                    Activez les notifications pour ne manquer aucun message
+                                    {NOTIFICATION_MESSAGES.PERMISSION_ACTIVATE}
                                 </span>
                             </div>
                             <Button onClick={handleRequestNotificationPermission} size="sm" variant="outline">
-                                Activer
+                                {UI_TEXTS.BUTTONS.ACTIVATE}
                             </Button>
                         </div>
                     </div>

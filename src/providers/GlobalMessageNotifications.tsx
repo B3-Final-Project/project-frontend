@@ -7,6 +7,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useQueryClient } from "@tanstack/react-query";
 import { Message, Conversation, NewMatchData } from "@/lib/routes/messages/interfaces/message.interface";
 import { useMessageNotifications } from "@/hooks/useMessageNotifications";
+import { getCurrentUserIdFromToken } from "@/lib/utils/user-utils";
 
 export function GlobalMessageNotifications({ children }: { children: React.ReactNode }) {
   const { socket, isConnected } = useSocket();
@@ -207,29 +208,4 @@ export function GlobalMessageNotifications({ children }: { children: React.React
   return <>{children}</>;
 }
 
-// Fonction utilitaire pour récupérer l'ID utilisateur depuis le token
-function getCurrentUserIdFromToken(): string | null {
-  if (typeof window === "undefined") return null;
-
-  try {
-    // Scan all sessionStorage keys for any oidc.user entry
-    const keys = Object.keys(sessionStorage);
-    for (const key of keys) {
-      if (key.startsWith("oidc.user:")) {
-        const userJson = sessionStorage.getItem(key);
-        if (userJson) {
-          const user = JSON.parse(userJson);
-          if (user?.access_token) {
-            // Décoder le token JWT pour extraire l'ID utilisateur
-            const payload = JSON.parse(atob(user.access_token.split('.')[1]));
-            return payload.sub ?? payload.username;
-          }
-        }
-      }
-    }
-  } catch (error) {
-    console.error('❌ Erreur lors du décodage du token:', error);
-  }
-
-  return null;
-} 
+ 

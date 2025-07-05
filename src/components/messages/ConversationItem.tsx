@@ -4,6 +4,7 @@ import { Conversation } from '../../lib/routes/messages/interfaces/message.inter
 import { OnlineStatus } from './OnlineStatus';
 import Image from 'next/image';
 import { formatMessageTimestamp } from '../../lib/utils/timestamp-utils';
+import { USER_STATUS } from '../../lib/utils/message-styles';
 
 interface ConversationItemProps {
   readonly conversation: Conversation;
@@ -74,7 +75,7 @@ export default function ConversationItem({
                     {conversation.name}
                   </h3>
                   {isOnline && (
-                    <span className="text-xs text-green-600 font-medium hidden sm:inline">En ligne</span>
+                    <span className="text-xs text-green-600 font-medium hidden sm:inline">{USER_STATUS.ONLINE}</span>
                   )}
                 </div>
                 <div className="text-xs sm:text-sm">

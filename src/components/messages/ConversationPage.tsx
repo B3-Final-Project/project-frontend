@@ -14,6 +14,15 @@ import { useConversations, useMessages, useMarkMessagesAsRead, useDeleteConversa
 import { useQueryClient } from '@tanstack/react-query';
 import Image from 'next/image';
 import { Message } from '../../lib/routes/messages/interfaces/message.interface';
+import { getCurrentUserIdFromToken } from '../../lib/utils/user-utils';
+import { 
+    getMessageAlignment, 
+    getMessageClasses, 
+    getTimestampClasses, 
+    getReadIndicator, 
+    getReadIndicatorClasses, 
+    getUserStatus 
+} from '../../lib/utils/message-styles';
 
 // Constantes pour les classes CSS communes - supprimées car non utilisées
 
@@ -164,30 +173,7 @@ export default function ConversationPage({ initialConversationId }: Conversation
         }
     }, [selectedConversation, isConnected, messages]);
 
-    // Fonction pour obtenir l'ID utilisateur actuel
-    const getCurrentUserId = (): string | null => {
-        if (typeof window === "undefined") return null;
-        
-        try {
-            const keys = Object.keys(sessionStorage);
-            for (const key of keys) {
-                if (key.startsWith("oidc.user:")) {
-                    const userJson = sessionStorage.getItem(key);
-                    if (userJson) {
-                        const user = JSON.parse(userJson);
-                        if (user?.access_token) {
-                            const payload = JSON.parse(atob(user.access_token.split('.')[1]));
-                            return payload.sub ?? payload.username;
-                        }
-                    }
-                }
-            }
-        } catch (error) {
-            console.error('❌ Erreur lors du décodage du token:', error);
-        }
-        
-        return null;
-    };
+
 
     const handleSendMessage = async () => {
         if (!newMessage.trim() || !selectedConversation) return;
@@ -339,35 +325,7 @@ export default function ConversationPage({ initialConversationId }: Conversation
         }
     }, [selectedConversation, conversations, router]);
 
-    // Méthodes pour l'alignement des messages
-    const getMessageAlignmentForSender = () => 'justify-end';
-    const getMessageAlignmentForReceiver = () => 'justify-start';
-    
-    // Méthodes pour les classes CSS des messages
-    const getMessageClassesForSender = () => 'max-w-[90%] md:max-w-[75%] rounded-2xl bg-blue-500 text-white p-2 md:p-3';
-    const getMessageClassesForReceiver = () => 'max-w-[90%] md:max-w-[75%] rounded-2xl bg-white text-gray-900 shadow-sm border border-gray-100 p-2.5 md:p-3.5';
-    
-    // Méthodes pour les classes CSS des timestamps
-    const getTimestampClassesForSender = () => 'text-blue-100';
-    const getTimestampClassesForReceiver = () => 'text-gray-500';
-    
-    // Méthodes pour les indicateurs de lecture
-    const getReadIndicatorForRead = () => '✓✓';
-    const getReadIndicatorForUnread = () => '✓';
-    const getReadIndicatorClassesForRead = () => 'text-blue-100';
-    const getReadIndicatorClassesForUnread = () => 'text-blue-200';
 
-    // Méthodes pour le statut de l'utilisateur
-    const getUserStatusOnline = () => 'En ligne';
-    const getUserStatusOffline = () => 'Hors ligne';
-
-    // Méthodes pour obtenir les classes appropriées selon le type de message
-    const getMessageAlignment = (isMe: boolean) => isMe ? getMessageAlignmentForSender() : getMessageAlignmentForReceiver();
-    const getMessageClasses = (isMe: boolean) => isMe ? getMessageClassesForSender() : getMessageClassesForReceiver();
-    const getTimestampClasses = (isMe: boolean) => isMe ? getTimestampClassesForSender() : getTimestampClassesForReceiver();
-    const getReadIndicator = (isRead: boolean) => isRead ? getReadIndicatorForRead() : getReadIndicatorForUnread();
-    const getReadIndicatorClasses = (isRead: boolean) => isRead ? getReadIndicatorClassesForRead() : getReadIndicatorClassesForUnread();
-    const getUserStatus = (isOnline: boolean) => isOnline ? getUserStatusOnline() : getUserStatusOffline();
 
     // Gestionnaire de clavier pour la popup de suppression
     const handlePopupKeyDown = (e: React.KeyboardEvent) => {
@@ -415,7 +373,7 @@ export default function ConversationPage({ initialConversationId }: Conversation
                         <div className="flex items-center gap-2 mt-1">
                           <MessageReactions 
                               message={message} 
-                              currentUserId={getCurrentUserId() || ''} 
+                              currentUserId={getCurrentUserIdFromToken() || ''} 
                               isMe={message.isMe}
                           />
                           {/* Bouton répondre UNIQUEMENT pour les messages de l'autre personne */}
