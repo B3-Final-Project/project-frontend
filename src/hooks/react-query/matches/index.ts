@@ -1,6 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { MatchRouter } from "@/lib/routes/matches";
-import { toast } from "@/hooks/use-toast";
 
 // Fetch all matches
 export function useMatchesQuery() {
@@ -52,31 +51,16 @@ export function useLikeMatchMutation() {
     mutationFn: async (matchId: string) => {
       return MatchRouter.likeMatch(undefined, { id: matchId });
     },
-    onSuccess: (data) => {
+    onSuccess: () => {
       // Invalidate and refetch match-related queries
       queryClient.invalidateQueries({ queryKey: ["matches"] });
-
-      // Show success message
-      if (data.isMatch) {
-        toast({
-          title: "It's a match! 🎉",
-          description: "You and this person liked each other!",
-        });
-      } else {
-        toast({
-          title: "Match liked",
-          description: "Your like has been sent!",
-        });
-      }
+      
+      // Note: Les notifications de match sont gérées dans GlobalMessageNotifications.tsx
+      // via l'événement WebSocket 'newMatch'
     },
     onError: (error) => {
       console.error("Failed to like match", error);
-      toast({
-        title: "Failed to like match",
-        description:
-          "Please try again or contact support if the issue persists.",
-        variant: "destructive",
-      });
+      // Note: Les notifications d'erreur sont gérées dans GlobalMessageNotifications.tsx
     },
   });
 }
@@ -97,20 +81,12 @@ export function usePassMatchMutation() {
 
       // Remove the specific match from cache
       queryClient.removeQueries({ queryKey: ["matches", "details", matchId] });
-
-      toast({
-        title: "Match passed",
-        description: "This profile has been passed.",
-      });
+      
+      // Note: Les notifications de match sont gérées dans GlobalMessageNotifications.tsx
     },
     onError: (error) => {
       console.error("Failed to pass match", error);
-      toast({
-        title: "Failed to pass match",
-        description:
-          "Please try again or contact support if the issue persists.",
-        variant: "destructive",
-      });
+      // Note: Les notifications d'erreur sont gérées dans GlobalMessageNotifications.tsx
     },
   });
 }

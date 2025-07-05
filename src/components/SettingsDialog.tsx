@@ -4,11 +4,10 @@ import {
   Dialog,
   DialogContent,
   DialogDescription,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { KeyRound, Loader2, UserX } from "lucide-react";
+import { Loader2, Key, LogOut, Trash2 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { useAuth } from "react-oidc-context";
@@ -17,14 +16,23 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { useDeleteAccountMutation } from "@/hooks/react-query/users";
+import { NotificationSettings } from './NotificationSettings';
+import { Separator } from "@/components/ui/separator";
 
 interface SettingsDialogProps {
   readonly isOpen: boolean;
   onClose(): void;
 }
 
+enum SettingsTab {
+  GENERAL = 'general',
+  NOTIFICATIONS = 'notifications',
+  ACCOUNT = 'account'
+}
+
 export function SettingsDialog({ isOpen, onClose }: SettingsDialogProps) {
   const [isDeleting, setIsDeleting] = useState(false);
+  const [activeTab, setActiveTab] = useState<SettingsTab>(SettingsTab.GENERAL);
   const auth = useAuth();
   const router = useRouter();
   const { config } = useAuthConfigReady();
@@ -120,53 +128,132 @@ export function SettingsDialog({ isOpen, onClose }: SettingsDialogProps) {
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="sm:max-w-[600px] max-h-[80vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
-            <span>Paramètres du compte</span>
-          </DialogTitle>
+          <DialogTitle>Paramètres</DialogTitle>
           <DialogDescription>
-            Gérez votre mot de passe et vos paramètres de compte.
+            Gérez vos préférences et votre compte
           </DialogDescription>
         </DialogHeader>
 
-       <div className="grid gap-4 py-4">
-         <Button
-           onClick={handleSignOut}
-           variant="outline"
-           className="w-full justify-start gap-2"
-         >
-           Déconnexion
-         </Button>
-         <Button
-            onClick={handleChangePassword}
-            variant="outline"
-            className="w-full justify-start gap-2"
+        {/* Onglets */}
+        <div className="flex space-x-1 border-b">
+          <button
+            onClick={() => setActiveTab(SettingsTab.GENERAL)}
+            className={`px-3 py-2 text-sm font-medium rounded-t-lg transition-colors ${
+              activeTab === SettingsTab.GENERAL
+                ? 'bg-blue-100 text-blue-700 border-b-2 border-blue-700'
+                : 'text-gray-500 hover:text-gray-700'
+            }`}
           >
-            <KeyRound className="h-4 w-4" />
-            Changer le mot de passe
-          </Button>
-
-          <Button
-            onClick={handleDeleteAccount}
-            variant="destructive"
-            className="w-full justify-start gap-2"
-            disabled={isDeleting}
+            Général
+          </button>
+          <button
+            onClick={() => setActiveTab(SettingsTab.NOTIFICATIONS)}
+            className={`px-3 py-2 text-sm font-medium rounded-t-lg transition-colors ${
+              activeTab === SettingsTab.NOTIFICATIONS
+                ? 'bg-blue-100 text-blue-700 border-b-2 border-blue-700'
+                : 'text-gray-500 hover:text-gray-700'
+            }`}
           >
-            {isDeleting ? (
-              <Loader2 className="h-4 w-4 animate-spin" />
-            ) : (
-              <UserX className="h-4 w-4" />
-            )}
-            {isDeleting ? "Suppression..." : "Supprimer le compte"}
-          </Button>
+            Notifications
+          </button>
+          <button
+            onClick={() => setActiveTab(SettingsTab.ACCOUNT)}
+            className={`px-3 py-2 text-sm font-medium rounded-t-lg transition-colors ${
+              activeTab === SettingsTab.ACCOUNT
+                ? 'bg-blue-100 text-blue-700 border-b-2 border-blue-700'
+                : 'text-gray-500 hover:text-gray-700'
+            }`}
+          >
+            Compte
+          </button>
         </div>
 
-        <DialogFooter>
-          <Button variant="ghost" onClick={onClose}>
-            Fermer
-          </Button>
-        </DialogFooter>
+        {/* Contenu des onglets */}
+        <div className="py-4">
+          {activeTab === SettingsTab.GENERAL && (
+            <div className="space-y-4">
+              <div>
+                <h3 className="text-lg font-medium mb-2">Paramètres généraux</h3>
+                <p className="text-sm text-gray-600">
+                  Configurez vos préférences générales de l&apos;application.
+                </p>
+              </div>
+              {/* Ajoutez ici d'autres paramètres généraux si nécessaire */}
+            </div>
+          )}
+
+          {activeTab === SettingsTab.NOTIFICATIONS && (
+            <div className="space-y-4">
+              <div>
+                <h3 className="text-lg font-medium mb-2">Paramètres de notification</h3>
+                <p className="text-sm text-gray-600 mb-4">
+                  Gérez vos préférences de notification pour les messages et matches.
+                </p>
+              </div>
+              <NotificationSettings />
+            </div>
+          )}
+
+          {activeTab === SettingsTab.ACCOUNT && (
+            <div className="space-y-4">
+              <div>
+                <h3 className="text-lg font-medium mb-2">Gestion du compte</h3>
+                <p className="text-sm text-gray-600">
+                  Gérez votre compte et vos informations personnelles.
+                </p>
+              </div>
+
+              <div className="space-y-3">
+                <Button
+                  onClick={handleChangePassword}
+                  variant="outline"
+                  className="w-full justify-start"
+                >
+                  <Key className="w-4 h-4 mr-2" />
+                  Changer le mot de passe
+                </Button>
+
+                <Button
+                  onClick={handleSignOut}
+                  variant="outline"
+                  className="w-full justify-start text-red-600 hover:text-red-700"
+                >
+                  <LogOut className="w-4 h-4 mr-2" />
+                  Se déconnecter
+                </Button>
+
+                <Separator />
+
+                <div className="space-y-2">
+                  <h4 className="font-medium text-red-700">Zone de danger</h4>
+                  <p className="text-sm text-gray-600">
+                    Ces actions sont irréversibles. Soyez certain de votre choix.
+                  </p>
+                  <Button
+                    onClick={handleDeleteAccount}
+                    variant="destructive"
+                    disabled={isDeleting}
+                    className="w-full"
+                  >
+                    {isDeleting ? (
+                      <>
+                        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                        Suppression en cours...
+                      </>
+                    ) : (
+                      <>
+                        <Trash2 className="w-4 h-4 mr-2" />
+                        Supprimer mon compte
+                      </>
+                    )}
+                  </Button>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
       </DialogContent>
     </Dialog>
   );

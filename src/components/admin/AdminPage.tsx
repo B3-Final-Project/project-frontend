@@ -33,7 +33,7 @@ function AdminPage() {
   const activeComponent = adminRoutes[activeRoute]?.component ?? adminRoutes.dashboard.component;
 
   return (
-    <div className="min-h-screen">
+    <div>
       <AdminNavigation />
       <main className="container mx-auto">
         {activeComponent}
