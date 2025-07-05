@@ -31,6 +31,8 @@ export default function ConversationPage({ initialConversationId }: Conversation
     const messagesEndRef = useRef<HTMLDivElement>(null);
     const lastMarkedConversation = useRef<string | null>(null);
     const modalRef = useRef<HTMLDivElement>(null);
+    const inputRef = useRef<HTMLInputElement>(null);
+    const markAsReadTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
     // Hooks pour les sockets et les données
     const {
@@ -100,6 +102,68 @@ export default function ConversationPage({ initialConversationId }: Conversation
         isTypingRef.current = false;
     }, [selectedConversation]);
 
+    // Effet pour marquer automatiquement les nouveaux messages comme lus quand on est dans la conversation
+    useEffect(() => {
+        if (selectedConversation && messages.length > 0 && isConnected) {
+            // Vérifier s'il y a des messages non lus de l'autre utilisateur
+            const unreadMessages = messages.filter(message => !message.isMe && !message.isRead);
+            
+            if (unreadMessages.length > 0) {
+                console.log('📖 Marquage automatique des messages comme lus:', unreadMessages.length, 'messages');
+                debouncedMarkAsRead(selectedConversation);
+            }
+        }
+    }, [messages, selectedConversation, isConnected]);
+
+    // Effet pour marquer les nouveaux messages comme lus en temps réel
+    useEffect(() => {
+        if (selectedConversation && isConnected) {
+            // Créer un intervalle pour vérifier périodiquement les nouveaux messages non lus
+            const interval = setInterval(() => {
+                const unreadMessages = messages.filter(message => 
+                    !message.isMe && 
+                    !message.isRead && 
+                    message.conversationId === selectedConversation
+                );
+                
+                if (unreadMessages.length > 0) {
+                    console.log('📖 Vérification périodique - marquage des messages comme lus:', unreadMessages.length, 'messages');
+                    debouncedMarkAsRead(selectedConversation);
+                }
+            }, 3000); // Vérifier toutes les 3 secondes
+
+            return () => clearInterval(interval);
+        }
+    }, [selectedConversation, isConnected, messages]);
+
+    // Effet pour marquer les messages comme lus quand on fait défiler vers le bas
+    useEffect(() => {
+        const handleScroll = () => {
+            if (selectedConversation && isConnected) {
+                const messagesContainer = document.querySelector('.messages-container');
+                if (messagesContainer) {
+                    const { scrollTop, scrollHeight, clientHeight } = messagesContainer as HTMLElement;
+                    const isAtBottom = scrollTop + clientHeight >= scrollHeight - 10; // 10px de marge
+                    
+                    if (isAtBottom) {
+                        // Marquer les messages comme lus seulement si on est en bas
+                        const unreadMessages = messages.filter(message => !message.isMe && !message.isRead);
+                        if (unreadMessages.length > 0) {
+                            console.log('📖 Marquage des messages comme lus (scroll en bas):', unreadMessages.length, 'messages');
+                            debouncedMarkAsRead(selectedConversation);
+                        }
+                    }
+                }
+            }
+        };
+
+        const messagesContainer = document.querySelector('.messages-container');
+        if (messagesContainer) {
+            messagesContainer.addEventListener('scroll', handleScroll);
+            return () => messagesContainer.removeEventListener('scroll', handleScroll);
+        }
+    }, [selectedConversation, isConnected, messages]);
+
     // Fonction pour obtenir l'ID utilisateur actuel
     const getCurrentUserId = (): string | null => {
         if (typeof window === "undefined") return null;
@@ -141,6 +205,11 @@ export default function ConversationPage({ initialConversationId }: Conversation
                 content: messageContent,
                 reply_to_id: replyToMessage?.id
             });
+            
+            // Remettre le focus sur l'input après l'envoi
+            setTimeout(() => {
+                inputRef.current?.focus();
+            }, 100);
             
         } catch (error) {
             console.error('❌ Erreur lors de l&apos;envoi du message:', error);
@@ -341,24 +410,27 @@ export default function ConversationPage({ initialConversationId }: Conversation
                                 </span>
                             )}
                         </div>
-                        
-                        {/* Afficher les réactions */}
-                        <MessageReactions 
-                            message={message} 
-                            currentUserId={getCurrentUserId() || ''} 
-                        />
-                        
-                        {/* Menu contextuel pour répondre */}
-                        <div className={`absolute top-0 ${message.isMe ? '-left-16' : '-right-16'} opacity-0 group-hover:opacity-100 transition-opacity`}>
+
+                        {/* Réactions et bouton répondre pour TOUS les messages */}
+                        <div className="flex items-center gap-2 mt-1">
+                          <MessageReactions 
+                              message={message} 
+                              currentUserId={getCurrentUserId() || ''} 
+                              isMe={message.isMe}
+                          />
+                          {/* Bouton répondre UNIQUEMENT pour les messages de l'autre personne */}
+                          {!message.isMe && (
                             <button
-                                onClick={() => setReplyToMessage(message)}
+                                onClick={() => handleReplyToMessage(message)}
                                 className="p-1 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded transition-colors"
                                 title="Répondre à ce message"
+                                style={{ minWidth: 32, minHeight: 32 }}
                             >
                                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6" />
                                 </svg>
                             </button>
+                          )}
                         </div>
                     </div>
                 </div>
@@ -372,8 +444,40 @@ export default function ConversationPage({ initialConversationId }: Conversation
     const conversationName = selectedConversationData?.name ?? "Messages";
     const userStatus = selectedConversationData ? getUserStatus(isOtherUserOnline) : null;
 
+    const handleReplyToMessage = (message: Message) => {
+        setReplyToMessage(message);
+        // Mettre le focus sur l'input après un court délai pour s'assurer que le DOM est mis à jour
+        setTimeout(() => {
+            inputRef.current?.focus();
+        }, 100);
+    };
+
+    const handleCancelReply = () => {
+        setReplyToMessage(null);
+        // Maintenir le focus sur l'input
+        setTimeout(() => {
+            inputRef.current?.focus();
+        }, 100);
+    };
+
+    // Fonction pour marquer les messages comme lus avec debounce
+    const debouncedMarkAsRead = (conversationId: string) => {
+        // Annuler le timeout précédent s'il existe
+        if (markAsReadTimeoutRef.current) {
+            clearTimeout(markAsReadTimeoutRef.current);
+        }
+        
+        // Créer un nouveau timeout
+        markAsReadTimeoutRef.current = setTimeout(() => {
+            console.log('📖 Marquage des messages comme lus (debounced):', conversationId);
+            markAsRead(conversationId);
+            markAsReadMutation.mutate(conversationId);
+            markAsReadTimeoutRef.current = null;
+        }, 1000); // Délai de 1 seconde
+    };
+
     return (
-        <div className="flex flex-col h-full">
+        <div className="flex flex-col h-[calc(100vh-130px)]">
             {/* Header avec bouton retour */}
             <div className="flex items-center justify-between p-4 border-b border-gray-200 bg-white bg-opacity-50">
                 <div className="flex items-center gap-3">
@@ -427,7 +531,7 @@ export default function ConversationPage({ initialConversationId }: Conversation
                 </div>
             </div>
             {/* Zone des messages */}
-            <div className="flex-1 overflow-y-auto p-4 space-y-3">
+            <div className="flex-1 overflow-y-auto p-4 space-y-3 messages-container">
                 {messagesContent}
             </div>
             {/* Barre de saisie */}
@@ -441,7 +545,7 @@ export default function ConversationPage({ initialConversationId }: Conversation
                                 <span className="text-sm text-blue-600 truncate">{replyToMessage.content}</span>
                             </div>
                             <button
-                                onClick={() => setReplyToMessage(null)}
+                                onClick={handleCancelReply}
                                 className="text-blue-500 hover:text-blue-700 p-1"
                                 title="Annuler la réponse"
                             >
@@ -462,6 +566,7 @@ export default function ConversationPage({ initialConversationId }: Conversation
                         placeholder={replyToMessage ? "Écrivez votre réponse..." : "Écrivez votre message..."}
                         className="flex-1 p-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                         disabled={!isConnected}
+                        ref={inputRef}
                     />
                     <button 
                         onClick={handleSendMessage}

@@ -8,22 +8,41 @@ import { NoConversationsState } from './NoConversationsState';
 import { useConversations } from '../../hooks/react-query/messages';
 import { useMessagesSocket } from '../../hooks/useMessagesSocket';
 import { useMessageNotifications } from '../../hooks/useMessageNotifications';
+import { NotificationSettings } from '../NotificationSettings';
+import { Button } from '../ui/button';
+import { Bell, BellOff, Settings } from 'lucide-react';
+import { NotificationPermission } from '../../lib/utils/notification-utils';
 
 export default function MessagesList() {
     const router = useRouter();
     const [selectedConversation, setSelectedConversation] = useState<string | null>(null);
-    const [notificationPermission, setNotificationPermission] = useState<NotificationPermission>('default');
+    const [showNotificationSettings, setShowNotificationSettings] = useState(false);
     
     // Hooks pour les données et sockets
     const { data: conversations = [], isLoading } = useConversations();
     const { isUserOnline } = useMessagesSocket();
-    const { unreadNotifications, removeConversationNotifications, requestNotificationPermission } = useMessageNotifications();
+    const { 
+        unreadNotifications, 
+        removeConversationNotifications, 
+        notificationState,
+        requestNotificationPermission,
+        openNotificationSettings
+    } = useMessageNotifications();
 
-    // Vérifier l'état des permissions de notification au chargement
+    // Écouter les clics sur les notifications pour la navigation
     useEffect(() => {
-        if ('Notification' in window) {
-            setNotificationPermission(Notification.permission);
-        }
+        const handleNotificationClick = (event: CustomEvent) => {
+            const { conversationId } = event.detail;
+            if (conversationId) {
+                handleConversationSelect(conversationId);
+            }
+        };
+
+        window.addEventListener('notification-click', handleNotificationClick as EventListener);
+        
+        return () => {
+            window.removeEventListener('notification-click', handleNotificationClick as EventListener);
+        };
     }, []);
 
     const handleConversationSelect = (conversationId: string) => {
@@ -41,12 +60,13 @@ export default function MessagesList() {
 
     const handleRequestNotificationPermission = async () => {
         const granted = await requestNotificationPermission();
-        if (granted) {
-            setNotificationPermission('granted');
-            alert('Notifications activées !');
-        } else {
-            setNotificationPermission('denied');
-            alert('Notifications refusées. Vous pouvez les activer dans les paramètres de votre navigateur.');
+        if (!granted) {
+            // Si la permission est refusée, proposer d'ouvrir les paramètres
+            setTimeout(() => {
+                if (confirm('Voulez-vous ouvrir les paramètres de notification du navigateur ?')) {
+                    openNotificationSettings();
+                }
+            }, 1000);
         }
     };
 
@@ -61,6 +81,27 @@ export default function MessagesList() {
         if (!conversation.otherUserId) return false;
         return isUserOnline(conversation.otherUserId);
     };
+
+    // Fonction pour obtenir le statut des notifications
+    const getNotificationStatus = () => {
+        if (!notificationState.isSupported) {
+            return { text: 'Non supportées', color: 'text-gray-500', icon: BellOff };
+        }
+        
+        switch (notificationState.permission) {
+            case NotificationPermission.GRANTED:
+                return { text: 'Activées', color: 'text-green-600', icon: Bell };
+            case NotificationPermission.DENIED:
+                return { text: 'Refusées', color: 'text-red-600', icon: BellOff };
+            case NotificationPermission.DEFAULT:
+                return { text: 'Non demandées', color: 'text-yellow-600', icon: Bell };
+            default:
+                return { text: 'Inconnu', color: 'text-gray-500', icon: BellOff };
+        }
+    };
+
+    const notificationStatus = getNotificationStatus();
+    const StatusIcon = notificationStatus.icon;
 
     // Préparer le contenu de la liste des conversations
     let conversationListContent;
@@ -108,27 +149,45 @@ export default function MessagesList() {
                         <h1 className="text-xl sm:text-2xl font-bold text-gray-900">Messages</h1>
                         <div className="w-2 h-2 sm:w-3 sm:h-3 rounded-full bg-green-500" />
                     </div>
+                    
+                    {/* Bouton des paramètres de notification */}
+                    <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => setShowNotificationSettings(!showNotificationSettings)}
+                        className="flex items-center gap-2"
+                    >
+                        <StatusIcon className={`w-4 h-4 ${notificationStatus.color}`} />
+                        <span className="hidden sm:inline text-sm">{notificationStatus.text}</span>
+                        <Settings className="w-4 h-4" />
+                    </Button>
                 </div>
-                <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-3 mt-2">
-                    {notificationPermission === 'default' && (
-                        <button
-                            onClick={handleRequestNotificationPermission}
-                            className="w-full sm:w-auto px-3 py-2 text-xs sm:text-sm bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition-colors text-center"
-                        >
-                            Activer notifications
-                        </button>
-                    )}
-                    {notificationPermission === 'granted' && (
-                        <div className="w-full sm:w-auto px-3 py-2 text-xs sm:text-sm bg-green-100 text-green-700 rounded-lg text-center">
-                            ✓ Notifications activées
+
+                {/* Section des paramètres de notification */}
+                {showNotificationSettings && (
+                    <div className="mt-4">
+                        <NotificationSettings />
+                    </div>
+                )}
+
+                {/* Demande rapide de permission si non demandée */}
+                {notificationState.permission === NotificationPermission.DEFAULT && 
+                 notificationState.isSupported && 
+                 !showNotificationSettings && (
+                    <div className="mt-3 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                        <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-2">
+                                <Bell className="w-4 h-4 text-blue-600" />
+                                <span className="text-sm text-blue-700">
+                                    Activez les notifications pour ne manquer aucun message
+                                </span>
+                            </div>
+                            <Button onClick={handleRequestNotificationPermission} size="sm" variant="outline">
+                                Activer
+                            </Button>
                         </div>
-                    )}
-                    {notificationPermission === 'denied' && (
-                        <div className="w-full sm:w-auto px-3 py-2 text-xs sm:text-sm bg-red-100 text-red-700 rounded-lg text-center">
-                            ✗ Notifications désactivées
-                        </div>
-                    )}
-                </div>
+                    </div>
+                )}
             </div>
 
             {/* Liste des conversations */}

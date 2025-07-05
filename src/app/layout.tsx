@@ -29,10 +29,10 @@ export default function RootLayout({
                 <ProfileGuard>
                   <SidebarProvider>
                     <SidebarComponent />
-                    <main className={"h-[calc(100vh-130px)] w-full"}>
+                    <main className="w-full min-h-[calc(100vh-130px)]">
                       {children}
-                      <div className="h-[130px] w-full"></div>
                     </main>
+                    <div className="h-[130px] w-full"></div>
                     <Toaster />
                   </SidebarProvider>
                 </ProfileGuard>

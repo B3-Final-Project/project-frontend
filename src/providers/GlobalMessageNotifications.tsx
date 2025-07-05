@@ -6,12 +6,14 @@ import { useSocket } from "./SocketProvider";
 import { useToast } from "@/hooks/use-toast";
 import { useQueryClient } from "@tanstack/react-query";
 import { Message, Conversation, NewMatchData } from "@/lib/routes/messages/interfaces/message.interface";
+import { useMessageNotifications } from "@/hooks/useMessageNotifications";
 
 export function GlobalMessageNotifications({ children }: { children: React.ReactNode }) {
   const { socket, isConnected } = useSocket();
   const { toast, dismiss } = useToast();
   const queryClient = useQueryClient();
   const router = useRouter();
+  const { addNotification, notificationState } = useMessageNotifications();
 
   useEffect(() => {
     if (!socket || !isConnected) return;
@@ -29,20 +31,29 @@ export function GlobalMessageNotifications({ children }: { children: React.React
       if (isMe) return;
 
       console.log('Nouveau message', message);
-      // Récupérer le nom de l'expéditeur à partir de la conversation
-      const toastInstance = toast({
-        title: `Nouveau message de ${message.senderName ?? 'Quelqu\'un'}`,
-        description: message.content?.slice(0, 80) || '',
-        variant: "default",
-        onClick: () => {
-          // Rediriger vers la conversation
-          if (message.conversationId) {
-            router.push(`/messages/${message.conversationId}`);
-          }
-          // Fermer le toast après l'action
-          toastInstance.dismiss();
-        },
-      });
+      
+      // Ajouter une notification native si autorisée
+      if (notificationState.permission === 'granted' && notificationState.settings?.enabled) {
+        addNotification(message, message.senderName ?? 'Quelqu\'un');
+      }
+
+      // Afficher un toast seulement si l'utilisateur n'a pas activé les notifications natives
+      // ou si les notifications natives sont désactivées
+      if (notificationState.permission !== 'granted' || !notificationState.settings?.enabled) {
+        const toastInstance = toast({
+          title: `Nouveau message de ${message.senderName ?? 'Quelqu\'un'}`,
+          description: message.content?.slice(0, 80) || '',
+          variant: "default",
+          onClick: () => {
+            // Rediriger vers la conversation
+            if (message.conversationId) {
+              router.push(`/messages/${message.conversationId}`);
+            }
+            // Fermer le toast après l'action
+            toastInstance.dismiss();
+          },
+        });
+      }
     };
 
     // Écouter les nouveaux matches
@@ -63,17 +74,36 @@ export function GlobalMessageNotifications({ children }: { children: React.React
       const matchAge = data.matchedWith.age;
       const ageText = matchAge ? `, ${matchAge} ans` : '';
       
-      const toastInstance = toast({
-        title: "🎉 Nouveau match !",
-        description: `Vous avez matché avec ${matchName}${ageText} ! Commencez à discuter maintenant.`,
-        variant: "default",
-        onClick: () => {
-          // Rediriger vers la conversation du match
+      // Notification native pour les nouveaux matches
+      if (notificationState.permission === 'granted' && notificationState.settings?.enabled) {
+        const matchNotification = new Notification('🎉 Nouveau match !', {
+          body: `Vous avez matché avec ${matchName}${ageText} ! Commencez à discuter maintenant.`,
+          icon: '/favicon.ico',
+          tag: 'new-match',
+          requireInteraction: true,
+          silent: !notificationState.settings?.sound,
+          vibrate: notificationState.settings?.vibration ? [200, 100, 200] : undefined,
+        });
+
+        matchNotification.onclick = () => {
+          matchNotification.close();
+          window.focus();
           router.push(`/messages/${data.conversation.id}`);
-          // Fermer le toast après l'action
-          toastInstance.dismiss();
-        },
-      });
+        };
+      } else {
+        // Fallback vers le toast si les notifications natives ne sont pas disponibles
+        const toastInstance = toast({
+          title: "🎉 Nouveau match !",
+          description: `Vous avez matché avec ${matchName}${ageText} ! Commencez à discuter maintenant.`,
+          variant: "default",
+          onClick: () => {
+            // Rediriger vers la conversation du match
+            router.push(`/messages/${data.conversation.id}`);
+            // Fermer le toast après l'action
+            toastInstance.dismiss();
+          },
+        });
+      }
     };
 
     // Écouter les suppressions de conversation
@@ -98,11 +128,27 @@ export function GlobalMessageNotifications({ children }: { children: React.React
 
         const message = deletedConversation?.name ? `${otherUserName} a supprimé cette conversation.` : 'Vous avez supprimé cette conversation.';
         
-        toast({
-          title: "Conversation supprimée",
-          description: message,
-          variant: "destructive",
-        });
+        // Notification native pour la suppression de conversation
+        if (notificationState.permission === 'granted' && notificationState.settings?.enabled) {
+          const deleteNotification = new Notification('Conversation supprimée', {
+            body: message,
+            icon: '/favicon.ico',
+            tag: 'conversation-deleted',
+            silent: !notificationState.settings?.sound,
+          });
+
+          deleteNotification.onclick = () => {
+            deleteNotification.close();
+            window.focus();
+          };
+        } else {
+          // Fallback vers le toast
+          toast({
+            title: "Conversation supprimée",
+            description: message,
+            variant: "destructive",
+          });
+        }
       }
     };
 
@@ -156,7 +202,7 @@ export function GlobalMessageNotifications({ children }: { children: React.React
       socket.off('matchAction', handleMatchAction);
       socket.off('matchError', handleMatchError);
     };
-  }, [socket, isConnected, toast, queryClient, router]);
+  }, [socket, isConnected, toast, queryClient, router, addNotification, notificationState]);
 
   return <>{children}</>;
 }

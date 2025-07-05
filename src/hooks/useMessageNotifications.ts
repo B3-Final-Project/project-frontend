@@ -1,5 +1,16 @@
-import { useState, useEffect, useCallback } from 'react';
-import { NotificationPermission, NotificationAPI } from '../lib/utils/notification-utils';
+import { useState, useEffect, useCallback, useRef } from 'react';
+import { 
+  NotificationPermission, 
+  NotificationAPI,
+  NotificationOptions,
+  NotificationState,
+  NOTIFICATION_CONFIG,
+  isNotificationSupported,
+  getNotificationPermission,
+  formatNotificationContent,
+  createNotificationTag,
+  handleNotificationError
+} from '../lib/utils/notification-utils';
 import { useMessagesSocket } from './useMessagesSocket';
 import { Message } from '../lib/routes/messages/interfaces/message.interface';
 
@@ -21,18 +32,131 @@ interface UnreadNotification {
 export const useMessageNotifications = () => {
   const [notifications, setNotifications] = useState<NotificationMessage[]>([]);
   const [unreadNotifications, setUnreadNotifications] = useState<UnreadNotification[]>([]);
-  const { isConnected } = useMessagesSocket();
-
-  // Fonction pour envoyer une notification push
-  const sendPushNotification = useCallback((notification: NotificationMessage) => {
-    if (NotificationAPI.NOTIFICATION in window && Notification.permission === NotificationPermission.GRANTED) {
-      new Notification(notification.title, {
-        body: notification.body,
-        icon: '/favicon.ico',
-        tag: notification.conversationId,
-      });
+  const [notificationState, setNotificationState] = useState<NotificationState>({
+    permission: NotificationPermission.DEFAULT,
+    isSupported: false,
+    settings: {
+      enabled: true,
+      sound: true,
+      vibration: true,
+      showPreview: true,
     }
+  });
+  
+  const { isConnected } = useMessagesSocket();
+  const notificationTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Initialiser l'état des notifications au chargement
+  useEffect(() => {
+    const initializeNotifications = () => {
+      const supported = isNotificationSupported();
+      const permission = getNotificationPermission();
+      
+      setNotificationState(prev => ({
+        ...prev,
+        isSupported: supported,
+        permission: permission as NotificationPermission,
+      }));
+
+      // Charger les paramètres depuis le localStorage
+      try {
+        const savedSettings = localStorage.getItem('notification-settings');
+        if (savedSettings) {
+          const settings = JSON.parse(savedSettings);
+          setNotificationState(prev => ({
+            ...prev,
+            settings: { ...prev.settings, ...settings }
+          }));
+        }
+      } catch (error) {
+        console.warn('Erreur lors du chargement des paramètres de notification:', error);
+      }
+    };
+
+    initializeNotifications();
   }, []);
+
+  // Sauvegarder les paramètres dans le localStorage
+  const saveNotificationSettings = useCallback((settings: Partial<NotificationState['settings']>) => {
+    try {
+      const currentSettings = notificationState.settings;
+      const newSettings = { ...currentSettings, ...settings };
+      localStorage.setItem('notification-settings', JSON.stringify(newSettings));
+      setNotificationState(prev => ({
+        ...prev,
+        settings: newSettings
+      }));
+    } catch (error) {
+      console.warn('Erreur lors de la sauvegarde des paramètres:', error);
+    }
+  }, [notificationState.settings]);
+
+  // Fonction pour envoyer une notification push native
+  const sendPushNotification = useCallback((notification: NotificationMessage) => {
+    if (!notificationState.isSupported || notificationState.permission !== NotificationPermission.GRANTED) {
+      return;
+    }
+
+    if (!notificationState.settings?.enabled) {
+      return;
+    }
+
+    try {
+      const { title, body } = formatNotificationContent(notification.title, notification.body);
+      
+      const options: NotificationOptions = {
+        title,
+        body: notificationState.settings.showPreview ? body : 'Nouveau message reçu',
+        icon: NOTIFICATION_CONFIG.DEFAULT_ICON,
+        badge: NOTIFICATION_CONFIG.DEFAULT_BADGE,
+        tag: createNotificationTag('message', notification.conversationId),
+        data: {
+          conversationId: notification.conversationId,
+          messageId: notification.id,
+          type: 'new-message'
+        },
+        requireInteraction: false,
+        silent: !notificationState.settings.sound,
+        vibrate: notificationState.settings.vibration ? NOTIFICATION_CONFIG.VIBRATION_PATTERN : undefined,
+        timestamp: notification.timestamp.getTime(),
+      };
+
+      const nativeNotification = new Notification(options.title, options);
+
+      // Gérer les événements de la notification
+      nativeNotification.onclick = () => {
+        // Fermer la notification
+        nativeNotification.close();
+        
+        // Rediriger vers la conversation (sera géré par le composant parent)
+        window.focus();
+        
+        // Émettre un événement personnalisé pour la navigation
+        window.dispatchEvent(new CustomEvent('notification-click', {
+          detail: {
+            conversationId: notification.conversationId,
+            messageId: notification.id
+          }
+        }));
+      };
+
+      nativeNotification.onclose = () => {
+        console.log('Notification fermée:', notification.id);
+      };
+
+      // Auto-fermeture après 5 secondes
+      if (notificationTimeoutRef.current) {
+        clearTimeout(notificationTimeoutRef.current);
+      }
+      
+      notificationTimeoutRef.current = setTimeout(() => {
+        nativeNotification.close();
+      }, 5000);
+
+    } catch (error) {
+      handleNotificationError(error as Error, 'sendPushNotification');
+    }
+  }, [notificationState]);
 
   // Fonction pour ajouter une notification
   const addNotification = useCallback((message: Message, senderName: string) => {
@@ -74,43 +198,115 @@ export const useMessageNotifications = () => {
 
   // Fonction pour demander la permission de notification
   const requestNotificationPermission = useCallback(async (): Promise<boolean> => {
-    if (!(NotificationAPI.NOTIFICATION in window)) {
+    if (!notificationState.isSupported) {
       console.warn('Notifications non supportées par ce navigateur');
       return false;
     }
 
-    if (Notification.permission === NotificationPermission.GRANTED) {
+    if (notificationState.permission === NotificationPermission.GRANTED) {
       return true;
     }
 
-    if (Notification.permission === NotificationPermission.DENIED) {
+    if (notificationState.permission === NotificationPermission.DENIED) {
       console.warn('Permission de notification refusée');
       return false;
     }
 
     try {
       const permission = await Notification.requestPermission();
-      return permission === NotificationPermission.GRANTED;
+      const granted = permission === NotificationPermission.GRANTED;
+      
+      setNotificationState(prev => ({
+        ...prev,
+        permission: permission as NotificationPermission,
+        lastRequested: new Date()
+      }));
+
+      if (granted) {
+        // Envoyer une notification de test
+        const testNotification = new Notification('Notifications activées ! 🎉', {
+          body: 'Vous recevrez maintenant des notifications pour les nouveaux messages.',
+          icon: NOTIFICATION_CONFIG.DEFAULT_ICON,
+          tag: 'test-notification',
+          silent: true
+        });
+
+        setTimeout(() => testNotification.close(), 3000);
+      }
+
+      return granted;
     } catch (error) {
-      console.error('Erreur lors de la demande de permission:', error);
+      handleNotificationError(error as Error, 'requestNotificationPermission');
       return false;
+    }
+  }, [notificationState.isSupported, notificationState.permission]);
+
+  // Fonction pour ouvrir les paramètres de notification du navigateur
+  const openNotificationSettings = useCallback(() => {
+    if (typeof window !== 'undefined' && 'Notification' in window) {
+      // Essayer d'ouvrir les paramètres de notification
+      if ('serviceWorker' in navigator && 'permissions' in navigator) {
+        navigator.permissions.query({ name: 'notifications' as PermissionName }).then((permission) => {
+          console.log('État actuel des permissions:', permission.state);
+        });
+      }
+      
+      // Afficher un message d'aide
+      alert('Pour activer les notifications, veuillez :\n\n1. Cliquer sur l\'icône de cadenas dans la barre d\'adresse\n2. Autoriser les notifications\n3. Recharger la page');
     }
   }, []);
 
-  // Effet pour écouter les nouveaux messages via WebSocket
-  useEffect(() => {
-    if (!isConnected) return;
+  // Fonction pour tester les notifications
+  const testNotification = useCallback(() => {
+    if (notificationState.permission === NotificationPermission.GRANTED && notificationState.settings?.enabled) {
+      try {
+        const testNotification = new Notification('Test de notification', {
+          body: 'Ceci est un test pour vérifier que les notifications fonctionnent correctement.',
+          icon: NOTIFICATION_CONFIG.DEFAULT_ICON,
+          tag: 'test-notification',
+          requireInteraction: true,
+          silent: !notificationState.settings?.sound,
+        });
 
-    // Les listeners WebSocket sont gérés dans useMessagesSocket
-    // Ici on peut ajouter des listeners spécifiques aux notifications si nécessaire
-  }, [isConnected]);
+        testNotification.onclick = () => {
+          testNotification.close();
+          window.focus();
+        };
+
+        console.log('✅ Notification de test envoyée avec succès');
+      } catch (error) {
+        console.error('❌ Erreur lors de l\'envoi de la notification de test:', error);
+        handleNotificationError(error as Error, 'testNotification');
+      }
+    } else {
+      console.warn('⚠️ Notifications non autorisées ou désactivées');
+      if (notificationState.permission !== NotificationPermission.GRANTED) {
+        alert('Veuillez d\'abord autoriser les notifications dans votre navigateur.');
+      } else if (!notificationState.settings?.enabled) {
+        alert('Veuillez d\'abord activer les notifications dans les paramètres.');
+      }
+    }
+  }, [notificationState.permission, notificationState.settings]);
+
+  // Cleanup des timeouts
+  useEffect(() => {
+    return () => {
+      if (notificationTimeoutRef.current) {
+        clearTimeout(notificationTimeoutRef.current);
+      }
+    };
+  }, []);
 
   return {
     notifications,
     unreadNotifications,
+    notificationState,
     addNotification,
     addUnreadNotification,
     removeConversationNotifications,
     requestNotificationPermission,
+    openNotificationSettings,
+    testNotification,
+    saveNotificationSettings,
   };
 }; 

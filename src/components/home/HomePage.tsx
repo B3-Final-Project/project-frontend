@@ -17,7 +17,7 @@ export default function HomePage() {
   if (auth.isLoading || !auth.user) {
     return (
       <main
-        className={"flex flex-col items-center justify-center gap-10 h-screen"}
+        className={"flex flex-col items-center justify-center gap-10 h-full"}
       >
         <Image
           src={"/logo.png"}

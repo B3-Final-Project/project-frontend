@@ -4,7 +4,7 @@ import { ProfileHeader } from "@/components/profile/ProfileHeader";
 
 export default function ProfilePage() {
   return (
-    <div className="h-full w-full flex flex-col justify-between">
+    <div className="w-full flex flex-col justify-between">
       <ProfileHeader />
       <div
         className={"w-full h-full flex flex-col items-center mt-8"}

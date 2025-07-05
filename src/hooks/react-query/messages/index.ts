@@ -3,6 +3,7 @@ import { useRouter } from 'next/navigation';
 import { MessageRouter } from '../../../lib/routes/messages';
 import { CreateMessageDto } from '../../../lib/routes/messages/dto/create-message.dto';
 import { CreateConversationDto } from '../../../lib/routes/messages/dto/create-conversation.dto';
+import { getCurrentUserIdFromToken } from '../../useMessagesSocket';
 
 export const useConversations = () => {
   return useQuery({
@@ -27,9 +28,6 @@ export const useMessages = (conversationId: string) => {
     queryFn: async () => {
       try {
         const result = await MessageRouter.getMessages(undefined, { id: conversationId });
-        
-
-        
         return result || [];
       } catch (error) {
         console.error('Erreur lors de la récupération des messages:', error);
@@ -121,8 +119,12 @@ export const useAddReaction = () => {
   return useMutation({
     mutationFn: (data: { message_id: string; emoji: string }) =>
       MessageRouter.addReaction(data),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['messages'] });
+    onSuccess: (updatedMessage, variables) => {
+      // Mettre à jour directement le cache des messages
+      queryClient.setQueryData(['messages', updatedMessage.conversationId], (oldData: any[] | undefined) => {
+        if (!oldData) return [updatedMessage];
+        return oldData.map(m => m.id === variables.message_id ? updatedMessage : m);
+      });
     },
   });
 };
@@ -133,8 +135,12 @@ export const useRemoveReaction = () => {
   return useMutation({
     mutationFn: (data: { message_id: string; emoji: string }) =>
       MessageRouter.removeReaction(data),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['messages'] });
+    onSuccess: (updatedMessage, variables) => {
+      // Mettre à jour directement le cache des messages
+      queryClient.setQueryData(['messages', updatedMessage.conversationId], (oldData: any[] | undefined) => {
+        if (!oldData) return [updatedMessage];
+        return oldData.map(m => m.id === variables.message_id ? updatedMessage : m);
+      });
     },
   });
 }; 

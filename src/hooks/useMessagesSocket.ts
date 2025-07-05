@@ -11,7 +11,7 @@ import { Message, Conversation, NewMatchData } from '../lib/routes/messages/inte
 const processedMessages = new Set<string>();
 
 // Fonctions utilitaires pour la gestion des tokens
-const getCurrentUserIdFromToken = (): string | null => {
+export const getCurrentUserIdFromToken = (): string | null => {
   if (typeof window === "undefined") return null;
 
   try {
@@ -182,10 +182,31 @@ const createMessageHandlers = (queryClient: ReturnType<typeof useQueryClient>, t
       updateConversationsData(message.conversationId, correctedMessage, isMe);
     },
 
-
-
     handleMessagesRead: (data: { conversationId: string; readBy: string; timestamp: Date }) => {
-      updateMessagesForRead(data.conversationId);
+      console.log('📖 Événement messagesRead reçu:', data);
+      const currentUserId = getCurrentUserIdFromToken();
+      
+      // Mettre à jour les messages de cette conversation
+      queryClient.setQueryData(['messages', data.conversationId], (oldData: Message[] | undefined) => {
+        if (!oldData) return oldData;
+        
+        const updatedData = oldData.map(message => {
+          // Si c'est notre message et qu'il n'est pas encore marqué comme lu
+          if (message.isMe && !message.isRead) {
+            console.log('📖 Mise à jour du statut lu pour le message:', message.id);
+            return {
+              ...message,
+              isRead: true
+            };
+          }
+          return message;
+        });
+        
+        console.log('📖 Messages mis à jour avec le statut lu:', updatedData.length);
+        return updatedData;
+      });
+      
+      // Mettre à jour la liste des conversations
       updateConversationsForRead(data.conversationId);
     },
 
@@ -254,10 +275,28 @@ const createMessageHandlers = (queryClient: ReturnType<typeof useQueryClient>, t
     },
 
     handleMessageReactionUpdated: (message: Message) => {
+      console.log('🔄 Événement de réaction reçu:', message);
+      const currentUserId = getCurrentUserIdFromToken();
+      const correctedMessage = {
+        ...message,
+        isMe: message.sender_id === currentUserId
+      };
+      console.log('🔄 Message corrigé:', correctedMessage);
+      
+      // Vérifier si le message existe déjà dans le cache
       queryClient.setQueryData(['messages', message.conversationId], (oldData: Message[] | undefined) => {
-        if (!oldData) return [message];
+        if (!oldData) return [correctedMessage];
         
-        return oldData.map(m => m.id === message.id ? message : m);
+        // Vérifier si le message a déjà été mis à jour récemment
+        const existingMessage = oldData.find(m => m.id === message.id);
+        if (existingMessage && JSON.stringify(existingMessage.reactions) === JSON.stringify(message.reactions)) {
+          console.log('🔄 Message déjà à jour, ignoré');
+          return oldData;
+        }
+        
+        const updatedData = oldData.map(m => m.id === message.id ? correctedMessage : m);
+        console.log('🔄 Cache mis à jour:', updatedData);
+        return updatedData;
       });
     }
   };
@@ -292,15 +331,22 @@ export const useMessagesSocket = () => {
 
   // Fonction pour rejoindre une conversation
   const joinConversation = useCallback((conversationId: string) => {
-    if (!socket || !isConnected) return;
+    if (!socket || !isConnected) {
+      console.error('❌ Impossible de rejoindre la conversation: socket non connecté');
+      return;
+    }
+    
+    console.log('🔗 Rejoindre la conversation:', conversationId);
     
     if (currentConversationRef.current) {
+      console.log('🔗 Quitter la conversation précédente:', currentConversationRef.current);
       socket.emit('leaveConversation', currentConversationRef.current);
     }
     
     socket.emit('joinConversation', conversationId);
     currentConversationRef.current = conversationId;
     setCurrentConversationId(conversationId);
+    console.log('🔗 Conversation rejointe avec succès:', conversationId);
   }, [socket, isConnected]);
 
   // Fonction pour quitter une conversation
@@ -364,14 +410,20 @@ export const useMessagesSocket = () => {
   // Fonction pour ajouter une réaction
   const addReaction = useCallback((data: { message_id: string; emoji: string }) => {
     if (socket && isConnected) {
+      console.log('🔗 Émission addReaction via WebSocket:', data);
       socket.emit('addReaction', data);
+    } else {
+      console.error('❌ Impossible d\'ajouter une réaction: socket non connecté');
     }
   }, [socket, isConnected]);
 
   // Fonction pour supprimer une réaction
   const removeReaction = useCallback((data: { message_id: string; emoji: string }) => {
     if (socket && isConnected) {
+      console.log('🔗 Émission removeReaction via WebSocket:', data);
       socket.emit('removeReaction', data);
+    } else {
+      console.error('❌ Impossible de supprimer une réaction: socket non connecté');
     }
   }, [socket, isConnected]);
 
@@ -522,4 +574,4 @@ export const useMessagesSocket = () => {
     getTypingUsers,
     isUserOnline,
   };
-}; 
+};
