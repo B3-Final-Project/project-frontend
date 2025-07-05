@@ -10,7 +10,6 @@ import {
   createNotificationTag,
   handleNotificationError
 } from '../lib/utils/notification-utils';
-import { useMessagesSocket } from './useMessagesSocket';
 import { Message } from '../lib/routes/messages/interfaces/message.interface';
 
 interface NotificationMessage {
@@ -53,7 +52,7 @@ export const useMessageNotifications = () => {
       setNotificationState(prev => ({
         ...prev,
         isSupported: supported,
-        permission: permission as NotificationPermission,
+        permission: permission,
       }));
 
       // Charger les paramètres depuis le localStorage
@@ -216,7 +215,7 @@ export const useMessageNotifications = () => {
       
       setNotificationState(prev => ({
         ...prev,
-        permission: permission as NotificationPermission,
+        permission: permission,
         lastRequested: new Date()
       }));
 

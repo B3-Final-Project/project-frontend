@@ -28,7 +28,6 @@ export default function MessagesList() {
     } = useMessageNotifications();
     
     const {
-        notificationState,
         getNotificationStatus,
         handleRequestNotificationPermission,
         shouldRequestPermission

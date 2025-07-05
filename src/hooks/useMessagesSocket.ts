@@ -183,7 +183,6 @@ const createMessageHandlers = (queryClient: ReturnType<typeof useQueryClient>, t
 
     handleMessagesRead: (data: { conversationId: string; readBy: string; timestamp: Date }) => {
       console.log('📖 Événement messagesRead reçu:', data);
-      const currentUserId = getCurrentUserIdFromToken();
       
       // Mettre à jour les messages de cette conversation
       queryClient.setQueryData(['messages', data.conversationId], (oldData: Message[] | undefined) => {

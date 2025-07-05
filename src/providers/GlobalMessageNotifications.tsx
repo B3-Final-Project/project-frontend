@@ -16,6 +16,61 @@ export function GlobalMessageNotifications({ children }: { readonly children: Re
   const router = useRouter();
   const { addNotification, notificationState } = useMessageNotifications();
 
+  // Fonction pour créer une notification native de match
+  const createMatchNotification = (data: NewMatchData, matchName: string, ageText: string) => {
+    const matchNotification = new Notification('🎉 Nouveau match !', {
+      body: `Vous avez matché avec ${matchName}${ageText} ! Commencez à discuter maintenant.`,
+      icon: '/favicon.ico',
+      tag: 'new-match',
+      requireInteraction: true,
+      silent: !notificationState.settings?.sound,
+      ...(notificationState.settings?.vibration && { vibrate: [200, 100, 200] }),
+    });
+
+    matchNotification.onclick = () => {
+      matchNotification.close();
+      window.focus();
+      router.push(`/messages/${data.conversation.id}`);
+    };
+  };
+
+  // Fonction pour créer un toast de match
+  const createMatchToast = (data: NewMatchData, matchName: string, ageText: string) => {
+    const toastInstance = toast({
+      title: "🎉 Nouveau match !",
+      description: `Vous avez matché avec ${matchName}${ageText} ! Commencez à discuter maintenant.`,
+      variant: "default",
+      onClick: () => {
+        router.push(`/messages/${data.conversation.id}`);
+        toastInstance.dismiss();
+      },
+    });
+  };
+
+  // Fonction pour créer une notification native de suppression
+  const createDeleteNotification = (message: string) => {
+    const deleteNotification = new Notification('Conversation supprimée', {
+      body: message,
+      icon: '/favicon.ico',
+      tag: 'conversation-deleted',
+      silent: !notificationState.settings?.sound,
+    });
+
+    deleteNotification.onclick = () => {
+      deleteNotification.close();
+      window.focus();
+    };
+  };
+
+  // Fonction pour créer un toast de suppression
+  const createDeleteToast = (message: string) => {
+    toast({
+      title: "Conversation supprimée",
+      description: message,
+      variant: "destructive",
+    });
+  };
+
   useEffect(() => {
     if (!socket || !isConnected) return;
 
@@ -43,7 +98,7 @@ export function GlobalMessageNotifications({ children }: { readonly children: Re
       if (notificationState.permission !== 'granted' || !notificationState.settings?.enabled) {
         const toastInstance = toast({
           title: `Nouveau message de ${message.senderName ?? 'Quelqu\'un'}`,
-          description: message.content?.slice(0, 80) || '',
+          description: message.content?.slice(0, 80) ?? '',
           variant: "default",
           onClick: () => {
             // Rediriger vers la conversation
@@ -77,33 +132,9 @@ export function GlobalMessageNotifications({ children }: { readonly children: Re
       
       // Notification native pour les nouveaux matches
       if (notificationState.permission === 'granted' && notificationState.settings?.enabled) {
-        const matchNotification = new Notification('🎉 Nouveau match !', {
-          body: `Vous avez matché avec ${matchName}${ageText} ! Commencez à discuter maintenant.`,
-          icon: '/favicon.ico',
-          tag: 'new-match',
-          requireInteraction: true,
-          silent: !notificationState.settings?.sound,
-          vibrate: notificationState.settings?.vibration ? [200, 100, 200] : undefined,
-        });
-
-        matchNotification.onclick = () => {
-          matchNotification.close();
-          window.focus();
-          router.push(`/messages/${data.conversation.id}`);
-        };
+        createMatchNotification(data, matchName, ageText);
       } else {
-        // Fallback vers le toast si les notifications natives ne sont pas disponibles
-        const toastInstance = toast({
-          title: "🎉 Nouveau match !",
-          description: `Vous avez matché avec ${matchName}${ageText} ! Commencez à discuter maintenant.`,
-          variant: "default",
-          onClick: () => {
-            // Rediriger vers la conversation du match
-            router.push(`/messages/${data.conversation.id}`);
-            // Fermer le toast après l'action
-            toastInstance.dismiss();
-          },
-        });
+        createMatchToast(data, matchName, ageText);
       }
     };
 
@@ -125,30 +156,15 @@ export function GlobalMessageNotifications({ children }: { readonly children: Re
       
       if (currentUserId && data.deletedBy !== currentUserId) {
         // Créer le message avec le nom de l'autre utilisateur si disponible
-        const otherUserName = deletedConversation?.name || 'Quelqu\'un';
+        const otherUserName = deletedConversation?.name ?? 'Quelqu\'un';
 
         const message = deletedConversation?.name ? `${otherUserName} a supprimé cette conversation.` : 'Vous avez supprimé cette conversation.';
         
         // Notification native pour la suppression de conversation
         if (notificationState.permission === 'granted' && notificationState.settings?.enabled) {
-          const deleteNotification = new Notification('Conversation supprimée', {
-            body: message,
-            icon: '/favicon.ico',
-            tag: 'conversation-deleted',
-            silent: !notificationState.settings?.sound,
-          });
-
-          deleteNotification.onclick = () => {
-            deleteNotification.close();
-            window.focus();
-          };
+          createDeleteNotification(message);
         } else {
-          // Fallback vers le toast
-          toast({
-            title: "Conversation supprimée",
-            description: message,
-            variant: "destructive",
-          });
+          createDeleteToast(message);
         }
       }
     };

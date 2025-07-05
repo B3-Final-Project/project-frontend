@@ -41,43 +41,98 @@ export const READ_INDICATOR_CLASSES = {
 } as const;
 
 /**
- * Obtient l'alignement approprié pour un message selon l'expéditeur
+ * Méthodes pour l'alignement des messages
+ */
+export const MessageAlignment = {
+    getSenderAlignment: (): string => MESSAGE_ALIGNMENT.SENDER,
+    getReceiverAlignment: (): string => MESSAGE_ALIGNMENT.RECEIVER,
+    getAlignment: (isMe: boolean): string => isMe ? MESSAGE_ALIGNMENT.SENDER : MESSAGE_ALIGNMENT.RECEIVER
+} as const;
+
+/**
+ * Méthodes pour les classes CSS des messages
+ */
+export const MessageClasses = {
+    getSenderClasses: (): string => MESSAGE_CLASSES.SENDER,
+    getReceiverClasses: (): string => MESSAGE_CLASSES.RECEIVER,
+    getClasses: (isMe: boolean): string => isMe ? MESSAGE_CLASSES.SENDER : MESSAGE_CLASSES.RECEIVER
+} as const;
+
+/**
+ * Méthodes pour les classes CSS des timestamps
+ */
+export const TimestampClasses = {
+    getSenderClasses: (): string => TIMESTAMP_CLASSES.SENDER,
+    getReceiverClasses: (): string => TIMESTAMP_CLASSES.RECEIVER,
+    getClasses: (isMe: boolean): string => isMe ? TIMESTAMP_CLASSES.SENDER : TIMESTAMP_CLASSES.RECEIVER
+} as const;
+
+/**
+ * Méthodes pour les indicateurs de lecture
+ */
+export const ReadIndicators = {
+    getReadIndicator: (): string => READ_INDICATORS.READ,
+    getUnreadIndicator: (): string => READ_INDICATORS.UNREAD,
+    getIndicator: (isRead: boolean): string => isRead ? READ_INDICATORS.READ : READ_INDICATORS.UNREAD
+} as const;
+
+/**
+ * Méthodes pour les classes CSS des indicateurs de lecture
+ */
+export const ReadIndicatorClasses = {
+    getReadClasses: (): string => READ_INDICATOR_CLASSES.READ,
+    getUnreadClasses: (): string => READ_INDICATOR_CLASSES.UNREAD,
+    getClasses: (isRead: boolean): string => isRead ? READ_INDICATOR_CLASSES.READ : READ_INDICATOR_CLASSES.UNREAD
+} as const;
+
+/**
+ * Méthodes pour le statut utilisateur
+ */
+export const UserStatus = {
+    getOnlineStatus: (): string => USER_STATUS.ONLINE,
+    getOfflineStatus: (): string => USER_STATUS.OFFLINE,
+    getStatus: (isOnline: boolean): string => isOnline ? USER_STATUS.ONLINE : USER_STATUS.OFFLINE
+} as const;
+
+// Fonctions de compatibilité pour maintenir l'API existante
+/**
+ * @deprecated Utilisez MessageAlignment.getAlignment() à la place
  */
 export function getMessageAlignment(isMe: boolean): string {
-    return isMe ? MESSAGE_ALIGNMENT.SENDER : MESSAGE_ALIGNMENT.RECEIVER;
+    return MessageAlignment.getAlignment(isMe);
 }
 
 /**
- * Obtient les classes CSS appropriées pour un message selon l'expéditeur
+ * @deprecated Utilisez MessageClasses.getClasses() à la place
  */
 export function getMessageClasses(isMe: boolean): string {
-    return isMe ? MESSAGE_CLASSES.SENDER : MESSAGE_CLASSES.RECEIVER;
+    return MessageClasses.getClasses(isMe);
 }
 
 /**
- * Obtient les classes CSS appropriées pour un timestamp selon l'expéditeur
+ * @deprecated Utilisez TimestampClasses.getClasses() à la place
  */
 export function getTimestampClasses(isMe: boolean): string {
-    return isMe ? TIMESTAMP_CLASSES.SENDER : TIMESTAMP_CLASSES.RECEIVER;
+    return TimestampClasses.getClasses(isMe);
 }
 
 /**
- * Obtient l'indicateur de lecture approprié
+ * @deprecated Utilisez ReadIndicators.getIndicator() à la place
  */
 export function getReadIndicator(isRead: boolean): string {
-    return isRead ? READ_INDICATORS.READ : READ_INDICATORS.UNREAD;
+    return ReadIndicators.getIndicator(isRead);
 }
 
 /**
- * Obtient les classes CSS appropriées pour l'indicateur de lecture
+ * @deprecated Utilisez ReadIndicatorClasses.getClasses() à la place
  */
 export function getReadIndicatorClasses(isRead: boolean): string {
-    return isRead ? READ_INDICATOR_CLASSES.READ : READ_INDICATOR_CLASSES.UNREAD;
+    return ReadIndicatorClasses.getClasses(isRead);
 }
 
 /**
- * Obtient le statut utilisateur approprié
+ * @deprecated Utilisez UserStatus.getStatus() à la place
  */
 export function getUserStatus(isOnline: boolean): string {
-    return isOnline ? USER_STATUS.ONLINE : USER_STATUS.OFFLINE;
+    return UserStatus.getStatus(isOnline);
 } 
