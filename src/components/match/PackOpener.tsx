@@ -144,7 +144,7 @@ const PackOpener = ({ onPackOpened, profiles = [] }: PackOpenerProps) => {
       >
         <div className="relative w-[110px] h-[110px] rounded-full bg-primary/80 flex items-center justify-center overflow-hidden">
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-white font-bold text-center text-sm w-[90%] leading-tight z-10 drop-shadow-md">
-            Rester appuyé pour ouvrir
+            Press and hold to open
           </div>
         </div>
       </div>

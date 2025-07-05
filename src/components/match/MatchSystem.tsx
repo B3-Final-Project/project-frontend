@@ -1,20 +1,20 @@
 "use client";
 
+import { checkPackAvailability } from "@/utils/packManager";
 import { AnimatePresence, useMotionValue, useTransform } from "framer-motion";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { checkPackAvailability } from "@/utils/packManager";
 import { UserCardModal } from "../UserCardModal";
 import ControlButtons from "./ControlButtons";
 
 import { useMatchActions } from "@/hooks/react-query/matches";
+import { ProfileCardType } from "@/lib/routes/profiles/dto/profile-card-type.dto";
 import { Loader } from "lucide-react";
 import MatchAnimation from "./MatchAnimation";
 import MatchCounters from "./MatchCounters";
 import MatchListModal from "./MatchListModal";
 import NonMatchListModal from "./NonMatchListModal";
 import ProfileCard from "./ProfileCard";
-import { ProfileCardType } from "@/lib/routes/profiles/dto/profile-card-type.dto";
 
 type MatchSystemProps = {
   profiles: ProfileCardType[];
@@ -135,30 +135,12 @@ export default function MatchSystem({ profiles }: MatchSystemProps) {
   useEffect(() => {
     const handleResize = () => setCardSize(getCardSize());
     window.addEventListener("resize", handleResize);
+    handleResize();
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  const handleMatch = (profile: ProfileCardType) => {
-    if (isProcessing) return; // Evite les clics multiples
-    setIsProcessing(true);
-
-    likeMatch(profile.id);
-
-    setMatchedProfile(profile);
-    setShowMatchAnimation(true);
-    const updatedMatches = [...matches, profile];
-    setMatches(updatedMatches);
-
-    setTimeout(() => {
-      setShowMatchAnimation(false);
-      setMatchedProfile(null);
-      moveToNextCard();
-      setIsProcessing(false); // Réactive les boutons
-    }, 1500);
-  };
-
   const handleReject = (profile: ProfileCardType) => {
-    if (isProcessing) return; // Evite les clics multiples
+    if (isProcessing) return;
     setIsProcessing(true);
 
     passMatch(profile.id);
@@ -168,11 +150,11 @@ export default function MatchSystem({ profiles }: MatchSystemProps) {
 
     setTimeout(() => {
       moveToNextCard();
-      setIsProcessing(false); // Réactive les boutons
+      setIsProcessing(false);
     }, 1000);
   };
 
-  const moveToNextCard = () => {
+  const moveToNextCard = useCallback(() => {
     setCurrentIndex((current) => {
       let nextIdx = current + 1;
       while (nextIdx < profiles.length) {
@@ -187,9 +169,38 @@ export default function MatchSystem({ profiles }: MatchSystemProps) {
       x.set(0);
       return nextIdx;
     });
-  };
+  }, [matches, nonMatches, profiles, x]);
 
-  const handleDragEnd = (_event: Event, info: {offset: {x: number}}) => {
+  const handleMatch = useCallback(
+    async (profile: ProfileCardType) => {
+      if (isProcessing) return;
+      setIsProcessing(true);
+
+      const response = await likeMatch(profile.id);
+
+      if (response.isMatch) {
+        setMatchedProfile(profile);
+        setShowMatchAnimation(true);
+        const updatedMatches = [...matches, profile];
+        setMatches(updatedMatches);
+
+        setTimeout(() => {
+          setShowMatchAnimation(false);
+          setMatchedProfile(null);
+          moveToNextCard();
+          setIsProcessing(false);
+        }, 1500);
+      } else {
+        setTimeout(() => {
+          moveToNextCard();
+          setIsProcessing(false);
+        }, 1000);
+      }
+    },
+    [isProcessing, likeMatch, matches, moveToNextCard]
+  );
+
+  const handleDragEnd = (_event: Event, info: { offset: { x: number } }) => {
     const offset = info.offset.x;
     if (offset > 100 && currentProfile) handleMatch(currentProfile);
     else if (offset < -100 && currentProfile) handleReject(currentProfile);
@@ -217,16 +228,8 @@ export default function MatchSystem({ profiles }: MatchSystemProps) {
 
   return (
     <div className="relative min-h-screen w-full overflow-hidden">
-      <div className="container mx-auto px-4 py-6 sm:py-10 relative z-10 flex flex-col items-center w-full h-screen">
-        {/* <div className="h-12 sm:h-16 relative w-full">
-          <AnimatePresence>
-            {showRejectAnimation && (
-              <div className="absolute top-1/2 left-0 right-0 flex justify-center z-50 -translate-y-1/2">
-                <RejectAnimation key="reject-animation" showRejectAnimation={showRejectAnimation} />
-              </div>
-            )}
-          </AnimatePresence>
-        </div> */}
+      <div className="container mx-auto px-4 py-6 sm:py-10 relative z-10 flex flex-col justify-center items-center w-full h-screen">
+
         <MatchCounters
           matchesCount={matches.length}
           nonMatchesCount={nonMatches.length}

@@ -15,8 +15,13 @@ import { getRarityGradient } from "@/utils/rarityHelper";
 import { motion } from "framer-motion";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useRouter } from "next/navigation";
+import { RelationshipTypeEnum } from "@/lib/routes/profiles/enums";
 
-const MatchPage = () => {
+interface MatchPageProps {
+  boosterType?: string | null;
+}
+
+const MatchPage = ({ boosterType }: MatchPageProps) => {
   const router = useRouter();
   const [packProfiles, setPackProfiles] = useState<ProfileCardType[]>([]);
   const [showMatchSystem, setShowMatchSystem] = useState(false);
@@ -189,6 +194,7 @@ const MatchPage = () => {
                 count={5}
                 onProfilesLoaded={handleProfilesLoadedFromGenerator}
                 onError={handleProfileLoadingError}
+                boosterType={boosterType ? boosterType as unknown as RelationshipTypeEnum : null}
               />
             </>
           ) : isVerified ? (

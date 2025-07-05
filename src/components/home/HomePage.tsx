@@ -28,7 +28,7 @@ export default function HomePage() {
         <h1 className={clsx(quantico.className, "text-4xl text-center")}>
           HOLOMATCH
         </h1>
-        <p>Ouvre ton pack, découvre des profils et trouve ton match</p>
+        <p>Open your pack, discover profiles and find your match</p>
         <SignInButton />
       </main>
     );

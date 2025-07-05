@@ -15,9 +15,10 @@ import {
   formatZodiacEnum,
 } from "@/lib/utils/enum-utils";
 import { useProfileCreation } from "@/providers/ProfileCreationProvider";
-import { useParams, useRouter } from "next/navigation";
+import { useParams } from "next/navigation";
 import { useState } from "react";
 import { PROFILE_STEPS } from "../StepComponent";
+import { useRouter } from "next/navigation";
 
 export function ReviewComponent() {
   const router = useRouter()
@@ -43,11 +44,13 @@ export function ReviewComponent() {
     setIsSubmitting(true);
     try {
       await saveProfile();
-      router.push("/");
       toast({
         title: "Profile Created",
         description: "Your profile has been successfully created!",
       });
+      setTimeout(() => {
+        router.push('/profile')
+      }, 400)
     } catch (error: unknown) {
       toast({
         title: "Error",

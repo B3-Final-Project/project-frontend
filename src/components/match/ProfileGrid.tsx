@@ -55,7 +55,7 @@ export default function ProfileGrid({
                   }}
                   className="mt-1 px-2 py-0.5 bg-white/20 backdrop-blur-md rounded-full text-primary-foreground text-xs hover:bg-white/30 transition-colors"
                 >
-                  Détails
+                  Details
                 </button>
               </div>
             </div>

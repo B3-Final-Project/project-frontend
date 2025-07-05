@@ -38,8 +38,6 @@ export function CognitoAuthProvider({ children }: CognitoAuthProviderProps) {
     if (isLoading || !config) {
       return {
         ...baseOIDCConfig,
-        authority: "",
-        client_id: "",
         redirect_uri:
           typeof window !== "undefined" ? window.location.origin : "",
         scope: "email openid profile",

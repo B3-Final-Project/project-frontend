@@ -37,7 +37,7 @@ export default function NonMatchListModal({
           <div className="flex justify-between items-center mb-4">
             <h2 className="text-lg sm:text-xl  text-primary-foreground flex items-center gap-1.5 sm:gap-2">
               <X className="w-4 h-4 sm:w-5 sm:h-5 text-red-500" />
-              Profils passés ({nonMatches.length})
+              Skipped profiles ({nonMatches.length})
             </h2>
             <button
               onClick={() => setShowNonMatchList(false)}
@@ -50,10 +50,10 @@ export default function NonMatchListModal({
           {nonMatches.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-8 text-center">
               <p className="text-gray-400 mb-2">
-                Vous n&#39;avez pas encore passé de profils
+                You haven&apos;t skipped any profiles yet
               </p>
               <p className="text-gray-500 text-sm">
-                Swipez à gauche pour passer un profil
+                Swipe left to skip a profile
               </p>
             </div>
           ) : (

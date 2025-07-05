@@ -1,5 +1,5 @@
-import BoosterList from "./BoosterList";
-import MatchList from "./MatchList";
+import BoosterList from "../boosters/BoosterList";
+import MatchList from "@/components/home/MatchList";
 
 export default function UserDashboard() {
   return (
