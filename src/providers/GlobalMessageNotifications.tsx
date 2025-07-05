@@ -71,6 +71,35 @@ export function GlobalMessageNotifications({ children }: { readonly children: Re
     });
   };
 
+  // Fonction pour gérer le clic sur un toast de nouveau message
+  const handleNewMessageToastClick = (message: Message, toastInstance: any) => {
+    // Rediriger vers la conversation
+    if (message.conversationId) {
+      router.push(`/messages/${message.conversationId}`);
+    }
+    // Fermer le toast après l'action
+    toastInstance.dismiss();
+  };
+
+  // Fonction pour mettre à jour le cache des conversations avec un nouveau match
+  const updateConversationsCacheWithMatch = (conversation: Conversation) => {
+    return (oldData: Conversation[] | undefined) => {
+      if (!oldData) return [conversation];
+      if (oldData.some(conv => conv.id === conversation.id)) {
+        return oldData;
+      }
+      return [conversation, ...oldData];
+    };
+  };
+
+  // Fonction pour mettre à jour le cache des conversations en supprimant une conversation
+  const updateConversationsCacheWithDeletion = (conversationId: string) => {
+    return (oldData: Conversation[] | undefined) => {
+      if (!oldData) return [];
+      return oldData.filter(conv => conv.id !== conversationId);
+    };
+  };
+
   useEffect(() => {
     if (!socket || !isConnected) return;
 
@@ -100,14 +129,7 @@ export function GlobalMessageNotifications({ children }: { readonly children: Re
           title: `Nouveau message de ${message.senderName ?? 'Quelqu\'un'}`,
           description: message.content?.slice(0, 80) ?? '',
           variant: "default",
-          onClick: () => {
-            // Rediriger vers la conversation
-            if (message.conversationId) {
-              router.push(`/messages/${message.conversationId}`);
-            }
-            // Fermer le toast après l'action
-            toastInstance.dismiss();
-          },
+          onClick: () => handleNewMessageToastClick(message, toastInstance),
         });
       }
     };
@@ -117,13 +139,7 @@ export function GlobalMessageNotifications({ children }: { readonly children: Re
       console.log('Nouveau match', data);
       
       // Mettre à jour le cache des conversations
-      queryClient.setQueryData(['conversations'], (oldData: Conversation[] | undefined) => {
-        if (!oldData) return [data.conversation];
-        if (oldData.some(conv => conv.id === data.conversation.id)) {
-          return oldData;
-        }
-        return [data.conversation, ...oldData];
-      });
+      queryClient.setQueryData(['conversations'], updateConversationsCacheWithMatch(data.conversation));
 
       // Créer le message du toast avec les informations enrichies
       const matchName = data.matchedWith.name;
@@ -149,10 +165,7 @@ export function GlobalMessageNotifications({ children }: { readonly children: Re
       const deletedConversation = conversations?.find(conv => conv.id === data.conversationId);
       
       // Mettre à jour le cache des conversations - retirer la conversation supprimée
-      queryClient.setQueryData(['conversations'], (oldData: Conversation[] | undefined) => {
-        if (!oldData) return [];
-        return oldData.filter(conv => conv.id !== data.conversationId);
-      });
+      queryClient.setQueryData(['conversations'], updateConversationsCacheWithDeletion(data.conversationId));
       
       if (currentUserId && data.deletedBy !== currentUserId) {
         // Créer le message avec le nom de l'autre utilisateur si disponible
