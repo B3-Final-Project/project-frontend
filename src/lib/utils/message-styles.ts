@@ -18,13 +18,13 @@ export const MESSAGE_ALIGNMENT = {
 
 // Classes CSS pour les messages
 export const MESSAGE_CLASSES = {
-    SENDER: 'max-w-[90%] md:max-w-[75%] rounded-2xl bg-blue-500 text-white p-2 md:p-3',
-    RECEIVER: 'max-w-[90%] md:max-w-[75%] rounded-2xl bg-white text-gray-900 shadow-sm border border-gray-100 p-2.5 md:p-3.5'
+    SENDER: 'max-w-[90%] md:max-w-[75%] rounded-2xl bg-blue-500 text-white shadow-sm border border-blue-500 p-2 md:p-3',
+    RECEIVER: 'max-w-[90%] md:max-w-[75%] rounded-2xl bg-white text-gray-900 shadow-sm border border-gray-100 p-2 md:p-3'
 } as const;
 
 // Classes CSS pour les timestamps
 export const TIMESTAMP_CLASSES = {
-    SENDER: 'text-blue-100',
+    SENDER: 'text-white',
     RECEIVER: 'text-gray-500'
 } as const;
 

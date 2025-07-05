@@ -40,7 +40,7 @@ export default function ConversationItem({
       className={`
         w-full text-left transition-colors
         ${isSelected ? 'bg-blue-50' : 'hover:bg-gray-50'}
-        p-3 sm:p-4
+        p-4 rounded-xl shadow-sm
         border-b border-gray-100
       `}
     >
