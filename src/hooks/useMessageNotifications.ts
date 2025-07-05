@@ -138,7 +138,7 @@ export const useMessageNotifications = () => {
       };
 
       nativeNotification.onclose = () => {
-        console.log('Notification fermée:', notification.id);
+        // Notification fermée
       };
 
       // Auto-fermeture après 5 secondes
@@ -151,7 +151,7 @@ export const useMessageNotifications = () => {
       }, 5000);
 
     } catch (error) {
-      handleNotificationError(error, 'sendPushNotification');
+      handleNotificationError(error as Error, 'sendPushNotification');
     }
   }, [notificationState]);
 
@@ -215,7 +215,7 @@ export const useMessageNotifications = () => {
       
       setNotificationState(prev => ({
         ...prev,
-        permission: permission,
+        permission: permission as NotificationPermission,
         lastRequested: new Date()
       }));
 
@@ -233,7 +233,7 @@ export const useMessageNotifications = () => {
 
       return granted;
     } catch (error) {
-      handleNotificationError(error, 'requestNotificationPermission');
+      handleNotificationError(error as Error, 'requestNotificationPermission');
       return false;
     }
   }, [notificationState.isSupported, notificationState.permission]);
@@ -273,7 +273,7 @@ export const useMessageNotifications = () => {
         console.log('✅ Notification de test envoyée avec succès');
       } catch (error) {
         console.error('❌ Erreur lors de l\'envoi de la notification de test:', error);
-        handleNotificationError(error, 'testNotification');
+        handleNotificationError(error as Error, 'testNotification');
       }
     } else {
       console.warn('⚠️ Notifications non autorisées ou désactivées');

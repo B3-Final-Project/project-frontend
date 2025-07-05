@@ -3,6 +3,7 @@ import { useRouter } from 'next/navigation';
 import { MessageRouter } from '../../../lib/routes/messages';
 import { CreateMessageDto } from '../../../lib/routes/messages/dto/create-message.dto';
 import { CreateConversationDto } from '../../../lib/routes/messages/dto/create-conversation.dto';
+import { Message, Conversation } from '../../../lib/routes/messages/interfaces/message.interface';
 
 export const useConversations = () => {
   return useQuery({
@@ -57,15 +58,15 @@ export const useSendMessage = () => {
     mutationFn: (dto: CreateMessageDto) => MessageRouter.sendMessage(dto),
     onSuccess: (data, variables) => {
       // Mettre à jour les messages de la conversation directement
-      queryClient.setQueryData(['messages', variables.conversation_id], (oldData: any[] | undefined) => {
+      queryClient.setQueryData(['messages', variables.conversation_id], (oldData: Message[] | undefined) => {
         if (!oldData) return [data];
         return [...oldData, data];
       });
       
       // Mettre à jour la liste des conversations directement
-      queryClient.setQueryData(['conversations'], (oldData: any[] | undefined) => {
+      queryClient.setQueryData(['conversations'], (oldData: Conversation[] | undefined) => {
         if (!oldData) return [];
-        return oldData.map(conv => {
+        return oldData.map((conv: Conversation) => {
           if (conv.id === variables.conversation_id) {
             return {
               ...conv,
@@ -120,9 +121,9 @@ export const useAddReaction = () => {
       MessageRouter.addReaction(data),
     onSuccess: (updatedMessage, variables) => {
       // Mettre à jour directement le cache des messages
-      queryClient.setQueryData(['messages', updatedMessage.conversationId], (oldData: any[] | undefined) => {
+      queryClient.setQueryData(['messages', updatedMessage.conversationId], (oldData: Message[] | undefined) => {
         if (!oldData) return [updatedMessage];
-        return oldData.map(m => m.id === variables.message_id ? updatedMessage : m);
+        return oldData.map((m: Message) => m.id === variables.message_id ? updatedMessage : m);
       });
     },
   });
@@ -136,9 +137,9 @@ export const useRemoveReaction = () => {
       MessageRouter.removeReaction(data),
     onSuccess: (updatedMessage, variables) => {
       // Mettre à jour directement le cache des messages
-      queryClient.setQueryData(['messages', updatedMessage.conversationId], (oldData: any[] | undefined) => {
+      queryClient.setQueryData(['messages', updatedMessage.conversationId], (oldData: Message[] | undefined) => {
         if (!oldData) return [updatedMessage];
-        return oldData.map(m => m.id === variables.message_id ? updatedMessage : m);
+        return oldData.map((m: Message) => m.id === variables.message_id ? updatedMessage : m);
       });
     },
   });

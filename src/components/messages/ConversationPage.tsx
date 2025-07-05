@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { IoArrowBack, IoTrash } from 'react-icons/io5';
 import { useRouter } from 'next/navigation';
 import { TypingIndicator } from './TypingIndicator';
@@ -79,14 +79,28 @@ export default function ConversationPage({ initialConversationId }: Conversation
         }
     }, [typingUsers.length]);
 
-    // Effet pour rejoindre une conversation quand elle est sélectionnée
+    // Fonction pour marquer les messages comme lus avec debounce
+    const debouncedMarkAsRead = useCallback((conversationId: string) => {
+        // Annuler le timeout précédent s'il existe
+        if (markAsReadTimeoutRef.current) {
+            clearTimeout(markAsReadTimeoutRef.current);
+        }
+        
+        // Créer un nouveau timeout
+        markAsReadTimeoutRef.current = setTimeout(() => {
+            markAsRead(conversationId);
+            markAsReadMutation.mutate(conversationId);
+            markAsReadTimeoutRef.current = null;
+        }, 1000); // Délai de 1 seconde
+    }, [markAsRead, markAsReadMutation]);
+
+    // Effet pour rejoindre/quitter les conversations
     useEffect(() => {
         if (selectedConversation && isConnected) {
             joinConversation(selectedConversation);
-
-            // Marquer les messages comme lus seulement si on n'a pas déjà marqué cette conversation
-            if (lastMarkedConversation.current !== selectedConversation) {
-                markAsRead(selectedConversation);
+            
+            // Marquer les messages comme lus quand on rejoint une conversation
+            if (messages.length > 0) {
                 markAsReadMutation.mutate(selectedConversation);
                 lastMarkedConversation.current = selectedConversation;
             }
@@ -118,7 +132,6 @@ export default function ConversationPage({ initialConversationId }: Conversation
             const unreadMessages = messages.filter(message => !message.isMe && !message.isRead);
             
             if (unreadMessages.length > 0) {
-                console.log('📖 Marquage automatique des messages comme lus:', unreadMessages.length, 'messages');
                 debouncedMarkAsRead(selectedConversation);
             }
         }
@@ -136,7 +149,6 @@ export default function ConversationPage({ initialConversationId }: Conversation
                 );
                 
                 if (unreadMessages.length > 0) {
-                    console.log('📖 Vérification périodique - marquage des messages comme lus:', unreadMessages.length, 'messages');
                     debouncedMarkAsRead(selectedConversation);
                 }
             }, 3000); // Vérifier toutes les 3 secondes
@@ -158,7 +170,6 @@ export default function ConversationPage({ initialConversationId }: Conversation
                         // Marquer les messages comme lus seulement si on est en bas
                         const unreadMessages = messages.filter(message => !message.isMe && !message.isRead);
                         if (unreadMessages.length > 0) {
-                            console.log('📖 Marquage des messages comme lus (scroll en bas):', unreadMessages.length, 'messages');
                             debouncedMarkAsRead(selectedConversation);
                         }
                     }
@@ -416,22 +427,6 @@ export default function ConversationPage({ initialConversationId }: Conversation
         setTimeout(() => {
             inputRef.current?.focus();
         }, 100);
-    };
-
-    // Fonction pour marquer les messages comme lus avec debounce
-    const debouncedMarkAsRead = (conversationId: string) => {
-        // Annuler le timeout précédent s'il existe
-        if (markAsReadTimeoutRef.current) {
-            clearTimeout(markAsReadTimeoutRef.current);
-        }
-        
-        // Créer un nouveau timeout
-        markAsReadTimeoutRef.current = setTimeout(() => {
-            console.log('📖 Marquage des messages comme lus (debounced):', conversationId);
-            markAsRead(conversationId);
-            markAsReadMutation.mutate(conversationId);
-            markAsReadTimeoutRef.current = null;
-        }, 1000); // Délai de 1 seconde
     };
 
     return (

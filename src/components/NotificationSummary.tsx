@@ -17,7 +17,7 @@ export function NotificationSummary({ className }: NotificationSummaryProps) {
       icon: Bell
     },
     {
-      title: 'Gestion d\'état robuste',
+      title: 'Gestion d&apos;état robuste',
       description: 'Persistance des paramètres et gestion des états de permission',
       status: 'completed',
       icon: CheckCircle
@@ -36,7 +36,7 @@ export function NotificationSummary({ className }: NotificationSummaryProps) {
     },
     {
       title: 'Gestion des erreurs',
-      description: 'Fallbacks et messages d\'erreur informatifs',
+      description: 'Fallbacks et messages d&apos;erreur informatifs',
       status: 'completed',
       icon: AlertCircle
     },
@@ -80,7 +80,7 @@ export function NotificationSummary({ className }: NotificationSummaryProps) {
           Améliorations du système de notifications
         </CardTitle>
         <CardDescription>
-          Résumé des fonctionnalités ajoutées pour améliorer l'expérience utilisateur
+          Résumé des fonctionnalités ajoutées pour améliorer l&apos;expérience utilisateur
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -111,9 +111,9 @@ export function NotificationSummary({ className }: NotificationSummaryProps) {
         <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
           <h4 className="font-medium text-blue-900 mb-2">Comment tester :</h4>
           <ul className="text-sm text-blue-700 space-y-1">
-            <li>• Allez dans Messages → Cliquez sur l'icône de notification</li>
+            <li>• Allez dans Messages → Cliquez sur l&apos;icône de notification</li>
             <li>• Activez les notifications dans votre navigateur</li>
-            <li>• Testez les notifications avec le bouton "Tester"</li>
+            <li>• Testez les notifications avec le bouton &quot;Tester&quot;</li>
             <li>• Personnalisez les paramètres (son, vibration, aperçu)</li>
             <li>• Envoyez un message depuis un autre onglet/navigateur</li>
           </ul>

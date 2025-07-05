@@ -18,27 +18,13 @@ export function MessageReactions({ message, currentUserId, isMe }: MessageReacti
   const { addReaction, removeReaction } = useMessagesSocket();
   const queryClient = useQueryClient();
 
-  // Debug: afficher les informations de réaction
-  console.log('🎯 MessageReactions - message:', message);
-  console.log('🎯 MessageReactions - reactions:', message.reactions);
-  console.log('🎯 MessageReactions - currentUserId:', currentUserId);
-
   const handleReactionClick = (emoji: string) => {
-    console.log('🎯 Clic sur réaction:', emoji);
-    console.log('🎯 Message ID:', message.id);
-    console.log('🎯 Conversation ID:', message.conversationId);
-    console.log('🎯 Current User ID:', currentUserId);
-    console.log('🎯 Is Me:', isMe);
-    
     const hasReacted = message.reactions?.[emoji]?.includes(currentUserId);
-    console.log('🎯 Utilisateur a déjà réagi:', hasReacted);
-    console.log('🎯 Réactions actuelles:', message.reactions);
     
     // Mise à jour optimiste du cache local
     const updatedReactions = message.reactions ? { ...message.reactions } : {};
     
     if (hasReacted) {
-      console.log('🎯 Suppression de réaction - appel de removeReaction');
       // Supprimer la réaction du cache local
       if (updatedReactions[emoji]) {
         updatedReactions[emoji] = updatedReactions[emoji].filter(id => id !== currentUserId);
@@ -48,7 +34,6 @@ export function MessageReactions({ message, currentUserId, isMe }: MessageReacti
       }
       removeReaction({ message_id: message.id, emoji });
     } else {
-      console.log('🎯 Ajout de réaction - appel de addReaction');
       // Ajouter la réaction au cache local
       if (!updatedReactions[emoji]) {
         updatedReactions[emoji] = [];
@@ -77,7 +62,7 @@ export function MessageReactions({ message, currentUserId, isMe }: MessageReacti
     if (!message.reactions) return [];
     
     return Object.entries(message.reactions)
-      .filter(([_, userIds]) => userIds.includes(currentUserId))
+      .filter(([, userIds]) => userIds.includes(currentUserId))
       .map(([emoji]) => emoji);
   };
 

@@ -14,13 +14,13 @@ export interface NotificationOptions {
   icon?: string;
   badge?: string;
   tag?: string;
-  data?: any;
+  data?: unknown;
   requireInteraction?: boolean;
   silent?: boolean;
   vibrate?: number[];
   actions?: NotificationAction[];
   timestamp?: number;
-  [key: string]: any; // Pour permettre les propriétés supplémentaires
+  [key: string]: unknown; // Pour permettre les propriétés supplémentaires
 }
 
 export interface NotificationAction {

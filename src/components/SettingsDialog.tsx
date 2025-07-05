@@ -171,7 +171,7 @@ export function SettingsDialog({ isOpen, onClose }: SettingsDialogProps) {
               <div>
                 <h3 className="text-lg font-medium mb-2">Paramètres généraux</h3>
                 <p className="text-sm text-gray-600">
-                  Configurez vos préférences générales de l'application.
+                  Configurez vos préférences générales de l&apos;application.
                 </p>
               </div>
               {/* Ajoutez ici d'autres paramètres généraux si nécessaire */}

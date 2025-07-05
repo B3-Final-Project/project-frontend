@@ -1,8 +1,6 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
-import { useRouter } from 'next/navigation';
 import { useSocket } from '../providers/SocketProvider';
 import { useQueryClient } from '@tanstack/react-query';
-import { useToast } from './use-toast';
 import { Message, Conversation, NewMatchData } from '../lib/routes/messages/interfaces/message.interface';
 import { getCurrentUserIdFromToken } from '../lib/utils/user-utils';
 
@@ -117,7 +115,6 @@ const handleProcessedMessage = (messageId: string | undefined) => {
   if (!messageId) return false;
   
   if (processedMessages.has(messageId)) {
-    console.log('⚠️ Message déjà présent, ignoré:', messageId);
     return true;
   }
   
@@ -135,7 +132,7 @@ const handleProcessedMessage = (messageId: string | undefined) => {
 };
 
 // Création des handlers
-const createMessageHandlers = (queryClient: ReturnType<typeof useQueryClient>, toast: (props: { title: string; description?: string; variant?: "default" | "destructive" | null; onClick?: () => void }) => void, router: any) => {
+const createMessageHandlers = (queryClient: ReturnType<typeof useQueryClient>) => {
   const updateMessagesData = createUpdateMessagesData(queryClient);
   const updateConversationsData = createUpdateConversationsData(queryClient);
   const updateConversationsForRead = createUpdateConversationsForRead(queryClient);
@@ -161,8 +158,6 @@ const createMessageHandlers = (queryClient: ReturnType<typeof useQueryClient>, t
     },
 
     handleMessagesRead: (data: { conversationId: string; readBy: string; timestamp: Date }) => {
-      console.log('📖 Événement messagesRead reçu:', data);
-      
       const { updateMessages } = createCacheUpdater(queryClient);
       
       // Mettre à jour les messages de cette conversation
@@ -172,7 +167,6 @@ const createMessageHandlers = (queryClient: ReturnType<typeof useQueryClient>, t
         const updatedData = oldData.map(message => {
           // Si c'est notre message et qu'il n'est pas encore marqué comme lu
           if (message.isMe && !message.isRead) {
-            console.log('📖 Mise à jour du statut lu pour le message:', message.id);
             return {
               ...message,
               isRead: true
@@ -181,7 +175,6 @@ const createMessageHandlers = (queryClient: ReturnType<typeof useQueryClient>, t
           return message;
         });
         
-        console.log('📖 Messages mis à jour avec le statut lu:', updatedData.length);
         return updatedData;
       });
       
@@ -236,8 +229,6 @@ const createMessageHandlers = (queryClient: ReturnType<typeof useQueryClient>, t
     // Gestion des nouveaux matches - mise à jour du cache uniquement
     // Les notifications sont gérées dans GlobalMessageNotifications.tsx
     handleNewMatch: (data: NewMatchData) => {
-      console.log('Nouveau match reçu dans useMessagesSocket', data);
-      
       const { updateConversations } = createCacheUpdater(queryClient);
       
       // Mettre à jour le cache des conversations
@@ -256,13 +247,11 @@ const createMessageHandlers = (queryClient: ReturnType<typeof useQueryClient>, t
     },
 
     handleMessageReactionUpdated: (message: Message) => {
-      console.log('🔄 Événement de réaction reçu:', message);
       const currentUserId = getCurrentUserIdFromToken();
       const correctedMessage = {
         ...message,
         isMe: message.sender_id === currentUserId
       };
-      console.log('🔄 Message corrigé:', correctedMessage);
       
       const { updateMessages } = createCacheUpdater(queryClient);
       
@@ -273,12 +262,10 @@ const createMessageHandlers = (queryClient: ReturnType<typeof useQueryClient>, t
         // Vérifier si le message a déjà été mis à jour récemment
         const existingMessage = oldData.find(m => m.id === message.id);
         if (existingMessage && JSON.stringify(existingMessage.reactions) === JSON.stringify(message.reactions)) {
-          console.log('🔄 Message déjà à jour, ignoré');
           return oldData;
         }
         
         const updatedData = oldData.map(m => m.id === message.id ? correctedMessage : m);
-        console.log('🔄 Cache mis à jour:', updatedData);
         return updatedData;
       });
     }
@@ -288,8 +275,6 @@ const createMessageHandlers = (queryClient: ReturnType<typeof useQueryClient>, t
 export const useMessagesSocket = () => {
   const { socket, isConnected } = useSocket();
   const queryClient = useQueryClient();
-  const { toast } = useToast();
-  const router = useRouter();
   const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const [typingUsers, setTypingUsers] = useState<Map<string, Set<string>>>(new Map());
   const [onlineUsers, setOnlineUsers] = useState<Set<string>>(new Set());
@@ -319,17 +304,13 @@ export const useMessagesSocket = () => {
       return;
     }
     
-    console.log('🔗 Rejoindre la conversation:', conversationId);
-    
     if (currentConversationRef.current) {
-      console.log('🔗 Quitter la conversation précédente:', currentConversationRef.current);
       socket.emit('leaveConversation', currentConversationRef.current);
     }
     
     socket.emit('joinConversation', conversationId);
     currentConversationRef.current = conversationId;
     setCurrentConversationId(conversationId);
-    console.log('🔗 Conversation rejointe avec succès:', conversationId);
   }, [socket, isConnected]);
 
   // Fonction pour quitter une conversation
@@ -393,7 +374,6 @@ export const useMessagesSocket = () => {
   // Fonction pour ajouter une réaction
   const addReaction = useCallback((data: { message_id: string; emoji: string }) => {
     if (socket && isConnected) {
-      console.log('🔗 Émission addReaction via WebSocket:', data);
       socket.emit('addReaction', data);
     } else {
       console.error('❌ Impossible d\'ajouter une réaction: socket non connecté');
@@ -403,7 +383,6 @@ export const useMessagesSocket = () => {
   // Fonction pour supprimer une réaction
   const removeReaction = useCallback((data: { message_id: string; emoji: string }) => {
     if (socket && isConnected) {
-      console.log('🔗 Émission removeReaction via WebSocket:', data);
       socket.emit('removeReaction', data);
     } else {
       console.error('❌ Impossible de supprimer une réaction: socket non connecté');
@@ -417,7 +396,7 @@ export const useMessagesSocket = () => {
     listenersInitialized.current = true;
 
     // Créer les handlers
-    const handlers = createMessageHandlers(queryClient, toast, router);
+    const handlers = createMessageHandlers(queryClient);
     handlersRef.current = handlers;
 
     // Écouter les événements
@@ -452,7 +431,7 @@ export const useMessagesSocket = () => {
       listenersInitialized.current = false;
       handlersRef.current = null;
     };
-  }, [socket]);
+  }, [socket, queryClient]);
 
   // Effet pour réinitialiser le flag quand le socket change
   useEffect(() => {
@@ -520,14 +499,14 @@ export const useMessagesSocket = () => {
     if (isConnected) {
       getOnlineUsers();
     }
-  }, [isConnected]);
+  }, [isConnected, getOnlineUsers]);
 
   // Effet pour obtenir les utilisateurs en ligne quand on rejoint une conversation
   useEffect(() => {
     if (isConnected && currentConversationId) {
       getOnlineUsers();
     }
-  }, [isConnected]);
+  }, [isConnected, currentConversationId, getOnlineUsers]);
 
   return {
     // État

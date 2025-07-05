@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import ConversationItem from './ConversationItem';
 import { StatusStates } from '../ui/status-states';
@@ -33,6 +33,14 @@ export default function MessagesList() {
         shouldRequestPermission
     } = useNotificationHelpers();
 
+    const handleConversationSelect = useCallback((conversationId: string) => {
+        setSelectedConversation(conversationId);
+        // Supprimer les notifications de cette conversation
+        removeConversationNotifications(conversationId);
+        // Rediriger vers la page de conversation spécifique
+        router.push(`/messages/${conversationId}`);
+    }, [removeConversationNotifications, router]);
+
     // Écouter les clics sur les notifications pour la navigation
     useEffect(() => {
         const handleNotificationClick = (event: CustomEvent) => {
@@ -47,15 +55,7 @@ export default function MessagesList() {
         return () => {
             window.removeEventListener('notification-click', handleNotificationClick as EventListener);
         };
-    }, []);
-
-    const handleConversationSelect = (conversationId: string) => {
-        setSelectedConversation(conversationId);
-        // Supprimer les notifications de cette conversation
-        removeConversationNotifications(conversationId);
-        // Rediriger vers la page de conversation spécifique
-        router.push(`/messages/${conversationId}`);
-    };
+    }, [handleConversationSelect]);
 
     // Fonction pour obtenir le nombre de messages non lus pour une conversation
     const getUnreadCount = (conversationId: string) => {

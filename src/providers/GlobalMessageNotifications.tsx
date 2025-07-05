@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { useSocket } from "./SocketProvider";
 import { useToast } from "@/hooks/use-toast";
@@ -17,7 +17,7 @@ export function GlobalMessageNotifications({ children }: { readonly children: Re
   const { addNotification, notificationState } = useMessageNotifications();
 
   // Fonction pour créer une notification native de match
-  const createMatchNotification = (data: NewMatchData, matchName: string, ageText: string) => {
+  const createMatchNotification = useCallback((data: NewMatchData, matchName: string, ageText: string) => {
     const matchNotification = new Notification('🎉 Nouveau match !', {
       body: `Vous avez matché avec ${matchName}${ageText} ! Commencez à discuter maintenant.`,
       icon: '/favicon.ico',
@@ -32,10 +32,10 @@ export function GlobalMessageNotifications({ children }: { readonly children: Re
       window.focus();
       router.push(`/messages/${data.conversation.id}`);
     };
-  };
+  }, [notificationState.settings?.sound, notificationState.settings?.vibration, router]);
 
   // Fonction pour créer un toast de match
-  const createMatchToast = (data: NewMatchData, matchName: string, ageText: string) => {
+  const createMatchToast = useCallback((data: NewMatchData, matchName: string, ageText: string) => {
     const toastInstance = toast({
       title: "🎉 Nouveau match !",
       description: `Vous avez matché avec ${matchName}${ageText} ! Commencez à discuter maintenant.`,
@@ -45,10 +45,10 @@ export function GlobalMessageNotifications({ children }: { readonly children: Re
         toastInstance.dismiss();
       },
     });
-  };
+  }, [toast, router]);
 
   // Fonction pour créer une notification native de suppression
-  const createDeleteNotification = (message: string) => {
+  const createDeleteNotification = useCallback((message: string) => {
     const deleteNotification = new Notification('Conversation supprimée', {
       body: message,
       icon: '/favicon.ico',
@@ -60,26 +60,26 @@ export function GlobalMessageNotifications({ children }: { readonly children: Re
       deleteNotification.close();
       window.focus();
     };
-  };
+  }, [notificationState.settings?.sound]);
 
   // Fonction pour créer un toast de suppression
-  const createDeleteToast = (message: string) => {
+  const createDeleteToast = useCallback((message: string) => {
     toast({
       title: "Conversation supprimée",
       description: message,
       variant: "destructive",
     });
-  };
+  }, [toast]);
 
   // Fonction pour gérer le clic sur un toast de nouveau message
-  const handleNewMessageToastClick = (message: Message, toastInstance: any) => {
+  const handleNewMessageToastClick = useCallback((message: Message, toastInstance: { dismiss: () => void }) => {
     // Rediriger vers la conversation
     if (message.conversationId) {
       router.push(`/messages/${message.conversationId}`);
     }
     // Fermer le toast après l'action
     toastInstance.dismiss();
-  };
+  }, [router]);
 
   // Fonction pour mettre à jour le cache des conversations avec un nouveau match
   const updateConversationsCacheWithMatch = (conversation: Conversation) => {
@@ -114,8 +114,6 @@ export function GlobalMessageNotifications({ children }: { readonly children: Re
       
       // Ne pas afficher de toast pour ses propres messages
       if (isMe) return;
-
-      console.log('Nouveau message', message);
       
       // Vérifier si l'utilisateur est actuellement sur la page de cette conversation
       const currentPath = window.location.pathname;
@@ -124,7 +122,6 @@ export function GlobalMessageNotifications({ children }: { readonly children: Re
       
       // Ne pas afficher de toast si l'utilisateur est déjà sur la page de cette conversation
       if (isOnConversationPage) {
-        console.log('Utilisateur déjà sur la page de conversation, pas de toast');
         return;
       }
       
@@ -145,8 +142,6 @@ export function GlobalMessageNotifications({ children }: { readonly children: Re
 
     // Écouter les nouveaux matches
     const handleNewMatch = (data: NewMatchData) => {
-      console.log('Nouveau match', data);
-      
       // Mettre à jour le cache des conversations
       queryClient.setQueryData(['conversations'], updateConversationsCacheWithMatch(data.conversation));
 
@@ -168,8 +163,6 @@ export function GlobalMessageNotifications({ children }: { readonly children: Re
     const handleConversationDeleted = (data: { conversationId: string; deletedBy: string; timestamp: Date }) => {
       const currentUserId = getCurrentUserIdFromToken();
       
-      console.log('Conversation supprimée', data.conversationId);
-      
       // Récupérer les informations de la conversation supprimée AVANT de la supprimer du cache
       const conversations = queryClient.getQueryData(['conversations']) as Conversation[] | undefined;
       const deletedConversation = conversations?.find(conv => conv.id === data.conversationId);
@@ -179,7 +172,6 @@ export function GlobalMessageNotifications({ children }: { readonly children: Re
       
       // Ne pas afficher de toast si c'est l'utilisateur actuel qui a supprimé la conversation
       if (currentUserId && data.deletedBy === currentUserId) {
-        console.log('Utilisateur actuel a supprimé la conversation, pas de toast');
         return;
       }
       
@@ -201,8 +193,6 @@ export function GlobalMessageNotifications({ children }: { readonly children: Re
 
     // Écouter les actions de match réussies
     const handleMatchAction = (data: { type: 'like' | 'pass'; matchId: string; isMatch?: boolean }) => {
-      console.log('Action de match', data);
-      
       if (data.type === 'like') {
         if (data.isMatch) {
           // Le match sera géré par l'événement 'newMatch'
@@ -225,8 +215,6 @@ export function GlobalMessageNotifications({ children }: { readonly children: Re
 
     // Écouter les erreurs de match
     const handleMatchError = (data: { type: string; message: string; matchId?: string }) => {
-      console.error('Erreur de match', data);
-      
       toast({
         title: "Erreur lors du match",
         description: data.message ?? "Une erreur s'est produite. Veuillez réessayer.",
@@ -249,7 +237,7 @@ export function GlobalMessageNotifications({ children }: { readonly children: Re
       socket.off('matchAction', handleMatchAction);
       socket.off('matchError', handleMatchError);
     };
-  }, [socket, isConnected, toast, queryClient, router, addNotification, notificationState]);
+  }, [socket, isConnected, toast, queryClient, router, addNotification, notificationState, createDeleteNotification, createDeleteToast, createMatchNotification, createMatchToast, handleNewMessageToastClick]);
 
   return <>{children}</>;
 }
