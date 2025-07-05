@@ -31,6 +31,7 @@ export interface PersonalInfo {
 }
 
 export interface LocationWorkInfo {
+  coordinates?: [number, number]; //longitude and latitude
   city: string;
   work: string;
   languages: string[];
