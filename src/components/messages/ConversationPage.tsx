@@ -16,12 +16,12 @@ import Image from 'next/image';
 import { Message } from '../../lib/routes/messages/interfaces/message.interface';
 import { getCurrentUserIdFromToken } from '../../lib/utils/user-utils';
 import { 
-    getMessageAlignment, 
-    getMessageClasses, 
-    getTimestampClasses, 
-    getReadIndicator, 
-    getReadIndicatorClasses, 
-    getUserStatus 
+    MessageAlignment, 
+    MessageClasses, 
+    TimestampClasses, 
+    ReadIndicators, 
+    ReadIndicatorClasses, 
+    UserStatus 
 } from '../../lib/utils/message-styles';
 
 // Constantes pour les classes CSS communes - supprimées car non utilisées
@@ -345,9 +345,9 @@ export default function ConversationPage({ initialConversationId }: Conversation
             {messages.map((message) => (
                 <div
                     key={message.id}
-                    className={`flex ${getMessageAlignment(message.isMe)} group relative`}
+                    className={`flex ${MessageAlignment.getAlignment(message.isMe)} group relative`}
                 >
-                    <div className={getMessageClasses(message.isMe)}>
+                    <div className={MessageClasses.getClasses(message.isMe)}>
                         {/* Afficher la réponse si elle existe */}
                         <MessageReply replyTo={message.replyTo} isMe={message.isMe} />
                         
@@ -356,15 +356,15 @@ export default function ConversationPage({ initialConversationId }: Conversation
                         </p>
                         
                         <div className="flex items-center justify-end space-x-1 mt-1">
-                            <p className={`text-[10px] md:text-xs ${getTimestampClasses(message.isMe)}`}>
+                            <p className={`text-[10px] md:text-xs ${TimestampClasses.getClasses(message.isMe)}`}>
                                 {new Date(message.timestamp).toLocaleTimeString('fr-FR', {
                                     hour: '2-digit',
                                     minute: '2-digit'
                                 })}
                             </p>
                             {message.isMe && (
-                                <span className={`text-[10px] md:text-xs ${getReadIndicatorClasses(message.isRead)}`}>
-                                    {getReadIndicator(message.isRead)}
+                                <span className={`text-[10px] md:text-xs ${ReadIndicatorClasses.getClasses(message.isRead)}`}>
+                                    {ReadIndicators.getIndicator(message.isRead)}
                                 </span>
                             )}
                         </div>
@@ -400,7 +400,7 @@ export default function ConversationPage({ initialConversationId }: Conversation
 
     // Préparer le nom et le statut de l'utilisateur
     const conversationName = selectedConversationData?.name ?? "Messages";
-    const userStatus = selectedConversationData ? getUserStatus(isOtherUserOnline) : null;
+    const userStatus = selectedConversationData ? UserStatus.getStatus(isOtherUserOnline) : null;
 
     const handleReplyToMessage = (message: Message) => {
         setReplyToMessage(message);

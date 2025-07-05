@@ -4,43 +4,27 @@ import { useSocket } from '../providers/SocketProvider';
 import { useQueryClient } from '@tanstack/react-query';
 import { useToast } from './use-toast';
 import { Message, Conversation, NewMatchData } from '../lib/routes/messages/interfaces/message.interface';
-
-// Interfaces supprimées car non utilisées
+import { getCurrentUserIdFromToken } from '../lib/utils/user-utils';
 
 // Set global pour tracker les messages déjà traités
 const processedMessages = new Set<string>();
 
-// Fonctions utilitaires pour la gestion des tokens
-export const getCurrentUserIdFromToken = (): string | null => {
-  if (typeof window === "undefined") return null;
-
-  try {
-    // Scan all sessionStorage keys for any oidc.user entry
-    const keys = Object.keys(sessionStorage);
-    for (const key of keys) {
-      if (key.startsWith("oidc.user:")) {
-        const userJson = sessionStorage.getItem(key);
-        if (userJson) {
-          const user = JSON.parse(userJson);
-          if (user?.access_token) {
-            // Décoder le token JWT pour extraire l'ID utilisateur
-            const payload = JSON.parse(atob(user.access_token.split('.')[1]));
-            return payload.sub ?? payload.username;
-          }
-        }
-      }
-    }
-  } catch (error) {
-    console.error('❌ Erreur lors du décodage du token:', error);
+// Utilitaires pour les mises à jour de cache
+const createCacheUpdater = (queryClient: ReturnType<typeof useQueryClient>) => ({
+  updateMessages: (conversationId: string, updater: (oldData: Message[] | undefined) => Message[] | undefined) => {
+    queryClient.setQueryData(['messages', conversationId], updater);
+  },
+  updateConversations: (updater: (oldData: Conversation[] | undefined) => Conversation[] | undefined) => {
+    queryClient.setQueryData(['conversations'], updater);
   }
-
-  return null;
-};
+});
 
 // Fonctions utilitaires pour les mises à jour des données
 const createUpdateMessagesData = (queryClient: ReturnType<typeof useQueryClient>) => {
+  const { updateMessages } = createCacheUpdater(queryClient);
+  
   return (conversationId: string, correctedMessage: Message) => {
-    queryClient.setQueryData(['messages', conversationId], (oldData: Message[] | undefined) => {
+    updateMessages(conversationId, (oldData) => {
       if (!oldData) return [correctedMessage];
       
       const existingMessage = oldData.find(m => m.id === correctedMessage.id);
@@ -55,8 +39,10 @@ const createUpdateMessagesData = (queryClient: ReturnType<typeof useQueryClient>
 };
 
 const createUpdateConversationsData = (queryClient: ReturnType<typeof useQueryClient>) => {
+  const { updateConversations } = createCacheUpdater(queryClient);
+  
   return (conversationId: string, correctedMessage: Message, isMe: boolean) => {
-    queryClient.setQueryData(['conversations'], (oldData: Conversation[] | undefined) => {
+    updateConversations((oldData) => {
       if (!oldData) return [];
       
       return oldData.map(conv => {
@@ -75,8 +61,10 @@ const createUpdateConversationsData = (queryClient: ReturnType<typeof useQueryCl
 };
 
 const createUpdateConversationsForRead = (queryClient: ReturnType<typeof useQueryClient>) => {
+  const { updateConversations } = createCacheUpdater(queryClient);
+  
   return (conversationId: string) => {
-    queryClient.setQueryData(['conversations'], (oldData: Conversation[] | undefined) => {
+    updateConversations((oldData) => {
       if (!oldData) return [];
       
       return oldData.map(conv => {
@@ -92,22 +80,11 @@ const createUpdateConversationsForRead = (queryClient: ReturnType<typeof useQuer
   };
 };
 
-const createUpdateMessagesForRead = (queryClient: ReturnType<typeof useQueryClient>) => {
-  return (conversationId: string) => {
-    queryClient.setQueryData(['messages', conversationId], (oldData: Message[] | undefined) => {
-      if (!oldData) return [];
-      
-      return oldData.map(message => ({
-        ...message,
-        isRead: message.isMe ? message.isRead : true,
-      }));
-    });
-  };
-};
-
 const createUpdateConversationsForUnread = (queryClient: ReturnType<typeof useQueryClient>) => {
+  const { updateConversations } = createCacheUpdater(queryClient);
+  
   return (conversationId: string, messageCount: number) => {
-    queryClient.setQueryData(['conversations'], (oldData: Conversation[] | undefined) => {
+    updateConversations((oldData) => {
       if (!oldData) return [];
       
       return oldData.map(conv => {
@@ -125,8 +102,10 @@ const createUpdateConversationsForUnread = (queryClient: ReturnType<typeof useQu
 };
 
 const createRemoveConversation = (queryClient: ReturnType<typeof useQueryClient>) => {
+  const { updateConversations } = createCacheUpdater(queryClient);
+  
   return (conversationId: string) => {
-    queryClient.setQueryData(['conversations'], (oldData: Conversation[] | undefined) => {
+    updateConversations((oldData) => {
       if (!oldData) return [];
       return oldData.filter(conv => conv.id !== conversationId);
     });
@@ -184,8 +163,10 @@ const createMessageHandlers = (queryClient: ReturnType<typeof useQueryClient>, t
     handleMessagesRead: (data: { conversationId: string; readBy: string; timestamp: Date }) => {
       console.log('📖 Événement messagesRead reçu:', data);
       
+      const { updateMessages } = createCacheUpdater(queryClient);
+      
       // Mettre à jour les messages de cette conversation
-      queryClient.setQueryData(['messages', data.conversationId], (oldData: Message[] | undefined) => {
+      updateMessages(data.conversationId, (oldData) => {
         if (!oldData) return oldData;
         
         const updatedData = oldData.map(message => {
@@ -257,8 +238,10 @@ const createMessageHandlers = (queryClient: ReturnType<typeof useQueryClient>, t
     handleNewMatch: (data: NewMatchData) => {
       console.log('Nouveau match reçu dans useMessagesSocket', data);
       
+      const { updateConversations } = createCacheUpdater(queryClient);
+      
       // Mettre à jour le cache des conversations
-      queryClient.setQueryData(['conversations'], (oldData: Conversation[] | undefined) => {
+      updateConversations((oldData) => {
         if (!oldData) return [data.conversation];
         if (oldData.some(conv => conv.id === data.conversation.id)) {
           return oldData;
@@ -281,8 +264,10 @@ const createMessageHandlers = (queryClient: ReturnType<typeof useQueryClient>, t
       };
       console.log('🔄 Message corrigé:', correctedMessage);
       
+      const { updateMessages } = createCacheUpdater(queryClient);
+      
       // Vérifier si le message existe déjà dans le cache
-      queryClient.setQueryData(['messages', message.conversationId], (oldData: Message[] | undefined) => {
+      updateMessages(message.conversationId, (oldData) => {
         if (!oldData) return [correctedMessage];
         
         // Vérifier si le message a déjà été mis à jour récemment
