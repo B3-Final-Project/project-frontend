@@ -1,4 +1,4 @@
-'use client';
+"use client";
 import { Button } from "@/components/ui/button";
 import { useProfileCreation } from "@/hooks/useProfileCreation";
 import { PROFILE_STEPS } from "../StepComponent";
@@ -8,9 +8,10 @@ export function StartComponent() {
 
   return (
     <div className="text-center space-y-6">
-      <h1 className="text-3xl font-bold">Create Your Dating Profile</h1>
+      <h1 className="text-3xl ">Create Your Dating Profile</h1>
       <p className="text-lg text-gray-600">
-        Welcome to Holomatch! We&#39;ll guide you through creating a profile that shows your best self.
+        Welcome to Holomatch! We&#39;ll guide you through creating a profile
+        that shows your best self.
       </p>
 
       <div className="flex flex-col space-y-4 max-w-md mx-auto">
@@ -25,7 +26,8 @@ export function StartComponent() {
         </div>
 
         <p className="text-sm text-gray-500">
-          This should take about 5 minutes to complete. You can edit your responses anytime.
+          This should take about 5 minutes to complete. You can edit your
+          responses anytime.
         </p>
       </div>
 

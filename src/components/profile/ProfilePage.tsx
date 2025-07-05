@@ -1,14 +1,14 @@
-'use client'
+import { ProfileAvatar } from "@/components/profile/ProfileAvatar";
 import { ProfileDialogContent } from "@/components/profile/ProfileDialogContent";
 import { ProfileHeader } from "@/components/profile/ProfileHeader";
-import { ProfileAvatar } from "@/components/profile/ProfileAvatar";
 
 export default function ProfilePage() {
-
   return (
-    <div className="h-full w-full flex flex-col justify-between">
+    <div className="h-full min-h-screen w-full flex flex-col justify-between mb-[75px]">
       <ProfileHeader />
-      <div className={"w-full h-full bg-background shadow-lg flex flex-col items-center justify-center"}>
+      <div
+        className={"w-full h-full shadow-lg flex flex-col items-center"}
+      >
         <ProfileAvatar />
         <ProfileDialogContent />
       </div>

@@ -23,8 +23,8 @@ export default {
           border: "hsl(var(--sidebar-border))",
           ring: "hsl(var(--sidebar-ring))",
         },
+
         background: "hsl(var(--background))",
-        foreground: "hsl(var(--foreground))",
         card: {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
@@ -32,17 +32,6 @@ export default {
         popover: {
           DEFAULT: "hsl(var(--popover))",
           foreground: "hsl(var(--popover-foreground))",
-        },
-        primary: {
-          DEFAULT: "hsl(var(--primary))",
-          foreground: "hsl(var(--primary-foreground))",
-        },
-        secondary: {
-          DEFAULT: "hsl(var(--secondary))",
-          foreground: "hsl(var(--secondary-foreground))",
-        },
-        tertiary: {
-          DEFAULT: "hsl(var(--tertiary))",
         },
         muted: {
           DEFAULT: "hsl(var(--muted))",
@@ -52,13 +41,36 @@ export default {
           DEFAULT: "hsl(var(--accent))",
           foreground: "hsl(var(--accent-foreground))",
         },
+        border: "hsl(var(--border))",
+        input: "hsl(var(--input))",
+        
+        foreground: "hsl(var(--foreground))",
+        
+        primary: {
+          DEFAULT: "hsl(var(--primary))",
+          foreground: "hsl(var(--primary-foreground))",
+        },
+
+        secondary: {
+          DEFAULT: "hsl(var(--secondary))",
+          foreground: "hsl(var(--secondary-foreground))",
+        },
+        
+        
+        
+        success: {
+          DEFAULT: "hsl(var(--success))",
+        },
+        warning: {
+          DEFAULT: "hsl(var(--warning))",
+        },
         destructive: {
           DEFAULT: "hsl(var(--destructive))",
           foreground: "hsl(var(--destructive-foreground))",
         },
-        border: "hsl(var(--border))",
-        input: "hsl(var(--input))",
+        
         ring: "hsl(var(--ring))",
+        
         chart: {
           "1": "hsl(var(--chart-1))",
           "2": "hsl(var(--chart-2))",
@@ -66,9 +78,8 @@ export default {
           "4": "hsl(var(--chart-4))",
           "5": "hsl(var(--chart-5))",
         },
-        "text-color": "hsl(var(--text-color))",
-        "light-gray": "hsl(var(--light-gray))",
-        transition: "hsl(var(--transition))",
+        
+        transition: "hsl(var(--transition))"
       },
       borderRadius: {
         lg: "var(--radius)",
@@ -84,9 +95,7 @@ export default {
       backgroundImage: {
         gradient: "linear-gradient(-45deg, #f5f5f5, #fff, #f5f5f5)"
       },
-      boxShadow: {
-        "inner-l": "inset 0.5rem 0 1rem #0002, 0 0 0.5rem #0003"
-      },
+    
     },
   },
   // eslint-disable-next-line @typescript-eslint/no-require-imports

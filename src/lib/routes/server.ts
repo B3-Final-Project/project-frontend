@@ -1,8 +1,47 @@
 export enum RESTServerRoute {
+  // SETTINGS ROUTES
   REST_AUTH_SETTINGS = 'settings/auth',
-  REST_PROFILES = 'profiles',
+  // PROFILE ROUTES
   REST_PROFILES_ALL = 'profiles/all',
-  REST_BOOSTER = 'booster',
-  REST_TEN_BOOSTERS = 'booster/:count',
+  REST_PROFILE = 'profiles/:id',
+  REST_PROFILES = 'profiles',
   REST_PROFILES_IMAGES = 'profiles/image',
+  // PROFILE IMAGES ROUTES
+  REST_PROFILE_IMAGES = 'profiles/:profileId/images',
+  REST_PROFILE_IMAGE = 'profiles/:profileId/images/:index',
+  // USER ROUTES
+  REST_ADMIN_BANS = 'users/:userId/bans',
+  REST_USERS = 'users',
+  // REPORT ROUTES
+  REST_USER_REPORTS = '/reports',
+  REST_USER_REPORT = '/reports/:reportId',
+  // BOOSTER ROUTES
+  REST_BOOSTER = 'booster',
+  REST_TEN_BOOSTERS = 'booster/10',
+  REST_AVAILABLE_PACKS = 'booster/list',
+  // MATCHES ROUTES
+  REST_MATCHES = 'matches',
+  REST_MATCHES_PENDING = 'matches/pending',
+  REST_MATCHES_SENT = 'matches/sent',
+  REST_MATCHES_DETAILS = 'matches/details/:id',
+  REST_MATCHES_LIKE = 'matches/like/:id',
+  REST_MATCHES_PASS = 'matches/pass/:id',
+  // STATS ROUTES
+  REST_STATS_APP = 'stats/app',
+  REST_STATS_BOOSTERS = 'stats/boosters',
+  REST_STATS_DETAILED = 'stats/detailed',
+  REST_STATS_USERS_COUNT = 'stats/users/count',
+  REST_STATS_MATCHES_COUNT = 'stats/matches/count',
+  REST_STATS_PASSES_COUNT = 'stats/passes/count',
+  REST_STATS_LIKES_COUNT = 'stats/likes/count',
+  REST_STATS_BOOSTERS_USAGE_TOTAL = 'stats/boosters/usage/total',
+  REST_STATS_DEMOGRAPHICS = 'stats/demographics',
+  REST_STATS_ENGAGEMENT = 'stats/engagement',
+  REST_STATS_ACTIVITY = 'stats/activity',
+  REST_STATS_COMPREHENSIVE = 'stats/comprehensive',
+  // MESSAGES ROUTES
+  REST_MESSAGES = 'messages',
+  REST_MESSAGES_CONVERSATIONS = 'messages/conversations',
+  REST_MESSAGES_CONVERSATION = 'messages/conversations/:id',
+  REST_MESSAGES_CONVERSATION_READ = 'messages/conversations/:id/read',
 }

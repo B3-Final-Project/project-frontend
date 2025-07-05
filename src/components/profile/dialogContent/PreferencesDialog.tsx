@@ -11,7 +11,7 @@ import { Slider } from "@/components/ui/slider";
 import { getEnumOptions } from "@/lib/utils/enum-utils";
 
 // Define options outside component to prevent recreation on each render
-const relationshipTypeOptions = getEnumOptions(RelationshipTypeEnum)
+const relationshipTypeOptions = getEnumOptions(RelationshipTypeEnum);
 
 export function PreferencesDialog() {
   return (
@@ -45,7 +45,9 @@ export function PreferencesDialog() {
 
               {/* Min‐Age Slider */}
               <div className="space-y-1">
-                <Label htmlFor="min-age" className="text-sm">Minimum Age</Label>
+                <Label htmlFor="min-age" className="text-sm">
+                  Minimum Age
+                </Label>
                 <Slider
                   id="min-age"
                   className="h-2"
@@ -54,7 +56,7 @@ export function PreferencesDialog() {
                   step={1}
                   value={[formData.min_age]}
                   onValueChange={([value]) =>
-                    setFormData(prev => ({ ...prev, min_age: value }))
+                    setFormData((prev) => ({ ...prev, min_age: value }))
                   }
                 >
                   <SliderPrimitive.Track className="relative bg-gray-200 flex-1">
@@ -66,7 +68,9 @@ export function PreferencesDialog() {
 
               {/* Max‐Age Slider */}
               <div className="space-y-1">
-                <Label htmlFor="max-age" className="text-sm">Maximum Age</Label>
+                <Label htmlFor="max-age" className="text-sm">
+                  Maximum Age
+                </Label>
                 <Slider
                   id="max-age"
                   className="h-2"
@@ -75,7 +79,7 @@ export function PreferencesDialog() {
                   step={1}
                   value={[formData.max_age]}
                   onValueChange={([value]) =>
-                    setFormData(prev => ({ ...prev, max_age: value }))
+                    setFormData((prev) => ({ ...prev, max_age: value }))
                   }
                 >
                   <SliderPrimitive.Track className="relative bg-gray-200 flex-1">
@@ -89,7 +93,9 @@ export function PreferencesDialog() {
 
           {/* Maximum Distance */}
           <div className="space-y-2">
-            <Label htmlFor="distance">Maximum Distance: {formData.max_distance} km</Label>
+            <Label htmlFor="distance">
+              Maximum Distance: {formData.max_distance} km
+            </Label>
             <div className="flex space-x-4 items-center">
               <span>1</span>
               <Slider
@@ -100,7 +106,7 @@ export function PreferencesDialog() {
                 step={1}
                 value={[formData.max_distance]}
                 onValueChange={([value]) =>
-                  setFormData(prev => ({ ...prev, max_distance: value }))
+                  setFormData((prev) => ({ ...prev, max_distance: value }))
                 }
               >
                 <SliderPrimitive.Track className="relative h-2 bg-gray-200">

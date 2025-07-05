@@ -1,33 +1,20 @@
-'use client';
+"use client";
 
-import { AnimatePresence, useMotionValue, useTransform } from 'framer-motion';
-import { useRouter } from 'next/navigation';
-import { useCallback, useEffect, useRef, useState } from 'react';
-import {
-  canOpenNewPack,
-  getRemainingPacksToday,
-  getTimeUntilNextPackAvailability,
-  recordPackOpened
-} from '../../utils/packManager';
-import { UserCardModal } from '../profile/UserCardModal';
-import ControlButtons from './ControlButtons';
-import EmptyCardState from './EmptyCardState';
-import MatchAnimation from './MatchAnimation';
-import MatchCounters from './MatchCounters';
-import MatchListModal from './MatchListModal';
-import NonMatchListModal from './NonMatchListModal';
-import ProfileCard from './ProfileCard';
-import RejectAnimation from './RejectAnimation';
+import { checkPackAvailability } from "@/utils/packManager";
+import { AnimatePresence, useMotionValue, useTransform } from "framer-motion";
+import { useRouter } from "next/navigation";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { UserCardModal } from "../UserCardModal";
+import ControlButtons from "./ControlButtons";
 
-export type ProfileCardType = {
-  id: string;
-  name: string;
-  image: string;
-  age?: number;
-  location?: string;
-  description?: string;
-  isRevealed?: boolean;
-};
+import { useMatchActions } from "@/hooks/react-query/matches";
+import { ProfileCardType } from "@/lib/routes/profiles/dto/profile-card-type.dto";
+import { Loader } from "lucide-react";
+import MatchAnimation from "./MatchAnimation";
+import MatchCounters from "./MatchCounters";
+import MatchListModal from "./MatchListModal";
+import NonMatchListModal from "./NonMatchListModal";
+import ProfileCard from "./ProfileCard";
 
 type MatchSystemProps = {
   profiles: ProfileCardType[];
@@ -35,35 +22,31 @@ type MatchSystemProps = {
   onReject?: (profile: ProfileCardType) => void;
 };
 
-const SESSION_STORAGE_PACK_PAID_KEY = 'holomatch_current_pack_paid_for_session';
+const SESSION_STORAGE_PACK_PAID_KEY = "holomatch_current_pack_paid_for_session";
+const MAX_PACKS_PER_WINDOW = 2;
 
-const formatTime = (ms: number): string => {
-  if (ms <= 0) return "00:00:00";
-  const totalSeconds = Math.max(0, Math.floor(ms / 1000));
-  const hours = Math.floor(totalSeconds / 3600);
-  const minutes = Math.floor((totalSeconds % 3600) / 60);
-  const seconds = totalSeconds % 60;
-  return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-};
-
-export default function MatchSystem({ profiles, onMatch, onReject }: MatchSystemProps) {
+export default function MatchSystem({ profiles }: MatchSystemProps) {
   const router = useRouter();
   const [matches, setMatches] = useState<ProfileCardType[]>([]);
   const [nonMatches, setNonMatches] = useState<ProfileCardType[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [cardSize, setCardSize] = useState(getCardSize());
   const [showMatchAnimation, setShowMatchAnimation] = useState(false);
-  const [showRejectAnimation, setShowRejectAnimation] = useState(false);
-  const [matchedProfile, setMatchedProfile] = useState<ProfileCardType | null>(null);
+  const [matchedProfile, setMatchedProfile] = useState<ProfileCardType | null>(
+    null,
+  );
   const [showMatchList, setShowMatchList] = useState(false);
   const [showNonMatchList, setShowNonMatchList] = useState(false);
-  const [selectedCard, setSelectedCard] = useState<ProfileCardType | null>(null);
+  const [selectedCard, setSelectedCard] = useState<ProfileCardType | null>(
+    null,
+  );
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const [isLoading, setIsLoading] = useState(true);
+  const [isProcessing, setIsProcessing] = useState(false);
   const [packStatus, setPackStatus] = useState({
     canOpen: true,
-    remainingToday: 0,
+    remainingPacks: MAX_PACKS_PER_WINDOW,
   });
   const [countdown, setCountdown] = useState(0);
 
@@ -73,16 +56,17 @@ export default function MatchSystem({ profiles, onMatch, onReject }: MatchSystem
   const rejectOpacity = useTransform(x, [-200, -100, 0], [1, 0.5, 0]);
 
   const constraintsRef = useRef<HTMLDivElement>(null);
+  const { likeMatch, passMatch } = useMatchActions();
 
   const refreshPackStatusAndCountdown = useCallback(() => {
-    const canUserOpen = canOpenNewPack();
-    const remaining = getRemainingPacksToday();
-    const timeToNext = getTimeUntilNextPackAvailability();
+    const { canOpen, timeUntilNextOpenMs, packsOpenedInWindow } =
+      checkPackAvailability();
+    const remainingInWindow = MAX_PACKS_PER_WINDOW - (packsOpenedInWindow || 0);
 
-    setPackStatus({ canOpen: canUserOpen, remainingToday: remaining });
+    setPackStatus({ canOpen: canOpen, remainingPacks: remainingInWindow });
 
-    if (!canUserOpen && timeToNext > 0) {
-      setCountdown(timeToNext);
+    if (!canOpen && timeUntilNextOpenMs && timeUntilNextOpenMs > 0) {
+      setCountdown(timeUntilNextOpenMs);
     } else {
       setCountdown(0);
     }
@@ -90,24 +74,24 @@ export default function MatchSystem({ profiles, onMatch, onReject }: MatchSystem
 
   useEffect(() => {
     setIsLoading(true);
-    const isPackPaidForSession = sessionStorage.getItem(SESSION_STORAGE_PACK_PAID_KEY) === 'true';
+    const isPackPaidForSession =
+      sessionStorage.getItem(SESSION_STORAGE_PACK_PAID_KEY) === "true";
 
     if (!isPackPaidForSession) {
-      if (canOpenNewPack()) {
-        recordPackOpened();
-        sessionStorage.setItem(SESSION_STORAGE_PACK_PAID_KEY, 'true');
+      const { canOpen: canCurrentlyOpen } = checkPackAvailability();
+      if (canCurrentlyOpen) {
+        sessionStorage.setItem(SESSION_STORAGE_PACK_PAID_KEY, "true");
       }
     }
     refreshPackStatusAndCountdown();
     setIsLoading(false);
   }, [profiles, refreshPackStatusAndCountdown]);
 
-  // Effect for Countdown Timer
   useEffect(() => {
     let timerId: NodeJS.Timeout | undefined;
     if (!packStatus.canOpen && countdown > 0) {
       timerId = setInterval(() => {
-        setCountdown(prev => {
+        setCountdown((prev) => {
           if (prev <= 1000) {
             clearInterval(timerId);
             refreshPackStatusAndCountdown();
@@ -125,9 +109,9 @@ export default function MatchSystem({ profiles, onMatch, onReject }: MatchSystem
   useEffect(() => {
     if (!isLoading && currentIndex >= profiles.length && profiles.length > 0) {
       sessionStorage.removeItem(SESSION_STORAGE_PACK_PAID_KEY);
-      refreshPackStatusAndCountdown();
+      router.push("/boosters");
     }
-  }, [currentIndex, profiles.length, isLoading, refreshPackStatusAndCountdown]);
+  }, [profiles, currentIndex, isLoading, router]);
 
   useEffect(() => {
     setMatches([]);
@@ -137,78 +121,86 @@ export default function MatchSystem({ profiles, onMatch, onReject }: MatchSystem
   }, [profiles, x]);
 
   function getCardSize() {
-    if (typeof window !== 'undefined') {
-      let size = { height: 'min(420px, 70vh)', width: 'min(280px, 85vw)' };
-      if (window.innerWidth >= 768) size = { height: 'min(480px, 75vh)', width: 'min(320px, 90vw)' };
-      if (window.innerWidth >= 1024) size = { height: 'min(520px, 80vh)', width: 'min(350px, 95vw)' };
+    if (typeof window !== "undefined") {
+      let size = { height: "min(420px, 70vh)", width: "min(280px, 85vw)" };
+      if (window.innerWidth >= 768)
+        size = { height: "min(480px, 75vh)", width: "min(320px, 90vw)" };
+      if (window.innerWidth >= 1024)
+        size = { height: "min(520px, 80vh)", width: "min(350px, 95vw)" };
       return size;
     }
-    return { height: 'min(420px, 70vh)', width: 'min(280px, 85vw)' };
+    return { height: "min(420px, 70vh)", width: "min(280px, 85vw)" };
   }
 
   useEffect(() => {
     const handleResize = () => setCardSize(getCardSize());
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
+    window.addEventListener("resize", handleResize);
+    handleResize();
+    return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  const handleMatch = (profile: ProfileCardType) => {
-    setMatchedProfile(profile);
-    setShowMatchAnimation(true);
-    const updatedMatches = [...matches, profile];
-    setMatches(updatedMatches);
-    if (onMatch) onMatch(profile);
-    setTimeout(() => {
-      setShowMatchAnimation(false);
-      setMatchedProfile(null);
-      moveToNextCard();
-    }, 1500);
-  };
-
   const handleReject = (profile: ProfileCardType) => {
-    setShowRejectAnimation(true);
+    if (isProcessing) return;
+    setIsProcessing(true);
+
+    passMatch(profile.id);
+
     const updatedNonMatches = [...nonMatches, profile];
     setNonMatches(updatedNonMatches);
-    if (onReject) onReject(profile);
+
     setTimeout(() => {
-      setShowRejectAnimation(false);
       moveToNextCard();
+      setIsProcessing(false);
     }, 1000);
   };
 
-  const moveToNextCard = () => {
-    setCurrentIndex(current => {
+  const moveToNextCard = useCallback(() => {
+    setCurrentIndex((current) => {
       let nextIdx = current + 1;
       while (nextIdx < profiles.length) {
         const profileToCheck = profiles[nextIdx];
-        const isInMatches = matches.some(m => m.id === profileToCheck.id);
-        const isInNonMatches = nonMatches.some(nm => nm.id === profileToCheck.id);
+        const isInMatches = matches.some((m) => m.id === profileToCheck.id);
+        const isInNonMatches = nonMatches.some(
+          (nm) => nm.id === profileToCheck.id,
+        );
         if (!isInMatches && !isInNonMatches) break;
         nextIdx++;
       }
       x.set(0);
       return nextIdx;
     });
-  };
+  }, [matches, nonMatches, profiles, x]);
 
-  const handleStartNewSession = () => {
-    if (canOpenNewPack()) {
-      recordPackOpened();
-      sessionStorage.setItem(SESSION_STORAGE_PACK_PAID_KEY, 'true');
+  const handleMatch = useCallback(
+    async (profile: ProfileCardType) => {
+      if (isProcessing) return;
+      setIsProcessing(true);
 
-      setMatches([]);
-      setNonMatches([]);
-      setCurrentIndex(0);
+      const response = await likeMatch(profile.id);
 
-      refreshPackStatusAndCountdown();
-      refreshPackStatusAndCountdown();
-    } else {
-      console.warn("handleStartNewSession: Tentative d'ouverture de pack, mais aucun disponible. Rafraîchissement du statut.");
-      refreshPackStatusAndCountdown();
-    }
-  };
+      if (response.isMatch) {
+        setMatchedProfile(profile);
+        setShowMatchAnimation(true);
+        const updatedMatches = [...matches, profile];
+        setMatches(updatedMatches);
 
-  const handleDragEnd = (event: any, info: any) => {
+        setTimeout(() => {
+          setShowMatchAnimation(false);
+          setMatchedProfile(null);
+          moveToNextCard();
+          setIsProcessing(false);
+        }, 1500);
+      } else {
+        setTimeout(() => {
+          moveToNextCard();
+          setIsProcessing(false);
+        }, 1000);
+      }
+    },
+    [isProcessing, likeMatch, matches, moveToNextCard]
+  );
+
+  const handleDragEnd = (_event: Event, info: { offset: { x: number } }) => {
     const offset = info.offset.x;
     if (offset > 100 && currentProfile) handleMatch(currentProfile);
     else if (offset < -100 && currentProfile) handleReject(currentProfile);
@@ -224,20 +216,10 @@ export default function MatchSystem({ profiles, onMatch, onReject }: MatchSystem
     setSelectedCard(null);
   };
 
-
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center min-h-screen w-full bg-gray-900 text-white">
+      <div className="flex items-center justify-center min-h-screen w-full bg-gray-900 text-primary-foreground">
         Chargement...
-      </div>
-    );
-  }
-
-  if (!packStatus.canOpen && countdown > 0) {
-    router.replace('/match/wait');
-    return (
-      <div className="flex flex-col items-center justify-center min-h-screen w-full bg-gray-900 text-white p-4">
-        <p className="text-lg">Redirection vers la page d'attente...</p>
       </div>
     );
   }
@@ -246,22 +228,15 @@ export default function MatchSystem({ profiles, onMatch, onReject }: MatchSystem
 
   return (
     <div className="relative min-h-screen w-full overflow-hidden">
-      <div className="container mx-auto px-4 py-6 sm:py-10 relative z-10 flex flex-col items-center w-full h-screen">
+      <div className="container mx-auto px-4 py-6 sm:py-10 relative z-10 flex flex-col justify-center items-center w-full h-screen">
+
         <MatchCounters
           matchesCount={matches.length}
           nonMatchesCount={nonMatches.length}
           setShowMatchList={setShowMatchList}
           setShowNonMatchList={setShowNonMatchList}
         />
-        <div className="h-12 sm:h-16 relative w-full">
-          <AnimatePresence>
-            {showRejectAnimation && (
-              <div className="absolute top-1/2 left-0 right-0 flex justify-center z-50 -translate-y-1/2">
-                <RejectAnimation key="reject-animation" showRejectAnimation={showRejectAnimation} />
-              </div>
-            )}
-          </AnimatePresence>
-        </div>
+
         <div
           ref={constraintsRef}
           className="relative flex items-center justify-center"
@@ -280,10 +255,7 @@ export default function MatchSystem({ profiles, onMatch, onReject }: MatchSystem
               openModal={openModal}
             />
           ) : (
-            <EmptyCardState
-              onStartNewSession={handleStartNewSession}
-              remainingPacks={packStatus.remainingToday}
-            />
+            <Loader />
           )}
         </div>
         {currentProfile && (
@@ -325,12 +297,9 @@ export default function MatchSystem({ profiles, onMatch, onReject }: MatchSystem
       </div>
       {selectedCard && (
         <UserCardModal
-          name={selectedCard.name}
-          age={selectedCard.age}
-          location={selectedCard.location}
-          description={selectedCard.description}
           isOpen={isModalOpen}
-          onClose={closeModal}
+          onCloseAction={closeModal}
+          user={selectedCard}
         />
       )}
     </div>

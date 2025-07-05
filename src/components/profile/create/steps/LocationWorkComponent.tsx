@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import {Button} from "@/components/ui/button";
 import {Input} from "@/components/ui/input";
@@ -16,7 +16,8 @@ interface ReverseGeocodeResultDto {
 }
 
 export function LocationWorkComponent() {
-    const {locationWork, setLocationWork, goToNextStep, goToPreviousStep} = useProfileCreation();
+    const {locationWork, setLocationWork, goToNextStep, goToPreviousStep} =
+    useProfileCreation();
     const {step} = useParams<{ step: string }>();
     const [errors, setErrors] = useState<Record<string, string>>({});
     const [cityQuery, setCityQuery] = useState(locationWork.city || '');
@@ -28,24 +29,24 @@ export function LocationWorkComponent() {
     const { data: reverseGeocodeData, refetch: refetchReverseGeocode } = useReverseGeocodeQuery(latLon ? latLon[0] : null, latLon ? latLon[1] : null, false);
 
     const handleChange = (field: string, value: string) => {
-        setLocationWork((prev: any) => ({...prev, [field]: value}));
-        if (field === 'city') setCityQuery(value);
+        setLocationWork((prev: any)) => ({...prev, [field]: value}));
+        if (field === 'city') setCityQuery(value;
         if (errors[field]) {
-            setErrors((prev: any) => ({...prev, [field]: ''}));
+            setErrors(((prev: any)) => ({...prev, [field]: ""}));
         }
     };
 
     const handleLanguageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const languagesStr = e.target.value;
         const languagesList = languagesStr
-            .split(',')
-            .map((lang: string) => lang.trim())
-            .filter((lang: string) => lang !== '');
+            .split(",")
+            .map(((lang: string)) => lang.trim())
+            .filter(((lang: string)) => lang !== "");
 
-        setLocationWork({...locationWork, languages: languagesList});
+        setLocationWork({ ...locationWork, languages: languagesList});
 
         if (errors.languages) {
-            setErrors((prev: any) => ({...prev, languages: ''}));
+            setErrors(((prev: any)) => ({...prev, languages: ""}));
         }
     };
 
@@ -90,15 +91,15 @@ export function LocationWorkComponent() {
         const newErrors: Record<string, string> = {};
 
         if (!locationWork.city?.trim()) {
-            newErrors.city = 'City is required';
+            newErrors.city = "City is required";
         }
 
         if (!locationWork.work?.trim()) {
-            newErrors.work = 'Occupation is required';
+            newErrors.work = "Occupation is required";
         }
 
         if (!locationWork.languages || locationWork.languages.length === 0) {
-            newErrors.languages = 'At least one language is required';
+            newErrors.languages = "At least one language is required";
         }
 
         setErrors(newErrors);
@@ -125,12 +126,12 @@ export function LocationWorkComponent() {
                         <Input
                             id="city"
                             placeholder="Where do you live?"
-                            value={locationWork.city || ''}
+                            value={locationWork.city || ""}
                             onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                                handleChange('city', e.target.value);
+                                handleChange("city", e.target.value);
                                 setShowSuggestions(true);
                             }}
-                            className={errors.city ? 'border-red-500' : ''}
+                            className={errors.city ? "border-red-500" : ""}
                             autoComplete="off"
                             onFocus={() => setShowSuggestions(true)}
                             onBlur={() => setTimeout(() => setShowSuggestions(false), 150)}
@@ -171,8 +172,12 @@ export function LocationWorkComponent() {
                                 ))}
                             </ul>
                         )}
-                        {errors.city && <p className="text-sm text-red-500">{errors.city}</p>}
-                        <p className="text-xs text-gray-500">This helps us find people near you</p>
+                        {errors.city && (
+              <p className="text-sm text-red-500">{errors.city}</p>
+            )}
+                        <p className="text-xs text-gray-500">
+              This helps us find people near you
+            </p>
                     </div>
 
                     {/* Work field */}
@@ -181,11 +186,13 @@ export function LocationWorkComponent() {
                         <Input
                             id="work"
                             placeholder="What do you do?"
-                            value={locationWork.work ?? ''}
-                            onChange={(e: { target: { value: string; }; }) => handleChange('work', e.target.value)}
-                            className={errors.work ? 'border-red-500' : ''}
+                            value={locationWork.work ?? ""}
+                            onChange={(e: { target: { value: string; }; }) => handleChange("work", e.target.value)}
+                            className={errors.work ? "border-red-500" : ""}
                         />
-                        {errors.work && <p className="text-sm text-red-500">{errors.work}</p>}
+                        {errors.work && (
+              <p className="text-sm text-red-500">{errors.work}</p>
+            )}
                     </div>
 
                     {/* Language field */}
@@ -194,12 +201,13 @@ export function LocationWorkComponent() {
                         <Input
                             id="languages"
                             placeholder="English, Spanish, French, etc."
-                            value={locationWork.languages?.join(', ') ?? ''}
+                            value={locationWork.languages?.join(", ") ?? ""}
                             onChange={handleLanguageChange}
-                            className={errors.languages ? 'border-red-500' : ''}
+                            className={errors.languages ? "border-red-500" : ""}
                         />
-                        {errors.languages && <p className="text-sm text-red-500">{errors.languages}</p>}
-                        <p className="text-xs text-gray-500">Separate multiple languages with commas</p>
+                        {errors.languages && (
+              <p className="text-sm text-red-500">{errors.languages}</p>
+                        )}
                     </div>
                 </div>
             </Card>

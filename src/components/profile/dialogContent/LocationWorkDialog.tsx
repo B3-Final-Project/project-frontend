@@ -20,9 +20,11 @@ export function LocationWorkDialog() {
         work: profile.work ?? "",
         languages: profile.languages ?? [],
       })}
-      buildUpdatePayload={(formData) => ({
-        locationWork: formData,
-      }as Partial<UpdateProfileDto>)}
+      buildUpdatePayload={(formData) =>
+        ({
+          locationWork: formData,
+        }) as Partial<UpdateProfileDto>
+      }
       renderFormContent={(formData, handleInputChange) => {
         return (
           <>
@@ -51,7 +53,9 @@ export function LocationWorkDialog() {
               <div className="flex gap-2">
                 <Input
                   value={formData.languages}
-                  onChange={(e) => handleInputChange("languages", e.target.value.split(",")[0])}
+                  onChange={(e) =>
+                    handleInputChange("languages", e.target.value.split(",")[0])
+                  }
                   placeholder="Add a language"
                 />
               </div>

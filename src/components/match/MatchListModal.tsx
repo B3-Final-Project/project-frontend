@@ -1,18 +1,23 @@
-'use client';
+"use client";
 
-import { motion } from 'framer-motion';
-import { Heart, X } from 'lucide-react';
-import { ProfileCardType } from './MatchSystem';
-import ProfileGrid from './ProfileGrid';
+import { motion } from "framer-motion";
+import { Heart, X } from "lucide-react";
+import ProfileGrid from "./ProfileGrid";
+import { ProfileCardType } from "@/lib/routes/profiles/dto/profile-card-type.dto";
 
 type MatchListModalProps = {
-  showMatchList: boolean;
-  setShowMatchList: (show: boolean) => void;
   matches: ProfileCardType[];
-  openModal: (profile: ProfileCardType) => void;
+  showMatchList: boolean;
+  setShowMatchList(show: boolean): void;
+  openModal(profile: ProfileCardType): void;
 };
 
-export default function MatchListModal({ showMatchList, setShowMatchList, matches, openModal }: MatchListModalProps) {
+export default function MatchListModal({
+  matches,
+  showMatchList,
+  setShowMatchList,
+  openModal,
+}: MatchListModalProps) {
   if (!showMatchList) return <></>;
 
   return (
@@ -30,13 +35,16 @@ export default function MatchListModal({ showMatchList, setShowMatchList, matche
       >
         <div className="bg-black/80 backdrop-blur-md rounded-lg p-4 sm:p-6 overflow-hidden flex flex-col">
           <div className="flex justify-between items-center mb-4">
-            <h2 className="text-lg sm:text-xl font-bold text-white flex items-center gap-1.5 sm:gap-2">
-              <Heart className="w-4 h-4 sm:w-5 sm:h-5 text-pink-500" fill="#ec4899" />
-              Vos matches ({matches.length})
+            <h2 className="text-primary-foreground flex items-center gap-1.5 sm:gap-2">
+              <Heart
+                className="w-4 h-4 sm:w-5 sm:h-5 text-pink-500"
+                fill="#ec4899"
+              />
+              Your matches ({matches.length})
             </h2>
             <button
               onClick={() => setShowMatchList(false)}
-              className="text-gray-400 hover:text-white"
+              className="text-gray-400 hover:text-primary-foreground"
             >
               <X className="w-5 h-5" />
             </button>
@@ -44,8 +52,12 @@ export default function MatchListModal({ showMatchList, setShowMatchList, matche
 
           {matches.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-8 text-center">
-              <p className="text-gray-400 mb-2">Vous n'avez pas encore de matches</p>
-              <p className="text-gray-500 text-sm">Continuez à swiper pour trouver des matches!</p>
+              <p className="text-gray-400 mb-2">
+                You don&apos;t have any matches yet
+              </p>
+              <p className="text-gray-500 text-sm">
+                Keep swiping to find matches!
+              </p>
             </div>
           ) : (
             <div className="overflow-y-auto custom-scrollbar flex-1 -mx-2 px-2">
