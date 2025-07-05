@@ -117,21 +117,30 @@ export function GlobalMessageNotifications({ children }: { readonly children: Re
 
       console.log('Nouveau message', message);
       
+      // Vérifier si l'utilisateur est actuellement sur la page de cette conversation
+      const currentPath = window.location.pathname;
+      const conversationPath = `/messages/${message.conversationId}`;
+      const isOnConversationPage = currentPath === conversationPath;
+      
+      // Ne pas afficher de toast si l'utilisateur est déjà sur la page de cette conversation
+      if (isOnConversationPage) {
+        console.log('Utilisateur déjà sur la page de conversation, pas de toast');
+        return;
+      }
+      
       // Ajouter une notification native si autorisée
       if (notificationState.permission === 'granted' && notificationState.settings?.enabled) {
         addNotification(message, message.senderName ?? 'Quelqu\'un');
       }
 
-      // Afficher un toast seulement si l'utilisateur n'a pas activé les notifications natives
-      // ou si les notifications natives sont désactivées
-      if (notificationState.permission !== 'granted' || !notificationState.settings?.enabled) {
-        const toastInstance = toast({
-          title: `Nouveau message de ${message.senderName ?? 'Quelqu\'un'}`,
-          description: message.content?.slice(0, 80) ?? '',
-          variant: "default",
-          onClick: () => handleNewMessageToastClick(message, toastInstance),
-        });
-      }
+      // Afficher un toast en plus des notifications natives (ou à la place si pas de notifications natives)
+      // Cela garantit que l'utilisateur voit toujours une notification
+      const toastInstance = toast({
+        title: `Nouveau message de ${message.senderName ?? 'Quelqu\'un'}`,
+        description: message.content?.slice(0, 80) ?? '',
+        variant: "default",
+        onClick: () => handleNewMessageToastClick(message, toastInstance),
+      });
     };
 
     // Écouter les nouveaux matches
@@ -149,9 +158,10 @@ export function GlobalMessageNotifications({ children }: { readonly children: Re
       // Notification native pour les nouveaux matches
       if (notificationState.permission === 'granted' && notificationState.settings?.enabled) {
         createMatchNotification(data, matchName, ageText);
-      } else {
-        createMatchToast(data, matchName, ageText);
       }
+      
+      // Toujours afficher un toast pour les nouveaux matches (en plus ou à la place des notifications natives)
+      createMatchToast(data, matchName, ageText);
     };
 
     // Écouter les suppressions de conversation
@@ -167,6 +177,12 @@ export function GlobalMessageNotifications({ children }: { readonly children: Re
       // Mettre à jour le cache des conversations - retirer la conversation supprimée
       queryClient.setQueryData(['conversations'], updateConversationsCacheWithDeletion(data.conversationId));
       
+      // Ne pas afficher de toast si c'est l'utilisateur actuel qui a supprimé la conversation
+      if (currentUserId && data.deletedBy === currentUserId) {
+        console.log('Utilisateur actuel a supprimé la conversation, pas de toast');
+        return;
+      }
+      
       if (currentUserId && data.deletedBy !== currentUserId) {
         // Créer le message avec le nom de l'autre utilisateur si disponible
         const otherUserName = deletedConversation?.name ?? 'Quelqu\'un';
@@ -176,9 +192,10 @@ export function GlobalMessageNotifications({ children }: { readonly children: Re
         // Notification native pour la suppression de conversation
         if (notificationState.permission === 'granted' && notificationState.settings?.enabled) {
           createDeleteNotification(message);
-        } else {
-          createDeleteToast(message);
         }
+        
+        // Toujours afficher un toast pour les suppressions (en plus ou à la place des notifications natives)
+        createDeleteToast(message);
       }
     };
 

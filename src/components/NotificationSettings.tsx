@@ -6,9 +6,10 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/
 import { Switch } from './ui/switch';
 import { Label } from './ui/label';
 import { Badge } from './ui/badge';
-import { Bell, BellOff, Settings, TestTube, Volume2, VolumeX, Smartphone, Eye, EyeOff } from 'lucide-react';
+import { Bell, BellOff, Settings, TestTube, Volume2, VolumeX, Smartphone, Eye, EyeOff, MessageSquare } from 'lucide-react';
 import { useMessageNotifications } from '../hooks/useMessageNotifications';
 import { NotificationPermission } from '../lib/utils/notification-utils';
+import { useToast } from '../hooks/use-toast';
 
 interface NotificationSettingsProps {
   readonly className?: string;
@@ -22,7 +23,8 @@ export function NotificationSettings({ className }: NotificationSettingsProps) {
     testNotification,
     saveNotificationSettings,
   } = useMessageNotifications();
-
+  
+  const { toast } = useToast();
   const [isExpanded, setIsExpanded] = useState(false);
 
   const handlePermissionRequest = async () => {
@@ -35,6 +37,14 @@ export function NotificationSettings({ className }: NotificationSettingsProps) {
         }
       }, 1000);
     }
+  };
+
+  const testToast = () => {
+    toast({
+      title: "Test de toast",
+      description: "Ceci est un test pour vérifier que les toasts fonctionnent correctement.",
+      variant: "default",
+    });
   };
 
   const getPermissionStatus = () => {
@@ -141,6 +151,19 @@ export function NotificationSettings({ className }: NotificationSettingsProps) {
                     </Label>
                   </div>
                   <Button onClick={testNotification} variant="outline" size="sm">
+                    Tester
+                  </Button>
+                </div>
+
+                {/* Test de toast */}
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-2">
+                    <MessageSquare className="w-4 h-4 text-gray-500" />
+                    <Label htmlFor="test-toast" className="text-sm">
+                      Tester les toasts
+                    </Label>
+                  </div>
+                  <Button onClick={testToast} variant="outline" size="sm">
                     Tester
                   </Button>
                 </div>
