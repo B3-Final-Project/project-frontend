@@ -17,11 +17,11 @@ export default function MatchList() {
             ? query.data.map((match, index) => (
               <li key={index} className="flex items-center gap-4">
                 <Image
-                  src={match.imageUrl}
-                  alt={match.name}
+                  src={match.imageUrl && match.imageUrl.trim() !== "" ? match.imageUrl : "/vintage.png"}
+                  alt={match.name || "Match"}
                   width={64}
                   height={64}
-                  className="w-16 h-16 rounded-full"
+                  className="w-16 h-16 rounded-full object-cover"
                 />
                 <span className="text-lg">{match.name}</span>
               </li>
