@@ -129,8 +129,8 @@ export default function MessagesList() {
                         <div className="mt-3 p-3 bg-blue-50 border border-blue-200 rounded-lg">
                             <div className="flex items-center justify-between">
                                 <div className={FLEX_CLASSES.CENTER_GAP_2}>
-                                    <Bell className="w-4 h-4 text-blue-600" />
-                                    <span className="text-sm text-blue-700">
+                                    <Bell className="w-4 h-4 text-secondary" />
+                                    <span className="text-sm text-secondary">
                                         {NOTIFICATION_MESSAGES.PERMISSION_ACTIVATE}
                                     </span>
                                 </div>
