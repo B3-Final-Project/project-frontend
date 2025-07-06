@@ -9,8 +9,8 @@ import {
 
 import { Button } from "@/components/ui/button";
 import { Profile } from "@/lib/routes/profiles/interfaces/profile.interface";
-import { User } from "@/lib/routes/profiles/interfaces/user.interface";
 import { UpdateProfileDto } from "@/lib/routes/profiles/dto/update-profile.dto";
+import { User } from "@/lib/routes/profiles/interfaces/user.interface";
 
 interface GenericProfileDialogProps<T> {
   readonly title: string;
@@ -38,15 +38,33 @@ export function GenericProfileDialog<T>({
   const user = data?.user;
 
   const [formData, setFormData] = useState<T>(initialFormData);
+  const [initialized, setInitialized] = useState(false);
+  const [lastProfileId, setLastProfileId] = useState<string | null>(null);
+
+  // Reset initialization when profile ID changes (dialog reopened for different profile)
+  useEffect(() => {
+    const currentProfileId = profile?.id?.toString();
+    if (currentProfileId && currentProfileId !== lastProfileId) {
+      setInitialized(false);
+      setLastProfileId(currentProfileId);
+    }
+  }, [profile?.id, lastProfileId]);
 
   useEffect(() => {
-    if (profile && user) {
+    if (profile && user && !initialized) {
       setFormData(extractFormDataFromProfile(profile, user));
+      setInitialized(true);
     }
-  }, [profile, user, extractFormDataFromProfile]);
+  }, [profile, user, extractFormDataFromProfile, initialized]);
 
   const handleInputChange = (fieldName: string, value: string | number) => {
-    setFormData((prevData) => ({ ...prevData, [fieldName]: value }));
+    console.log("GenericProfileDialog handleInputChange called with:", fieldName, value);
+    console.log("Current formData before change:", formData);
+    setFormData((prevData) => {
+      const newData = { ...prevData, [fieldName]: value };
+      console.log("New formData:", newData);
+      return newData;
+    });
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -54,7 +72,12 @@ export function GenericProfileDialog<T>({
     if (!profile || !user) return;
     const payload = buildUpdatePayload(formData);
 
-    updateProfile.mutate(payload);
+    updateProfile.mutate(payload, {
+      onSuccess: () => {
+        // Reset initialization flag after successful update to allow fresh data on next open
+        setInitialized(false);
+      }
+    });
   };
 
   if (isLoading) return <div>Loading...</div>;
