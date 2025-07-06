@@ -84,7 +84,7 @@ export function StepComponent() {
 
   return (
     <div className="w-full max-w-2xl mx-auto">
-      <div className="mb-8 mx-10">
+      <div className="my-6 mx-10">
         <div className="flex items-center justify-between mb-2">
           <h2 className="text-2xl font-semibold">{step.description}</h2>
           <p className="text-sm text-gray-500">
