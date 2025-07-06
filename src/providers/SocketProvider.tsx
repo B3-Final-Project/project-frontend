@@ -39,14 +39,20 @@ export function SocketProvider({ children, token }: SocketProviderProps) {
       socketRef.current.disconnect();
     }
 
-    const socketInstance = io(`${process.env.NEXT_PUBLIC_BASE_URL ?? 'https://holomatch.org/api'}/ws/messages`, {
-      auth: { token },
-      transports: ['websocket'],
-      autoConnect: true,
-      reconnection: true,
-      reconnectionAttempts: 5,
-      reconnectionDelay: 1000,
-    });
+    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL ?? 'https://holomatch.org/api';
+    const namespace = '/ws/messages';
+
+    const socketInstance = io(
+      `${baseUrl}${namespace}`,
+      {
+        auth: { token },
+        transports: ['websocket'],
+        autoConnect: true,
+        reconnection: true,
+        reconnectionAttempts: 5,
+        reconnectionDelay: 1000,
+      }
+    );
 
     socketInstance.on('connect', () => {
       setIsConnected(true);
