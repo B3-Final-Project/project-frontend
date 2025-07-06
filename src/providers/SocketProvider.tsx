@@ -39,23 +39,31 @@ export function SocketProvider({ children, token }: SocketProviderProps) {
       socketRef.current.disconnect();
     }
 
-    const socketInstance = io(`${process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:8080/api'}/ws/messages`, {
-      auth: { token },
-      transports: ['websocket'],
-      autoConnect: true,
-      reconnection: true,
-      reconnectionAttempts: 5,
-      reconnectionDelay: 1000,
-    });
+    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL ?? 'https://holomatch.org';
+    const namespace = '/api/ws/messages';
+
+    const socketInstance = io(
+      `${baseUrl}${namespace}`,
+      {
+        auth: { token },
+        transports: ['websocket','polling'],
+        autoConnect: true,
+        reconnection: true,
+        reconnectionAttempts: 5,
+        reconnectionDelay: 1000,
+        timeout: 10000, // 10 seconds
+        forceNew: true,
+      }
+    );
 
     socketInstance.on('connect', () => {
       setIsConnected(true);
     });
-    
+
     socketInstance.on('disconnect', () => {
       setIsConnected(false);
     });
-    
+
     socketInstance.on('connect_error', (error) => {
       console.error('❌ Erreur de connexion Socket.IO:', error);
       setIsConnected(false);
