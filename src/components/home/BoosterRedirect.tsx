@@ -2,7 +2,6 @@
 
 import { ArrowRight, Gift } from 'lucide-react';
 import Link from 'next/link';
-import { GiWaterDrop, GiGrass, GiRock, GiMetalBar, GiPerspectiveDiceSixFacesRandom } from 'react-icons/gi';
 
 export default function BoosterRedirect() {
     return (
@@ -28,13 +27,12 @@ export default function BoosterRedirect() {
             </Link>
 
             {/* Explication du fonctionnement des boosters */}
-            <div className="mt-6 bg-card rounded-lg p-5 shadow-sm">
+            {/* <div className="mt-6 bg-card rounded-lg p-5 shadow-sm">
                 <h3 className="text-lg font-medium mb-2">How Boosters Work</h3>
                 <p className="text-muted-foreground mb-3">
                     Boosters are special packs that help you discover unique matches based on different algorithms and preferences. Each type offers a unique matching experience.
                 </p>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
-                    {/* Les trois types de boosters les plus populaires */}
                     <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-4 flex flex-col items-center text-center">
                         <div className="bg-blue-100 dark:bg-blue-800/30 p-3 rounded-full mb-3">
                             <GiWaterDrop className="text-4xl text-blue-500" />
@@ -65,7 +63,7 @@ export default function BoosterRedirect() {
                         </p>
                     </div>
                 </div>
-            </div>
+            </div> */}
         </div>
     );
 }

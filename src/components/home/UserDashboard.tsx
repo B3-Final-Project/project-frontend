@@ -3,7 +3,7 @@ import MatchList from "./MatchList";
 
 export default function UserDashboard() {
   return (
-    <main className="flex flex-col min-h-[calc(100vh-130px)] p-4 md:p-6 lg:p-8 gap-8 bg-background/50">
+    <main className="flex flex-col min-h-[calc(100vh-130px)] p-4 md:p-6 lg:p-8 gap-8">
       <div className="w-full max-w-7xl mx-auto space-y-8">
         {/* Hero section */}
         <div className="w-full p-6 lg:p-8">
