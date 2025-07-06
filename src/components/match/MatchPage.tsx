@@ -68,7 +68,7 @@ const MatchPage = ({ boosterType }: MatchPageProps) => {
   };
 
   return (
-    <div className="w-full h-full flex items-center justify-center">
+    <div className="w-full h-[calc(100vh-130px)] flex items-center justify-center">
       {showMatchSystem ? (
         <motion.div
           className="w-full h-full"

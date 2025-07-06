@@ -6,6 +6,13 @@ export interface Message {
   isRead: boolean;
   conversationId: string;
   sender_id?: string;
+  senderName?: string;
+  replyTo?: {
+    id: string;
+    content: string;
+    sender_id: string;
+  } | null;
+  reactions?: Record<string, string[]>; // emoji -> array of user IDs
 }
 
 export interface Conversation {
@@ -17,4 +24,18 @@ export interface Conversation {
   unread: number;
   isTyping: boolean;
   lastActive: Date;
+}
+
+export interface MatchedWith {
+  userId: string;
+  name: string;
+  avatar: string | null;
+  age: number | null;
+}
+
+export interface NewMatchData {
+  type: string;
+  conversation: Conversation;
+  matchedWith: MatchedWith;
+  timestamp: Date;
 } 

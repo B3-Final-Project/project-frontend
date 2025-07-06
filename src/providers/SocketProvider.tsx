@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext, useEffect, useState, ReactNode, useMemo } from "react";
+import { createContext, useContext, useEffect, useState, ReactNode, useMemo, useRef } from "react";
 import { io, Socket } from "socket.io-client";
 
 interface SocketContextType {
@@ -21,33 +21,38 @@ interface SocketProviderProps {
 export function SocketProvider({ children, token }: SocketProviderProps) {
   const [socket, setSocket] = useState<Socket | null>(null);
   const [isConnected, setIsConnected] = useState(false);
+  const socketRef = useRef<Socket | null>(null);
+  const tokenRef = useRef<string | null>(null);
 
   useEffect(() => {
     if (!token) {
-      console.log('❌ Pas de token, connexion WebSocket impossible');
       return;
     }
 
-    // Éviter de recréer la connexion si on a déjà un socket connecté
-    if (socket?.connected) {
+    // Éviter de recréer la connexion si le token n'a pas changé
+    if (tokenRef.current === token && socketRef.current?.connected) {
       return;
     }
 
-    console.log('🔌 Tentative de connexion WebSocket avec token:', token.substring(0, 20) + '...');
+    // Déconnecter l'ancien socket s'il existe
+    if (socketRef.current) {
+      socketRef.current.disconnect();
+    }
 
-    const socketInstance = io(`${process.env.NEXT_PUBLIC_WS_URL ?? 'http://localhost:8080/api'}/ws/messages`, {
+    const socketInstance = io(`${process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:8080/api'}/ws/messages`, {
       auth: { token },
-      transports: ['websocket', 'polling'],
+      transports: ['websocket'],
       autoConnect: true,
+      reconnection: true,
+      reconnectionAttempts: 5,
+      reconnectionDelay: 1000,
     });
 
     socketInstance.on('connect', () => {
-      console.log('✅ Socket.IO connecté ! ID:', socketInstance.id);
       setIsConnected(true);
     });
     
-    socketInstance.on('disconnect', (reason) => {
-      console.log('❌ Socket.IO déconnecté. Raison:', reason);
+    socketInstance.on('disconnect', () => {
       setIsConnected(false);
     });
     
@@ -56,17 +61,14 @@ export function SocketProvider({ children, token }: SocketProviderProps) {
       setIsConnected(false);
     });
 
-    socketInstance.on('error', (error) => {
-      console.error('❌ Erreur Socket.IO:', error);
-    });
-
+    socketRef.current = socketInstance;
+    tokenRef.current = token;
     setSocket(socketInstance);
 
     return () => {
-      console.log('🔌 Déconnexion WebSocket');
       socketInstance.disconnect();
     };
-  }, [token, socket?.connected]); // Ajout de socket?.connected comme dépendance
+  }, [token]);
 
   const contextValue = useMemo(() => ({
     socket,
