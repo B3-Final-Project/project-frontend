@@ -1,15 +1,9 @@
 "use client";
 import { SignInButton } from "@/components/auth/SignInButton";
-import { clsx } from "clsx";
-import { Quantico } from "next/font/google";
 import Image from "next/image";
 import { useAuth } from "react-oidc-context";
 import UserDashboard from "./UserDashboard";
 
-const quantico = Quantico({
-  subsets: ["latin"],
-  weight: ["400", "700"],
-});
 
 export default function HomePage() {
   const auth = useAuth();
@@ -28,11 +22,7 @@ export default function HomePage() {
             />
           </div>
 
-          <h1 className={clsx(
-            quantico.className,
-            "text-4xl md:text-5xl lg:text-6xl text-center font-bold tracking-wider",
-            "bg-clip-text text-transparent bg-gradient-to-r from-primary to-secondary"
-          )}>
+          <h1 className={`text-4xl md:text-5xl lg:text-6xl text-center font-bold tracking-wider bg-clip-text text-transparent bg-gradient-to-r from-primary to-secondary`}>
             HOLOMATCH
           </h1>
 
@@ -40,10 +30,7 @@ export default function HomePage() {
             Open your pack, discover profiles and find your match
           </p>
 
-          <div className="mt-4 w-full flex justify-center transform transition-all duration-300 hover:scale-105 hover:shadow-lg">
-            <SignInButton />
-          </div>
-          <div className="absolute bottom-0 left-0 w-full h-20 bg-gradient-to-t from-black/20 to-transparent opacity-30" />
+          <SignInButton />
         </div>
       </main>
     );

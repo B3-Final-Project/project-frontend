@@ -17,7 +17,7 @@ export function MessageReply({ replyTo, isMe }: MessageReplyProps) {
         : 'bg-gray-50 border-gray-300 text-gray-700'
     }`}>
       <div className="text-xs font-medium mb-1">
-        Réponse à un message
+        Reply to a message
       </div>
       <div className="text-sm truncate">
         {replyTo.content}

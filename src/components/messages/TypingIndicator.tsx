@@ -12,11 +12,11 @@ export const TypingIndicator: React.FC<TypingIndicatorProps> = ({ isVisible, typ
 
   const getTypingText = () => {
     if (typingUsers.length === 1) {
-      return `${typingUsers[0]} est en train d'écrire...`;
+      return `${typingUsers[0]} is typing...`;
     } else if (typingUsers.length === 2) {
-      return `${typingUsers[0]} et ${typingUsers[1]} sont en train d'écrire...`;
+      return `${typingUsers[0]} and ${typingUsers[1]} are typing...`;
     } else {
-      return 'Plusieurs personnes sont en train d\'écrire...';
+      return 'Several people are typing...';
     }
   };
 

@@ -18,7 +18,7 @@ export const MESSAGE_ALIGNMENT = {
 
 // Classes CSS pour les messages
 export const MESSAGE_CLASSES = {
-    SENDER: 'max-w-[90%] md:max-w-[75%] rounded-2xl bg-blue-500 text-white shadow-sm border border-blue-500 p-2 md:p-3',
+    SENDER: 'max-w-[90%] md:max-w-[75%] rounded-2xl bg-secondary text-white shadow-sm border border-secondary p-2 md:p-3',
     RECEIVER: 'max-w-[90%] md:max-w-[75%] rounded-2xl bg-white text-gray-900 shadow-sm border border-gray-100 p-2 md:p-3'
 } as const;
 
