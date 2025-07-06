@@ -39,8 +39,8 @@ export function SocketProvider({ children, token }: SocketProviderProps) {
       socketRef.current.disconnect();
     }
 
-    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL ?? 'https://holomatch.org/api';
-    const namespace = '/ws/messages';
+    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL ?? 'https://holomatch.org';
+    const namespace = '/api/ws/messages';
 
     const socketInstance = io(
       `${baseUrl}${namespace}`,
