@@ -47,4 +47,7 @@ export enum RESTServerRoute {
   // SEED
   REST_SEED_USERS = 'seed/all',
   REST_SEED_BOOSTERS = 'seed/boosters',
+  // GEOLOCATION ROUTES
+  REST_GEOLOCATION_REVERSE = 'geolocate/reverse',
+  REST_GEOLOCATION_SEARCH = 'geolocate/search/:city',
 }
