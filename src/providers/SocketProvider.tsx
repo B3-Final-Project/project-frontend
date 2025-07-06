@@ -39,7 +39,7 @@ export function SocketProvider({ children, token }: SocketProviderProps) {
       socketRef.current.disconnect();
     }
 
-    const socketInstance = io(`${process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:8080/api'}/ws/messages`, {
+    const socketInstance = io(`${process.env.NEXT_PUBLIC_BASE_URL ?? 'https://holomatch.org/api'}/ws/messages`, {
       auth: { token },
       transports: ['websocket'],
       autoConnect: true,
@@ -51,11 +51,11 @@ export function SocketProvider({ children, token }: SocketProviderProps) {
     socketInstance.on('connect', () => {
       setIsConnected(true);
     });
-    
+
     socketInstance.on('disconnect', () => {
       setIsConnected(false);
     });
-    
+
     socketInstance.on('connect_error', (error) => {
       console.error('❌ Erreur de connexion Socket.IO:', error);
       setIsConnected(false);
