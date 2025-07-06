@@ -46,11 +46,13 @@ export function SocketProvider({ children, token }: SocketProviderProps) {
       `${baseUrl}${namespace}`,
       {
         auth: { token },
-        transports: ['websocket'],
+        transports: ['websocket','polling'],
         autoConnect: true,
         reconnection: true,
         reconnectionAttempts: 5,
         reconnectionDelay: 1000,
+        timeout: 10000, // 10 seconds
+        forceNew: true,
       }
     );
 
