@@ -29,9 +29,9 @@ export function NotificationSettings({ className }: NotificationSettingsProps) {
   const handlePermissionRequest = async () => {
     const granted = await requestNotificationPermission();
     if (!granted) {
-      // Si la permission est refusée, proposer d'ouvrir les paramètres
+      // If permission is denied, offer to open settings
       setTimeout(() => {
-        if (confirm('Voulez-vous ouvrir les paramètres de notification du navigateur ?')) {
+        if (confirm('Do you want to open browser notification settings?')) {
           openNotificationSettings();
         }
       }, 1000);
@@ -43,13 +43,13 @@ export function NotificationSettings({ className }: NotificationSettingsProps) {
   const permissionStatus = (() => {
     switch (notificationState.permission) {
       case NotificationPermission.GRANTED:
-        return { text: 'Autorisées', color: 'bg-green-100 text-green-700', icon: Bell };
+        return { text: 'Allowed', color: 'bg-green-100 text-green-700', icon: Bell };
       case NotificationPermission.DENIED:
-        return { text: 'Refusées', color: 'bg-red-100 text-red-700', icon: BellOff };
+        return { text: 'Denied', color: 'bg-red-100 text-red-700', icon: BellOff };
       case NotificationPermission.DEFAULT:
-        return { text: 'Non demandées', color: 'bg-yellow-100 text-yellow-700', icon: Bell };
+        return { text: 'Not asked', color: 'bg-yellow-100 text-yellow-700', icon: Bell };
       default:
-        return { text: 'Inconnu', color: 'bg-gray-100 text-gray-700', icon: BellOff };
+        return { text: 'Unknown', color: 'bg-gray-100 text-gray-700', icon: BellOff };
     }
   })();
   const StatusIcon = permissionStatus.icon;
@@ -61,7 +61,7 @@ export function NotificationSettings({ className }: NotificationSettingsProps) {
           <div>
             <CardTitle className="text-lg">Notifications</CardTitle>
             <CardDescription>
-              Gérez vos préférences de notification
+              Manage your notification preferences
             </CardDescription>
           </div>
           <Badge className={permissionStatus.color}>
@@ -76,7 +76,7 @@ export function NotificationSettings({ className }: NotificationSettingsProps) {
         {!notificationState.isSupported && (
           <div className="p-3 bg-red-50 border border-red-200 rounded-lg">
             <p className="text-sm text-red-700">
-              ⚠️ Les notifications ne sont pas supportées par votre navigateur.
+              ⚠️ Notifications are not supported by your browser.
             </p>
           </div>
         )}
@@ -86,14 +86,14 @@ export function NotificationSettings({ className }: NotificationSettingsProps) {
           <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
             <div className="flex items-center justify-between">
               <div>
-                <h4 className="font-medium text-blue-900">Activer les notifications</h4>
+                <h4 className="font-medium text-blue-900">Enable notifications</h4>
                 <p className="text-sm text-blue-700 mt-1">
-                  Recevez des notifications pour les nouveaux messages et matches
+                  Receive notifications for new messages and matches
                 </p>
               </div>
               <Button onClick={handlePermissionRequest} size="sm">
                 <Bell className="w-4 h-4 mr-2" />
-                Activer
+                Enable
               </Button>
             </div>
           </div>
@@ -104,66 +104,66 @@ export function NotificationSettings({ className }: NotificationSettingsProps) {
           <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
             <div className="flex items-center justify-between">
               <div>
-                <h4 className="font-medium text-red-900">Notifications désactivées</h4>
+                <h4 className="font-medium text-red-900">Notifications denied</h4>
                 <p className="text-sm text-red-700 mt-1">
-                  Vous devez autoriser les notifications dans les paramètres de votre navigateur
+                  You must allow notifications in your browser settings
                 </p>
               </div>
-              <Button onClick={openNotificationSettings} variant="outline" size="sm">
+              <Button onClick={openNotificationSettings} size="sm" variant="outline">
                 <Settings className="w-4 h-4 mr-2" />
-                Paramètres
+                Settings
               </Button>
             </div>
           </div>
         )}
 
-        {/* Paramètres avancés */}
+        {/* Advanced settings */}
         {notificationState.permission === NotificationPermission.GRANTED && (
           <>
-            {/* Bouton pour développer/réduire */}
+            {/* Expand/collapse button */}
             <Button
               variant="ghost"
               size="sm"
               onClick={() => setIsExpanded(!isExpanded)}
               className="w-full justify-between"
             >
-              <span>Paramètres avancés</span>
+              <span>Advanced settings</span>
               <Settings className={`w-4 h-4 transition-transform ${isExpanded ? 'rotate-90' : ''}`} />
             </Button>
 
             {isExpanded && (
               <div className="space-y-4 pt-2 border-t">
-                {/* Test de notification */}
+                {/* Notification test */}
                 <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-2">
                     <TestTube className="w-4 h-4 text-gray-500" />
                     <Label htmlFor="test-notification" className="text-sm">
-                      Tester les notifications
+                      Test notifications
                     </Label>
                   </div>
                   <Button onClick={testNotification} variant="outline" size="sm">
-                    Tester
+                    Test
                   </Button>
                 </div>
 
-                {/* Test de toast */}
+                {/* Toast test */}
                 <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-2">
                     <MessageSquare className="w-4 h-4 text-gray-500" />
                     <Label htmlFor="test-toast" className="text-sm">
-                      Tester les toasts
+                      Test toasts
                     </Label>
                   </div>
                   <Button onClick={() => toast({
-                    title: "Test de toast",
-                    description: "Ceci est un test pour vérifier que les toasts fonctionnent correctement.",
+                    title: "Toast test",
+                    description: "This is a test to verify that toasts are working correctly.",
                     variant: "default",
                   })} variant="outline" size="sm">
-                    Tester
+                    Test
                   </Button>
                 </div>
 
-                {/* Paramètres de son */}
+                {/* Sound settings */}
                 <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-2">
                     {notificationState.settings?.sound ? (
@@ -172,7 +172,7 @@ export function NotificationSettings({ className }: NotificationSettingsProps) {
                       <VolumeX className="w-4 h-4 text-gray-500" />
                     )}
                     <Label htmlFor="sound-toggle" className="text-sm">
-                      Son
+                      Sound
                     </Label>
                   </div>
                   <Switch
@@ -182,7 +182,7 @@ export function NotificationSettings({ className }: NotificationSettingsProps) {
                   />
                 </div>
 
-                {/* Paramètres de vibration */}
+                {/* Vibration settings */}
                 <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-2">
                     <Smartphone className="w-4 h-4 text-gray-500" />
@@ -197,7 +197,7 @@ export function NotificationSettings({ className }: NotificationSettingsProps) {
                   />
                 </div>
 
-                {/* Paramètres d'aperçu */}
+                {/* Preview settings */}
                 <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-2">
                     {notificationState.settings?.showPreview ? (
@@ -206,7 +206,7 @@ export function NotificationSettings({ className }: NotificationSettingsProps) {
                       <EyeOff className="w-4 h-4 text-gray-500" />
                     )}
                     <Label htmlFor="preview-toggle" className="text-sm">
-                      Aperçu du message
+                      Message preview
                     </Label>
                   </div>
                   <Switch
@@ -219,7 +219,7 @@ export function NotificationSettings({ className }: NotificationSettingsProps) {
                 {/* Dernière demande */}
                 {notificationState.lastRequested && (
                   <div className="text-xs text-gray-500 pt-2 border-t">
-                    Dernière demande : {notificationState.lastRequested.toLocaleDateString('fr-FR')}
+                    Last request: {notificationState.lastRequested.toLocaleDateString('en-US')}
                   </div>
                 )}
               </div>

@@ -1,10 +1,10 @@
 'use client';
 
-import { Conversation } from '../../lib/routes/messages/interfaces/message.interface';
-import { OnlineStatus } from './OnlineStatus';
 import Image from 'next/image';
-import { formatMessageTimestamp } from '../../lib/utils/timestamp-utils';
+import { Conversation } from '../../lib/routes/messages/interfaces/message.interface';
 import { USER_STATUS } from '../../lib/utils/message-styles';
+import { formatMessageTimestamp } from '../../lib/utils/timestamp-utils';
+import { OnlineStatus } from './OnlineStatus';
 
 interface ConversationItemProps {
   readonly conversation: Conversation;
@@ -28,7 +28,7 @@ export default function ConversationItem({
     if (conversation.lastMessage) {
       return conversation.lastMessage.content;
     }
-    return "Aucun message";
+    return "No message";
   };
 
   // Obtenir le nombre total de messages non lus
@@ -39,9 +39,8 @@ export default function ConversationItem({
       onClick={onClick}
       className={`
         w-full text-left transition-colors
-        ${isSelected ? 'bg-blue-50' : 'hover:bg-gray-50'}
-        p-4 rounded-xl shadow-sm
-        border-b border-gray-100
+        ${isSelected ? 'bg-primary/20' : 'hover:bg-primary/10'}
+        p-4 border-b border-border
       `}
     >
       <div className={`
@@ -60,12 +59,12 @@ export default function ConversationItem({
             <OnlineStatus isOnline={isOnline} size="sm" />
           </div>
           {totalUnread > 0 && (
-            <span className="absolute -top-1 -right-1 bg-blue-500 text-white text-xs rounded-full min-w-[18px] sm:min-w-[20px] h-4 sm:h-5 flex items-center justify-center px-1">
+            <span className="absolute -top-1 -right-1 bg-secondary text-white text-xs rounded-full min-w-[18px] sm:min-w-[20px] h-4 sm:h-5 flex items-center justify-center px-1">
               {totalUnread > 99 ? '99+' : totalUnread}
             </span>
           )}
         </div>
-        
+
         {isExpanded && (
           <div className="flex-1 min-w-0">
             <div className="flex justify-between items-start w-full">
@@ -80,8 +79,8 @@ export default function ConversationItem({
                 </div>
                 <div className="text-xs sm:text-sm">
                   {conversation.isTyping ? (
-                    <div className="flex items-center text-blue-500">
-                      <span className="animate-pulse">En train d&apos;écrire</span>
+                    <div className="flex items-center text-secondary">
+                      <span className="animate-pulse">Typing</span>
                       <span className="ml-1 animate-bounce delay-0">.</span>
                       <span className="animate-bounce delay-150">.</span>
                       <span className="animate-bounce delay-300">.</span>
@@ -89,9 +88,9 @@ export default function ConversationItem({
                   ) : (
                     <p className={`truncate ${totalUnread > 0 ? 'text-gray-900 font-medium' : 'text-gray-600'}`}>
                       {conversation.lastMessage?.isMe && (
-                        <span className="text-blue-600 font-medium">Vous: </span>
+                        <span className="text-secondary font-medium">You: </span>
                       )}
-                      {getLastMessageText().replace('Vous: ', '')}
+                      {getLastMessageText().replace('You: ', '')}
                     </p>
                   )}
                 </div>
@@ -100,7 +99,7 @@ export default function ConversationItem({
                 <p className="text-xs">{formatMessageTimestamp(conversation.lastMessage?.timestamp || conversation.lastActive)}</p>
                 {totalUnread > 0 && (
                   <div className="mt-1">
-                    <span className="inline-block w-2 h-2 bg-blue-500 rounded-full"></span>
+                    <span className="inline-block w-2 h-2 bg-secondary rounded-full"></span>
                   </div>
                 )}
               </div>

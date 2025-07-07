@@ -38,7 +38,7 @@ export default function BoosterListPage() {
 
   return (
     <motion.div
-      className="flex flex-col items-center justify-center w-full h-[calc(100vh-130px)] overflow-hidden py-2 px-4"
+      className="flex flex-col items-center justify-center w-full h-[calc(100vh-130px)] overflow-hidden py-2 px-4 mt-10"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.5 }}

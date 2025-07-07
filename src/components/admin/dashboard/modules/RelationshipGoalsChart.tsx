@@ -1,6 +1,6 @@
 "use client";
 
-import { Cell, Pie, PieChart, Tooltip } from "recharts";
+import { Cell, Pie, PieChart } from "recharts";
 
 import { useComprehensiveStatsQuery } from "@/hooks/react-query/stats";
 import {
@@ -9,6 +9,8 @@ import {
   transformObjectToChartData,
 } from "@/lib/utils/stats-utils";
 import { ChartCard } from "@/components/admin/dashboard/shared/ChartCard";
+import { formatRelationshipTypeEnum } from "@/lib/utils/enum-utils";
+import { toNumber } from "es-toolkit/compat";
 
 export function RelationshipGoalsChart() {
   const { data: comprehensiveStats } = useComprehensiveStatsQuery();
@@ -39,13 +41,12 @@ export function RelationshipGoalsChart() {
           outerRadius={100}
           fill="#8884d8"
           dataKey="count"
-          label={formatPercentageLabel}
+          label={(entry)=>formatPercentageLabel({name: formatRelationshipTypeEnum(toNumber(entry.name)), percent: entry.percent})}
         >
           {relationshipGoalsData.map((entry) => (
             <Cell key={`goal-${entry.goal}`} fill={entry.color} />
           ))}
         </Pie>
-        <Tooltip />
       </PieChart>
     </ChartCard>
   );

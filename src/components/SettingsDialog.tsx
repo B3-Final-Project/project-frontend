@@ -25,14 +25,13 @@ interface SettingsDialogProps {
 }
 
 enum SettingsTab {
-  GENERAL = 'general',
   NOTIFICATIONS = 'notifications',
   ACCOUNT = 'account'
 }
 
 export function SettingsDialog({ isOpen, onClose }: SettingsDialogProps) {
   const [isDeleting, setIsDeleting] = useState(false);
-  const [activeTab, setActiveTab] = useState<SettingsTab>(SettingsTab.GENERAL);
+  const [activeTab, setActiveTab] = useState<SettingsTab>(SettingsTab.NOTIFICATIONS);
   const auth = useAuth();
   const router = useRouter();
   const { config } = useAuthConfigReady();
@@ -89,18 +88,18 @@ export function SettingsDialog({ isOpen, onClose }: SettingsDialogProps) {
   };
 
   const handleDeleteAccount = async () => {
-    // const confirmDelete = window.confirm(
-    //   "Êtes-vous sûr de vouloir supprimer votre compte ? Cette action est irréversible."
-    // );
-    //
-    // if (!confirmDelete) return;
-    //
-    // const doubleConfirm = window.confirm(
-    //   "ATTENTION : Vous êtes sur le point de supprimer définitivement votre compte. Tapez 'SUPPRIMER' pour confirmer."
-    // );
-    //
-    // if (!doubleConfirm) return;
-    //
+    const confirmDelete = window.confirm(
+      "Êtes-vous sûr de vouloir supprimer votre compte ? Cette action est irréversible."
+    );
+
+    if (!confirmDelete) return;
+
+    const doubleConfirm = window.confirm(
+      "ATTENTION : Vous êtes sur le point de supprimer définitivement votre compte. Tapez 'SUPPRIMER' pour confirmer."
+    );
+
+    if (!doubleConfirm) return;
+
     setIsDeleting(true);
 
     try {
@@ -139,16 +138,6 @@ export function SettingsDialog({ isOpen, onClose }: SettingsDialogProps) {
         {/* Onglets */}
         <div className="flex space-x-1 border-b">
           <button
-            onClick={() => setActiveTab(SettingsTab.GENERAL)}
-            className={`px-3 py-2 text-sm font-medium rounded-t-lg transition-colors ${
-              activeTab === SettingsTab.GENERAL
-                ? 'bg-blue-100 text-blue-700 border-b-2 border-blue-700'
-                : 'text-gray-500 hover:text-gray-700'
-            }`}
-          >
-            Général
-          </button>
-          <button
             onClick={() => setActiveTab(SettingsTab.NOTIFICATIONS)}
             className={`px-3 py-2 text-sm font-medium rounded-t-lg transition-colors ${
               activeTab === SettingsTab.NOTIFICATIONS
@@ -172,18 +161,6 @@ export function SettingsDialog({ isOpen, onClose }: SettingsDialogProps) {
 
         {/* Contenu des onglets */}
         <div className="py-4">
-          {activeTab === SettingsTab.GENERAL && (
-            <div className="space-y-4">
-              <div>
-                <h3 className="text-lg font-medium mb-2">Paramètres généraux</h3>
-                <p className="text-sm text-gray-600">
-                  Configurez vos préférences générales de l&apos;application.
-                </p>
-              </div>
-              {/* Ajoutez ici d'autres paramètres généraux si nécessaire */}
-            </div>
-          )}
-
           {activeTab === SettingsTab.NOTIFICATIONS && (
             <div className="space-y-4">
               <div>

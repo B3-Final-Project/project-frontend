@@ -160,3 +160,4 @@ dist
 next-env.d.ts
 
 .idea
+test-results/

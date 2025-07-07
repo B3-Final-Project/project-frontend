@@ -23,7 +23,7 @@ export const FLEX_CLASSES = {
   
   // Responsive flex
   RESPONSIVE_CENTER: 'flex items-center gap-2 sm:gap-3',
-  RESPONSIVE_BETWEEN: 'flex items-center justify-between gap-2 sm:gap-3',
+  RESPONSIVE_BETWEEN: 'flex items-center justify-between gap-2 sm:gap-3 p-2',
   RESPONSIVE_COLUMN: 'flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4',
 } as const;
 
