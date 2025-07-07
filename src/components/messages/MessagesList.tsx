@@ -34,32 +34,8 @@ export default function MessagesList() {
     } = useNotificationHelpers();
 
     const handleConversationSelect = useCallback((conversationId: string) => {
-        // Ajouter des logs détaillés pour le débogage
-        console.log('=== CONVERSATION SELECTION LOGS ===');
-        console.log('Conversation sélectionnée - ID:', conversationId);
-        
-        // Trouver la conversation complète dans les données
-        const selectedConv = conversations.find(c => c.id === conversationId);
-        console.log('Objet conversation complet:', selectedConv);
-        
-        if (selectedConv) {
-            console.log('Propriétés importantes:');
-            console.log('- id:', selectedConv.id);
-            console.log('- otherUserId:', selectedConv.otherUserId);
-            console.log('- Toutes les propriétés disponibles:');
-            // Afficher toutes les propriétés de la conversation pour débug
-            Object.keys(selectedConv).forEach(key => {
-                console.log(`- ${key}:`, (selectedConv as any)[key]);
-            });
-        }
-        
-        console.log('URL de redirection:', `/messages/${conversationId}`);
-        console.log('=== FIN DES LOGS ===');
-        
         setSelectedConversation(conversationId);
-        // Supprimer les notifications de cette conversation
         removeConversationNotifications(conversationId);
-        // Rediriger vers la page de conversation spécifique
         router.push(`/messages/${conversationId}`);
     }, [removeConversationNotifications, router, conversations]);
 
