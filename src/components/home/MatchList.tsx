@@ -8,6 +8,17 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 
+interface Match {
+  id?: string;
+  user_id?: string;
+  userId?: string;
+  name?: string;
+  imageUrl?: string;
+  isOnline?: boolean;
+  unread?: boolean;
+  unreadCount?: number;
+}
+
 export default function MatchList() {
   const router = useRouter();
   const query = useMatchesQuery();
@@ -43,28 +54,35 @@ export default function MatchList() {
   };
 
   // Récupère le nombre de messages non lus pour un match depuis sa conversation correspondante
-  const getUnreadMessagesCount = (match: any) => {
-    if (!match || !match.user_id) return 0;
+  const getUnreadMessagesCount = (match: Match) => {
+    if (!match || (!match.user_id && !match.userId)) return 0;
 
-    const conversationId = findConversationIdByUserId(match.user_id);
+    // Utilise user_id ou userId selon ce qui est disponible
+    const userId = match.user_id || match.userId;
+    if (!userId) return 0; // S'assurer que userId est défini
+
+    const conversationId = findConversationIdByUserId(userId);
     if (!conversationId) return 0;
 
     const conversation = conversations.find(conv => conv.id === conversationId);
     return conversation && conversation.unread ? conversation.unread : 0;
   };
 
-  const hasUnreadMessages = (match: any) => {
+  const hasUnreadMessages = (match: Match) => {
     return getUnreadMessagesCount(match) > 0;
   };
 
-  const handleMatchClick = (match: any) => {
-    const conversationId = findConversationIdByUserId(match.user_id);
+  const handleMatchClick = (match: Match) => {
+    const userId = match.user_id || match.userId;
+    if (!userId) return;
+
+    const conversationId = findConversationIdByUserId(userId);
 
     if (conversationId) {
-      console.log(`Redirection vers la conversation ${conversationId} pour le match ${match.name} (user_id: ${match.user_id})`);
+      console.log(`Redirection vers la conversation ${conversationId} pour le match ${match.name} (user_id: ${userId})`);
       router.push(`/messages/${conversationId}`);
     } else {
-      console.log(`Aucune conversation trouvée pour le match ${match.name} (user_id: ${match.user_id})`);
+      console.log(`Aucune conversation trouvée pour le match ${match.name} (user_id: ${userId})`);
     }
   };
 
@@ -96,7 +114,7 @@ export default function MatchList() {
         ) : (
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
             {query.data && Array.isArray(query.data) && query.data.length > 0 ? (
-              query.data.slice(0, 10).map((match: any, index: number) => (
+              query.data.slice(0, 10).map((match: Match, index: number) => (
                 <div
                   key={match.id || index}
                   className="group cursor-pointer"
@@ -122,7 +140,7 @@ export default function MatchList() {
                       {(match.unread === true || hasUnreadMessages(match)) ? (
                         <div className="mt-1 w-full">
                           <div className="bg-secondary/10 px-2 py-0.5 rounded text-[10px] font-medium text-secondary animate-pulse text-center">
-                            New message ({match.unreadCount > 0 ? match.unreadCount : getUnreadMessagesCount(match)})
+                            New message ({(match.unreadCount && match.unreadCount > 0) ? match.unreadCount : getUnreadMessagesCount(match)})
                           </div>
                         </div>
                       ) : null}

@@ -114,14 +114,14 @@ export default function ConversationPage({ initialConversationId }: Conversation
                 leaveConversation(selectedConversation);
             }
         };
-    }, [selectedConversation, isConnected]);
+    }, [selectedConversation, isConnected, joinConversation, leaveConversation, markAsReadMutation, messages.length]);
 
     // Effet pour obtenir les utilisateurs en ligne au chargement
     useEffect(() => {
         if (isConnected) {
             getOnlineUsers();
         }
-    }, [isConnected]);
+    }, [isConnected, getOnlineUsers]);
 
     // Effet pour réinitialiser l'état de frappe quand on change de conversation
     useEffect(() => {
@@ -138,7 +138,7 @@ export default function ConversationPage({ initialConversationId }: Conversation
                 debouncedMarkAsRead(selectedConversation);
             }
         }
-    }, [messages, selectedConversation, isConnected]);
+    }, [messages, selectedConversation, isConnected, debouncedMarkAsRead, messages.length]);
 
     // Effet pour marquer les nouveaux messages comme lus en temps réel
     useEffect(() => {
@@ -158,7 +158,7 @@ export default function ConversationPage({ initialConversationId }: Conversation
 
             return () => clearInterval(interval);
         }
-    }, [selectedConversation, isConnected, messages]);
+    }, [selectedConversation, isConnected, messages, debouncedMarkAsRead]);
 
     // Effet pour marquer les messages comme lus quand on fait défiler vers le bas
     useEffect(() => {
@@ -185,7 +185,7 @@ export default function ConversationPage({ initialConversationId }: Conversation
             messagesContainer.addEventListener('scroll', handleScroll);
             return () => messagesContainer.removeEventListener('scroll', handleScroll);
         }
-    }, [selectedConversation, isConnected, messages]);
+    }, [selectedConversation, isConnected, messages, debouncedMarkAsRead]);
 
 
 
@@ -341,12 +341,7 @@ export default function ConversationPage({ initialConversationId }: Conversation
 
 
 
-    // Keyboard handler for deletion popup
-    const handlePopupKeyDown = (e: React.KeyboardEvent) => {
-        if (e.key === 'Escape' && !isDeleting) {
-            cancelDeleteConversation();
-        }
-    };
+    // La fonction handlePopupKeyDown a été supprimée car elle n'était pas utilisée
 
     // Prepare the messages content
     let messagesContent;

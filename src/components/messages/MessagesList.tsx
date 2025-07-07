@@ -1,6 +1,6 @@
 'use client';
 
-import { Bell, BellOff, Settings } from 'lucide-react';
+import { Bell, Settings } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useCallback, useEffect, useState } from 'react';
 import { useConversations } from '../../hooks/react-query/messages';
@@ -28,7 +28,6 @@ export default function MessagesList() {
     } = useMessageNotifications();
 
     const {
-        getNotificationStatus,
         handleRequestNotificationPermission,
         shouldRequestPermission
     } = useNotificationHelpers();
@@ -37,7 +36,7 @@ export default function MessagesList() {
         setSelectedConversation(conversationId);
         removeConversationNotifications(conversationId);
         router.push(`/messages/${conversationId}`);
-    }, [removeConversationNotifications, router, conversations]);
+    }, [removeConversationNotifications, router]);
 
     // Écouter les clics sur les notifications pour la navigation
     useEffect(() => {
@@ -67,8 +66,8 @@ export default function MessagesList() {
         return isUserOnline(conversation.otherUserId);
     };
 
-    const notificationStatus = getNotificationStatus();
-    const StatusIcon = notificationStatus.icon === 'Bell' ? Bell : BellOff;
+    // Nous n'avons plus besoin de notificationStatus ni de StatusIcon
+    // car ils ne sont pas utilisés dans le composant
 
     // Préparer le contenu de la liste des conversations
     const conversationListContent = (
