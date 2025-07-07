@@ -70,6 +70,10 @@ export function GlobalMessageNotifications({ children }: { readonly children: Re
         title: `Nouveau message de ${message.senderName ?? 'Quelqu\'un'}`,
         description: message.content?.slice(0, 80) ?? '',
         variant: "default",
+        avatar: {
+          src: message.senderAvatar || '/img.png',
+          alt: message.senderName ?? 'Quelqu\'un'
+        },
         onClick: () => handleNewMessageToastClick(message, toastInstance),
       });
     };
@@ -103,6 +107,10 @@ export function GlobalMessageNotifications({ children }: { readonly children: Re
         title: "🎉 Nouveau match !",
         description: `Vous avez matché avec ${matchName}${ageText} ! Commencez à discuter maintenant.`,
         variant: "default",
+        avatar: {
+          src: data.matchedWith.avatar || '/img.png',
+          alt: matchName
+        },
         onClick: () => {
           router.push(`/messages/${data.conversation.id}`);
           toastInstance.dismiss();

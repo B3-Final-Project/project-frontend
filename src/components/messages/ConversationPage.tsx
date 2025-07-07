@@ -114,14 +114,14 @@ export default function ConversationPage({ initialConversationId }: Conversation
                 leaveConversation(selectedConversation);
             }
         };
-    }, [selectedConversation, isConnected, joinConversation, leaveConversation, markAsReadMutation, messages.length]);
+    }, [selectedConversation, isConnected]);
 
     // Effet pour obtenir les utilisateurs en ligne au chargement
     useEffect(() => {
         if (isConnected) {
             getOnlineUsers();
         }
-    }, [isConnected, getOnlineUsers]);
+    }, [isConnected]);
 
     // Effet pour réinitialiser l'état de frappe quand on change de conversation
     useEffect(() => {
@@ -138,7 +138,7 @@ export default function ConversationPage({ initialConversationId }: Conversation
                 debouncedMarkAsRead(selectedConversation);
             }
         }
-    }, [messages, selectedConversation, isConnected, debouncedMarkAsRead, messages.length]);
+    }, [messages, selectedConversation, isConnected]);
 
     // Effet pour marquer les nouveaux messages comme lus en temps réel
     useEffect(() => {
@@ -158,7 +158,7 @@ export default function ConversationPage({ initialConversationId }: Conversation
 
             return () => clearInterval(interval);
         }
-    }, [selectedConversation, isConnected, messages, debouncedMarkAsRead]);
+    }, [selectedConversation, isConnected, messages]);
 
     // Effet pour marquer les messages comme lus quand on fait défiler vers le bas
     useEffect(() => {
@@ -185,7 +185,7 @@ export default function ConversationPage({ initialConversationId }: Conversation
             messagesContainer.addEventListener('scroll', handleScroll);
             return () => messagesContainer.removeEventListener('scroll', handleScroll);
         }
-    }, [selectedConversation, isConnected, messages, debouncedMarkAsRead]);
+    }, [selectedConversation, isConnected, messages]);
 
 
 
@@ -339,9 +339,12 @@ export default function ConversationPage({ initialConversationId }: Conversation
         }
     }, [selectedConversation, conversations, router]);
 
-
-
-    // La fonction handlePopupKeyDown a été supprimée car elle n'était pas utilisée
+    // Gestionnaire de clavier pour la popup de suppression
+    const handlePopupKeyDown = (e: React.KeyboardEvent) => {
+        if (e.key === 'Escape' && !isDeleting) {
+            cancelDeleteConversation();
+        }
+    };
 
     // Prepare the messages content
     let messagesContent;
@@ -523,14 +526,22 @@ export default function ConversationPage({ initialConversationId }: Conversation
             </div>
             {/* Deletion confirmation popup */}
             {showDeleteConfirm && (
-                <Dialog
+                <dialog
                     open
+                    className="fixed inset-0 bg-opacity-50 flex items-center justify-center z-50 rounded-xl"
                     aria-modal="true"
                     aria-labelledby="delete-dialog-title"
                 >
+                    <button
+                        type="button"
+                        className="fixed inset-0 bg-black bg-opacity-50 border-0 cursor-default"
+                        onClick={!isDeleting ? cancelDeleteConversation : undefined}
+                        onKeyDown={handlePopupKeyDown}
+                        aria-label="Fermer la modal"
+                    />
                     <div
                         ref={modalRef}
-                        className="relative border border-border rounded-xl shadow-2xl max-w-md w-full p-6 bg-background animate-in fade-in-0 zoom-in-95 duration-200"
+                        className="relative border border-gray-200 rounded-xl shadow-2xl max-w-md w-full p-6 bg-white animate-in fade-in-0 zoom-in-95 duration-200"
                     >
                         <div className="flex items-center gap-3 mb-4">
                             <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center">
@@ -572,7 +583,7 @@ export default function ConversationPage({ initialConversationId }: Conversation
                             </Button>
                         </div>
                     </div>
-                </Dialog>
+                </dialog>
             )}
         </div>
     );

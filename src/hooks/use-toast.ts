@@ -14,6 +14,10 @@ type ToasterToast = ToastProps & {
   description?: React.ReactNode;
   action?: ToastActionElement;
   onClick?: () => void;
+  avatar?: {
+    src?: string;
+    alt?: string;
+  };
 };
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars

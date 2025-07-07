@@ -8,6 +8,7 @@ import {
   ToastProvider,
   ToastTitle,
   ToastViewport,
+  ToastAvatar,
 } from "@/components/ui/toast";
 
 export function Toaster() {
@@ -15,7 +16,7 @@ export function Toaster() {
 
   return (
     <ToastProvider>
-      {toasts.map(function ({ id, title, description, action, onClick, ...props }) {
+      {toasts.map(function ({ id, title, description, action, onClick, avatar, ...props }) {
         const handleClick = (event: React.MouseEvent) => {
           // Empêcher la propagation pour éviter les conflits avec le bouton de fermeture
           event.stopPropagation();
@@ -37,11 +38,19 @@ export function Toaster() {
             onClick={handleClick}
             className="cursor-pointer"
           >
-            <div className="grid gap-1">
-              {title && <ToastTitle>{title}</ToastTitle>}
-              {description && (
-                <ToastDescription>{description}</ToastDescription>
+            <div className="flex items-start gap-3 items-center">
+              {avatar && (
+                <ToastAvatar 
+                  src={avatar.src} 
+                  alt={avatar.alt || title || "Avatar"} 
+                />
               )}
+              <div className="grid gap-1 flex-1">
+                {title && <ToastTitle>{title}</ToastTitle>}
+                {description && (
+                  <ToastDescription>{description}</ToastDescription>
+                )}
+              </div>
             </div>
             {action}
             <ToastClose />
