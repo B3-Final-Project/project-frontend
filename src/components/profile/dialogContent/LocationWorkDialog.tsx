@@ -51,6 +51,7 @@ export function LocationWorkDialog() {
           .then((data) => {
             if (data.city) {
               setCityInput(data.city);
+              setFormData((prev) => ({ ...prev, city: data.city }));
               setGeoState("success");
               setGeoMsg("Location found!");
             } else {
