@@ -40,32 +40,20 @@ export function SettingsDialog({ isOpen, onClose }: SettingsDialogProps) {
 
   const handleChangePassword = () => {
     if (!config) {
-      toast({
-        title: "Erreur",
-        description: "Configuration d'authentification non disponible",
-        variant: "destructive",
-      });
+      toast({ title: 'Erreur', description: 'Config manquante', variant: 'destructive' });
       return;
     }
 
-    // Redirect to Cognito's hosted UI for password change
-    const clientId = config.userPoolClient;
-    const cognitoDomain = config.hostedDomain;
-    const redirectUri = config.callbackUrl;
+    const { hostedDomain, userPoolClient, callbackUrl } = config;
+    const url =
+      `${hostedDomain}/forgotPassword` +
+      `?client_id=${encodeURIComponent(userPoolClient)}` +
+      `&response_type=code` +
+      `&scope=openid+profile+email` +
+      `&redirect_uri=${encodeURIComponent(callbackUrl)}`;
 
-    if (!clientId || !cognitoDomain || !redirectUri) {
-      toast({
-        title: "Erreur",
-        description: "Configuration manquante pour le changement de mot de passe",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    // Build the URL for password change
-    const changePasswordUrl = `${cognitoDomain}/forgotPassword?client_id=${clientId}&response_type=code&scope=email+openid+profile&redirect_uri=${encodeURIComponent(redirectUri)}`;
-
-    window.open(changePasswordUrl, '_blank');
+    // You can use window.location.assign if you want to replace history
+    window.open(url, '_blank');
   };
 
     const handleSignOut = async () => {
