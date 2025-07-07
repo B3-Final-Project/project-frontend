@@ -10,6 +10,7 @@ import { GetProfileResponse } from "@/lib/routes/profiles/response/get-profile.r
 import { ProfileRouter } from "@/lib/routes/profiles";
 import { UpdateProfileDto } from "@/lib/routes/profiles/dto/update-profile.dto";
 import { toast } from "@/hooks/use-toast";
+import { Profile } from "@/lib/routes/profiles/interfaces/profile.interface";
 
 // Fetch a single profile
 export function useProfileQuery(enabled: boolean = true) {
@@ -97,31 +98,26 @@ export function useAllProfilesQuery(
   });
 }
 
+interface Options {
+  onFormReset: (updated: Profile) => void;
+  onError?: (error: unknown) => void;
+}
+
 export function useUpdatePartialProfileMutation<
-  T extends Partial<UpdateProfileDto>,
->() {
+  T extends Partial<UpdateProfileDto>
+>(opts: Options) {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (data: T) => {
-      return ProfileRouter.updatePartialProfile(data);
+    mutationFn: (data: T) => ProfileRouter.updatePartialProfile(data),
+    onSuccess: (updated) => {
+      // First, blow away the old cache
+      queryClient.invalidateQueries({queryKey: ['profile']});
+
+      // Then let component handle its own state
+      opts.onFormReset(updated);
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["profile"] });
-      toast({
-        title: "Profile saved",
-        description: "Your profile profiles have been saved successfully.",
-      });
-    },
-    onError: (error) => {
-      console.error("Failed to update profile", error);
-      toast({
-        title: "Couldn't save your profil",
-        description:
-          "Please try again or contact support if the issue persists.",
-        variant: "destructive",
-      });
-    },
+    onError: opts.onError,
   });
 }
 

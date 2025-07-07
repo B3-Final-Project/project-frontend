@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Profile } from "@/lib/routes/profiles/interfaces/profile.interface";
 import { User } from "@/lib/routes/profiles/interfaces/user.interface";
 import { UpdateProfileDto } from "@/lib/routes/profiles/dto/update-profile.dto";
+import { toast } from "@/hooks/use-toast";
 
 interface GenericProfileDialogProps<T> {
   readonly title: string;
@@ -32,8 +33,15 @@ export function GenericProfileDialog<T>({
   renderFormContent,
 }: GenericProfileDialogProps<T>) {
   const { data, isLoading } = useProfileQuery();
-  const updateProfile =
-    useUpdatePartialProfileMutation<Partial<UpdateProfileDto>>();
+  const updateProfile = useUpdatePartialProfileMutation<Partial<UpdateProfileDto>>({
+    onFormReset: (updated) => {
+      setFormData(extractFormDataFromProfile(updated, user!));
+      toast({ title: 'Saved', description: 'Profile updated.' });
+    },
+    onError: (_err) => {
+      toast({ title: 'Error', description: 'Update failed.' });
+    },
+  });
   const profile = data?.profile;
   const user = data?.user;
 
@@ -51,10 +59,7 @@ export function GenericProfileDialog<T>({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!profile || !user) return;
-    const payload = buildUpdatePayload(formData);
-
-    updateProfile.mutate(payload);
+    updateProfile.mutate(buildUpdatePayload(formData))
   };
 
   if (isLoading) return <div>Loading...</div>;
