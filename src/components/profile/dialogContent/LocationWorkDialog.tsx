@@ -17,12 +17,11 @@ export function LocationWorkDialog() {
   const debouncedCity = useDebouncedValue(cityInput, 2000);
   const { data: citySuggestions, isLoading: isCityLoading } = useCitySearch(debouncedCity);
 
-  React.useEffect(() => {
-    if (citySuggestions?.length > 0) {
-      setCityInput(citySuggestions[0].name);
-      setFormData((prev) => ({ ...prev, city: citySuggestions[0].name }));
-    }
-  }, [citySuggestions]);
+  const suggestions = citySuggestions ?? [];
+  if (suggestions.length > 0) {
+    setCityInput(suggestions[0].name);
+    setFormData((prev) => ({ ...prev, city: suggestions[0].name }));
+  }
 
   const handleGeolocate = () => {
     if (!navigator.geolocation) {
@@ -34,7 +33,7 @@ export function LocationWorkDialog() {
           .then((data) => {
             if (data.city) {
               setCityInput(data.city);
-              setFormData((prev) => ({ ...prev, city: data.city }));
+              setFormData((prev) => ({ ...prev, city: data.city ?? "" }));
             }
           })
           .catch(() => {
