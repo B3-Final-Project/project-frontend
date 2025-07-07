@@ -540,7 +540,7 @@ export default function ConversationPage({ initialConversationId }: Conversation
                     />
                     <div
                         ref={modalRef}
-                        className="relative border border-gray-200 rounded-xl shadow-2xl max-w-md w-full p-6 bg-white animate-in fade-in-0 zoom-in-95 duration-200"
+                        className="relative border border-border rounded-xl shadow-2xl max-w-md w-full p-6 bg-background animate-in fade-in-0 zoom-in-95 duration-200"
                     >
                         <div className="flex items-center gap-3 mb-4">
                             <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center">
