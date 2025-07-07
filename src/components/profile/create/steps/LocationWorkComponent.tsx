@@ -7,12 +7,41 @@ import { Card } from "@/components/ui/card";
 import { useState } from "react";
 import { useParams } from "next/navigation";
 import { useProfileCreation } from "@/providers/ProfileCreationProvider";
+import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from "@/components/ui/select";
+import { useCitySearch, useReverseGeocode } from "@/hooks/react-query/geolocate";
+import { Loader2, Check, MapPin } from "lucide-react";
+import React from "react";
+import { Autocomplete } from "@/components/ui/Autocomplete";
+import { GeolocateAPI } from "@/lib/routes/geolocate";
+
+function useDebouncedValue<T>(value: T, delay: number): T {
+  const [debounced, setDebounced] = React.useState(value);
+  React.useEffect(() => {
+    const handler = setTimeout(() => setDebounced(value), delay);
+    return () => clearTimeout(handler);
+  }, [value, delay]);
+  return debounced;
+}
 
 export function LocationWorkComponent() {
   const { locationWork, setLocationWork, goToNextStep, goToPreviousStep } =
     useProfileCreation();
   const { step } = useParams<{ step: string }>();
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [cityInput, setCityInput] = useState(locationWork.city || "");
+  const debouncedCity = useDebouncedValue(cityInput, 2000);
+  const { data: citySuggestions, isLoading: isCityLoading } = useCitySearch(debouncedCity);
+  const [coords, setCoords] = useState<{ lat: number; lon: number } | null>(null);
+  const { data: reverseResult, isLoading: isReverseLoading } = useReverseGeocode(coords?.lat ?? null, coords?.lon ?? null, !!coords);
+  const [geoState, setGeoState] = useState<'idle' | 'loading' | 'success' | 'error'>("idle");
+  const [geoMsg, setGeoMsg] = useState("");
+
+  React.useEffect(() => {
+    if (reverseResult?.city) {
+      setCityInput(reverseResult.city);
+      handleChange("city", reverseResult.city);
+    }
+  }, [reverseResult?.city]);
 
   const handleChange = (field: string, value: string) => {
     setLocationWork((prev) => ({ ...prev, [field]: value }));
@@ -62,6 +91,40 @@ export function LocationWorkComponent() {
     }
   };
 
+  const handleGeolocate = () => {
+    setGeoState("loading");
+    setGeoMsg("");
+    if (!navigator.geolocation) {
+      setGeoState("error");
+      setGeoMsg("Geolocation not supported");
+      return;
+    }
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        GeolocateAPI.reverseGeocode(pos.coords.latitude, pos.coords.longitude)
+          .then((data) => {
+            if (data.city) {
+              setCityInput(data.city);
+              handleChange("city", data.city);
+              setGeoState("success");
+              setGeoMsg("Location found!");
+            } else {
+              setGeoState("error");
+              setGeoMsg("Could not find city");
+            }
+          })
+          .catch(() => {
+            setGeoState("error");
+            setGeoMsg("Error getting city");
+          });
+      },
+      () => {
+        setGeoState("error");
+        setGeoMsg("Permission denied");
+      },
+    );
+  };
+
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       <Card className="p-4">
@@ -70,13 +133,36 @@ export function LocationWorkComponent() {
         <div className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="city">City</Label>
-            <Input
-              id="city"
-              placeholder="Where do you live?"
-              value={locationWork.city || ""}
-              onChange={(e) => handleChange("city", e.target.value)}
-              className={errors.city ? "border-red-500" : ""}
-            />
+            <div className="flex gap-2 items-center">
+              <Autocomplete
+                value={cityInput}
+                onChange={(val) => {
+                  setCityInput(val);
+                  handleChange("city", val);
+                }}
+                onSelect={(val) => {
+                  setCityInput(val);
+                  handleChange("city", val);
+                }}
+                suggestions={citySuggestions?.map((c) => c.name) || []}
+                loading={isCityLoading}
+                placeholder="Where do you live?"
+                disabled={geoState === "loading"}
+              />
+              <button
+                type="button"
+                className={`ml-2 rounded-md border px-2 py-1 flex items-center gap-1 transition-colors ${geoState === "success" ? "border-green-500 bg-green-50 text-green-700" : geoState === "error" ? "border-red-500 bg-red-50 text-red-700" : "border-input bg-background text-foreground"}`}
+                onClick={handleGeolocate}
+                disabled={geoState === "loading"}
+                title={geoState === "loading" ? "Getting your location..." : geoState === "success" ? geoMsg : geoState === "error" ? geoMsg : "Use my location"}
+              >
+                {geoState === "loading" ? <Loader2 className="animate-spin h-4 w-4" /> : geoState === "success" ? <Check className="h-4 w-4" /> : <MapPin className="h-4 w-4" />}
+                <span className="sr-only">Use my location</span>
+              </button>
+            </div>
+            {geoState !== "idle" && geoMsg && (
+              <p className={`text-xs ${geoState === "error" ? "text-red-500" : geoState === "success" ? "text-green-500" : "text-gray-500"}`}>{geoMsg}</p>
+            )}
             {errors.city && (
               <p className="text-sm text-red-500">{errors.city}</p>
             )}
