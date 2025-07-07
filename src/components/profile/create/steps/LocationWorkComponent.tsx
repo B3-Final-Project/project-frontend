@@ -26,13 +26,6 @@ export function LocationWorkComponent() {
   const [geoState, setGeoState] = useState<'idle' | 'loading' | 'success' | 'error'>("idle");
   const [geoMsg, setGeoMsg] = useState("");
 
-  React.useEffect(() => {
-    if (reverseResult?.city) {
-      setCityInput(reverseResult.city);
-      handleChange("city", reverseResult.city);
-    }
-  }, [reverseResult?.city]);
-
   const handleChange = (field: string, value: string) => {
     setLocationWork((prev) => ({ ...prev, [field]: value }));
     if (errors[field]) {
@@ -194,7 +187,6 @@ export function LocationWorkComponent() {
       <div className="flex justify-between pt-6">
         <Button
           type="button"
-          variant="outline"
           onClick={() => goToPreviousStep(step as string, PROFILE_STEPS)}
         >
           Back
