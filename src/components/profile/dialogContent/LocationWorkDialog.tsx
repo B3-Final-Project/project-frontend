@@ -5,9 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { LocationWorkInfo } from "@/hooks/useProfileCreation";
 import { UpdateProfileDto } from "@/lib/routes/profiles/dto/update-profile.dto";
-import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from "@/components/ui/select";
 import { useCitySearch } from "@/hooks/react-query/geolocate";
-import { Loader2, Check, MapPin } from "lucide-react";
 import React from "react";
 import { Autocomplete } from "@/components/ui/Autocomplete";
 import { GeolocateAPI } from "@/lib/routes/geolocate";
@@ -92,7 +90,6 @@ export function LocationWorkDialog() {
                   className="ml-2 rounded-md border px-2 py-1 flex items-center gap-1 transition-colors border-input bg-background text-foreground"
                   onClick={handleGeolocate}
                 >
-                  <MapPin className="h-4 w-4" />
                   <span className="sr-only">Use my location</span>
                 </button>
               </div>
