@@ -44,14 +44,15 @@ export function UserCardModal({
   const [interestIndex, setInterestIndex] = useState(0);
   const modalRef = useRef<HTMLDivElement>(null);
 
-  let imageList: string[];
-  if (user.images?.length > 0) {
-    imageList = user.images;
-  } else if (user.image_url) {
-    imageList = [user.image_url];
-  } else {
-    imageList = ['/vintage.png', '/vintage.png', '/vintage.png'];
-  }
+  // Constante pour les images par défaut
+  const DEFAULT_IMAGES = ['/vintage.png'];
+
+  // Détermination des images à utiliser avec une approche plus propre
+  const imageList: string[] = Array.isArray(user.images) && user.images.length > 0
+    ? user.images
+    : user.image_url
+      ? [user.image_url]
+      : DEFAULT_IMAGES;
 
   // Réinitialiser l'index des intérêts quand l'utilisateur change
   useEffect(() => {
@@ -75,7 +76,7 @@ export function UserCardModal({
   const goToPreviousInterest = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    if (user?.interests?.length > 1) {
+    if (Array.isArray(user?.interests) && user.interests.length > 1) {
       setInterestIndex((prev: number) => {
         const interestsLength = user.interests?.length || 1;
         const newIndex = prev > 0 ? prev - 1 : interestsLength - 1;
@@ -87,7 +88,7 @@ export function UserCardModal({
   const goToNextInterest = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    if (user?.interests?.length > 1) {
+    if (Array.isArray(user?.interests) && user.interests.length > 1) {
       setInterestIndex((prev: number) => {
         const interestsLength = user.interests?.length || 1;
         const newIndex = prev < interestsLength - 1 ? prev + 1 : 0;
@@ -165,6 +166,7 @@ export function UserCardModal({
           exit="exit"
           variants={cardVariants}
           className="relative"
+          whileTap={{ scale: 0.98 }}
         >
           <motion.div
             className="w-[280px] h-[420px] sm:w-[320px] sm:h-[480px] md:w-[380px] md:h-[550px] perspective-1000 relative"
@@ -239,10 +241,10 @@ export function UserCardModal({
                         {user.name}
                       </h2>
                       <div className="flex flex-wrap gap-2 pt-1">
-                        {user.languages?.length > 0 && (
+                        {Array.isArray(user?.languages) && user.languages.length > 0 && (
                           <div className="flex items-center gap-1 text-sm bg-black/50 px-2 py-1 rounded-full">
                             <Languages size={16} className="text-yellow-300" />
-                            {user.languages?.slice(0, 2).join(", ")}
+                            {Array.isArray(user?.languages) ? user.languages.slice(0, 2).join(", ") : ""}
                           </div>
                         )}
                         {user.zodiac && (
@@ -287,7 +289,7 @@ export function UserCardModal({
                     </h3>
                   </div>
 
-                  {user.interests?.length > 0 ? (
+                  {Array.isArray(user?.interests) && user.interests.length > 0 ? (
                     <div className="flex flex-col gap-3">
                       <div className="bg-white/15 backdrop-blur-sm rounded-lg p-4 border border-white/10 shadow-lg min-h-[160px]">
                         <p className="font-bold text-white/90 mb-2 text-sm">
@@ -303,7 +305,7 @@ export function UserCardModal({
                         onClick={(e) => e.stopPropagation()}
                       >
                         <div className="text-white/80 text-sm font-medium bg-black/40 px-3 py-1 rounded-full backdrop-blur-sm border border-white/10">
-                          {interestIndex + 1} / {user.interests?.length || 0}
+                          {interestIndex + 1} / {Array.isArray(user?.interests) ? user.interests.length : 0}
                         </div>
                         <div className="flex items-center gap-2">
                           <button
