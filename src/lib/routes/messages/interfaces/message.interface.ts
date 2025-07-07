@@ -7,6 +7,7 @@ export interface Message {
   conversationId: string;
   sender_id?: string;
   senderName?: string;
+  senderAvatar?: string;
   replyTo?: {
     id: string;
     content: string;
@@ -34,7 +35,7 @@ export interface MatchedWith {
 }
 
 export interface NewMatchData {
-  type: string;
+  type: 'match';
   conversation: Conversation;
   matchedWith: MatchedWith;
   timestamp: Date;

@@ -4,6 +4,7 @@ import * as React from "react";
 import * as ToastPrimitives from "@radix-ui/react-toast";
 import { cva, type VariantProps } from "class-variance-authority";
 import { X } from "lucide-react";
+import Image from "next/image";
 
 import { cn } from "@/lib/utils";
 
@@ -112,6 +113,37 @@ const ToastDescription = React.forwardRef<
 ));
 ToastDescription.displayName = ToastPrimitives.Description.displayName;
 
+const ToastAvatar = React.forwardRef<
+  HTMLDivElement,
+  React.HTMLAttributes<HTMLDivElement> & {
+    src?: string;
+    alt?: string;
+  }
+>(({ className, src, alt, ...props }, ref) => (
+  <div
+    ref={ref}
+    className={cn("flex-shrink-0", className)}
+    {...props}
+  >
+    {src ? (
+      <Image
+        src={src}
+        alt={alt ?? "Avatar"}
+        width={32}
+        height={32}
+        className="w-8 h-8 rounded-full object-cover"
+      />
+    ) : (
+      <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center">
+        <span className="text-xs text-muted-foreground">
+          {alt ? alt.charAt(0).toUpperCase() : "?"}
+        </span>
+      </div>
+    )}
+  </div>
+));
+ToastAvatar.displayName = "ToastAvatar";
+
 type ToastProps = React.ComponentPropsWithoutRef<typeof Toast>;
 
 type ToastActionElement = React.ReactElement<typeof ToastAction>;
@@ -126,4 +158,5 @@ export {
   ToastDescription,
   ToastClose,
   ToastAction,
+  ToastAvatar,
 };
