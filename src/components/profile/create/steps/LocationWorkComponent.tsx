@@ -7,7 +7,6 @@ import { Card } from "@/components/ui/card";
 import { useState } from "react";
 import { useParams } from "next/navigation";
 import { useProfileCreation } from "@/providers/ProfileCreationProvider";
-import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from "@/components/ui/select";
 import { useCitySearch } from "@/hooks/react-query/geolocate";
 import { Loader2, Check, MapPin } from "lucide-react";
 import React from "react";
