@@ -27,10 +27,8 @@ export const Autocomplete: React.FC<AutocompleteProps> = ({
   const listRef = useRef<HTMLUListElement>(null);
 
   useEffect(() => {
-    if (suggestions.length > 0 && value) setOpen(true);
-    else setOpen(false);
     setHighlighted(-1);
-  }, [suggestions, value]);
+  }, [suggestions]);
 
   useEffect(() => {
     if (!open) setHighlighted(-1);
@@ -75,7 +73,7 @@ export const Autocomplete: React.FC<AutocompleteProps> = ({
         ref={inputRef}
         value={value}
         onChange={handleInput}
-        onFocus={() => suggestions.length > 0 && setOpen(true)}
+        onFocus={() => setOpen(true)}
         onBlur={() => setTimeout(() => setOpen(false), 100)}
         onKeyDown={handleKeyDown}
         placeholder={placeholder}
@@ -91,7 +89,7 @@ export const Autocomplete: React.FC<AutocompleteProps> = ({
           <Loader2 className="animate-spin h-4 w-4" />
         </span>
       )}
-      {open && (
+      {open && suggestions.length > 0 && (
         <ul
           ref={listRef}
           id="autocomplete-listbox"
