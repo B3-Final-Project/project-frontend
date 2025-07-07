@@ -42,7 +42,7 @@ export function Toaster() {
               {avatar && (
                 <ToastAvatar 
                   src={avatar.src} 
-                  alt={avatar.alt || title || "Avatar"} 
+                  alt={avatar.alt ?? title ?? "Avatar"} 
                 />
               )}
               <div className="grid gap-1 flex-1">

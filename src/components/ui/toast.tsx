@@ -128,7 +128,7 @@ const ToastAvatar = React.forwardRef<
     {src ? (
       <Image
         src={src}
-        alt={alt || "Avatar"}
+        alt={alt ?? "Avatar"}
         width={32}
         height={32}
         className="w-8 h-8 rounded-full object-cover"

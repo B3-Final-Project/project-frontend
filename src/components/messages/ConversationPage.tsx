@@ -1,6 +1,5 @@
 'use client'
 
-import { Dialog } from "@radix-ui/react-dialog";
 import { useQueryClient } from '@tanstack/react-query';
 import { ArrowLeft, Trash2, X } from 'lucide-react';
 import Image from 'next/image';
