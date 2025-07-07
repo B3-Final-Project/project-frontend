@@ -1,3 +1,6 @@
+import { formatRelationshipTypeEnum } from "@/lib/utils/enum-utils";
+import { toNumber } from "es-toolkit/compat";
+
 export const CHART_COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884D8', '#82CA9D'];
 
 // DTO Interfaces matching backend structure
@@ -82,7 +85,7 @@ export const formatPercentage = (value: number): string => `${value.toFixed(1)}%
  * Formats pie chart labels to show name and percentage
  */
 export const formatPercentageLabel = (entry: { name?: string; percent?: number }): string =>
-  `${entry.name ?? ''} ${entry.percent ? (entry.percent * 100).toFixed(0) : 0}%`;
+  `${formatRelationshipTypeEnum(toNumber(entry.name)) ?? ''} ${entry.percent ? (entry.percent * 100).toFixed(0) : 0}%`;
 
 /**
  * Transforms an object with string keys and numeric values into chart-ready data format

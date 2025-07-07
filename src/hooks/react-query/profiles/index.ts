@@ -10,7 +10,6 @@ import { GetProfileResponse } from "@/lib/routes/profiles/response/get-profile.r
 import { ProfileRouter } from "@/lib/routes/profiles";
 import { UpdateProfileDto } from "@/lib/routes/profiles/dto/update-profile.dto";
 import { toast } from "@/hooks/use-toast";
-import { useRouter } from "next/navigation";
 
 // Fetch a single profile
 export function useProfileQuery(enabled: boolean = true) {
@@ -128,7 +127,6 @@ export function useUpdatePartialProfileMutation<
 
 export function useCreateProfileMutation() {
   const queryClient = useQueryClient();
-  const router = useRouter();
 
   return useMutation({
     mutationFn: async (data: UpdateProfileDto) => {
@@ -136,11 +134,6 @@ export function useCreateProfileMutation() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["profile"] });
-      toast({
-        title: "Profile saved",
-        description: "Your profile profiles have been saved successfully.",
-      });
-      router.push("/profile");
     },
     onError: (error) => {
       console.error("Failed to update profile", error);

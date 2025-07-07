@@ -1,6 +1,6 @@
 "use client";
 
-import { Cell, Pie, PieChart, Tooltip } from "recharts";
+import { Cell, Pie, PieChart } from "recharts";
 
 import { useComprehensiveStatsQuery } from "@/hooks/react-query/stats";
 import {
@@ -45,7 +45,6 @@ export function RelationshipGoalsChart() {
             <Cell key={`goal-${entry.goal}`} fill={entry.color} />
           ))}
         </Pie>
-        <Tooltip />
       </PieChart>
     </ChartCard>
   );
