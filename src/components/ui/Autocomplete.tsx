@@ -89,29 +89,32 @@ export const Autocomplete: React.FC<AutocompleteProps> = ({
           <Loader2 className="animate-spin h-4 w-4" />
         </span>
       )}
-      {open && suggestions.length > 0 && (
+      {open && (
         <ul
           ref={listRef}
           id="autocomplete-listbox"
           role="listbox"
           className="absolute z-10 mt-1 w-full bg-popover border border-input rounded-md shadow-lg max-h-48 overflow-auto"
         >
-          {suggestions.map((s, i) => (
-            <li
-              key={i}
-              id={`autocomplete-item-${i}`}
-              role="option"
-              aria-selected={highlighted === i}
-              className={`px-3 py-2 cursor-pointer select-none ${highlighted === i ? "bg-accent text-accent-foreground" : ""}`}
-              onMouseDown={() => handleSelect(s)}
-              onMouseEnter={() => setHighlighted(i)}
-            >
-              {s}
-              {value === s && <Check className="inline ml-2 h-4 w-4 text-green-500" />}
-            </li>
-          ))}
-          {suggestions.length === 0 && !loading && (
-            <li className="px-3 py-2 text-muted-foreground select-none">No suggestions</li>
+          {suggestions.length > 0 ? (
+            suggestions.map((s, i) => (
+              <li
+                key={i}
+                id={`autocomplete-item-${i}`}
+                role="option"
+                aria-selected={highlighted === i}
+                className={`px-3 py-2 cursor-pointer select-none ${highlighted === i ? "bg-accent text-accent-foreground" : ""}`}
+                onMouseDown={() => handleSelect(s)}
+                onMouseEnter={() => setHighlighted(i)}
+              >
+                {s}
+                {value === s && <Check className="inline ml-2 h-4 w-4 text-green-500" />}
+              </li>
+            ))
+          ) : (
+            !loading && (
+              <li className="px-3 py-2 text-muted-foreground select-none">No suggestions</li>
+            )
           )}
         </ul>
       )}
