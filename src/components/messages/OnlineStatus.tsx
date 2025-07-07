@@ -5,9 +5,9 @@ interface OnlineStatusProps {
   readonly size?: 'sm' | 'md' | 'lg';
 }
 
-export const OnlineStatus: React.FC<OnlineStatusProps> = ({ 
-  isOnline, 
-  size = 'md' 
+export const OnlineStatus: React.FC<OnlineStatusProps> = ({
+  isOnline,
+  size = 'md'
 }) => {
   const getSizeClasses = () => {
     switch (size) {
@@ -21,13 +21,12 @@ export const OnlineStatus: React.FC<OnlineStatusProps> = ({
   };
 
   return (
-    <div className="flex items-center space-x-2">
-      <div 
-        className={`${getSizeClasses()} rounded-full border-2 border-white ${
-          isOnline ? 'bg-green-500' : 'bg-gray-400'
-        }`}
+    <div className=" hidden">
+      <div
+        className={`${getSizeClasses()} rounded-full border-2 border-white ${isOnline ? 'bg-green-500' : 'bg-gray-400'
+          }`}
       />
-      
+
     </div>
   );
 };

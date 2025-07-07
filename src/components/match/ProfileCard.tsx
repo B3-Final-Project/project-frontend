@@ -1,9 +1,9 @@
 "use client";
 
+import { ProfileCardType } from "@/lib/routes/profiles/dto/profile-card-type.dto";
 import { getRarityGradient } from "@/utils/rarityHelper";
 import { motion, MotionValue } from "framer-motion";
 import { Heart, MapPin, User, X } from "lucide-react";
-import { ProfileCardType } from "@/lib/routes/profiles/dto/profile-card-type.dto";
 
 type ProfileCardProps = {
   profile: ProfileCardType;

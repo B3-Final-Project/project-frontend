@@ -40,6 +40,9 @@ const ProfileGenerator: React.FC<ProfileGeneratorProps> = ({
   }, [boosterData, onProfilesLoaded]);
 
   return null;
+
 };
+
+
 
 export default ProfileGenerator;
