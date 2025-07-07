@@ -100,7 +100,7 @@ export const Autocomplete: React.FC<AutocompleteProps> = ({
         >
           {suggestions.map((s, i) => (
             <li
-              key={s}
+              key={i}
               id={`autocomplete-item-${i}`}
               role="option"
               aria-selected={highlighted === i}

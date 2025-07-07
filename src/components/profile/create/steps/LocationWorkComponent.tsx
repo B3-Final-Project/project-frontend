@@ -8,20 +8,12 @@ import { useState } from "react";
 import { useParams } from "next/navigation";
 import { useProfileCreation } from "@/providers/ProfileCreationProvider";
 import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from "@/components/ui/select";
-import { useCitySearch, useReverseGeocode } from "@/hooks/react-query/geolocate";
+import { useCitySearch } from "@/hooks/react-query/geolocate";
 import { Loader2, Check, MapPin } from "lucide-react";
 import React from "react";
 import { Autocomplete } from "@/components/ui/Autocomplete";
 import { GeolocateAPI } from "@/lib/routes/geolocate";
-
-function useDebouncedValue<T>(value: T, delay: number): T {
-  const [debounced, setDebounced] = React.useState(value);
-  React.useEffect(() => {
-    const handler = setTimeout(() => setDebounced(value), delay);
-    return () => clearTimeout(handler);
-  }, [value, delay]);
-  return debounced;
-}
+import { useDebouncedValue } from "@/hooks/useDebouncedValue";
 
 export function LocationWorkComponent() {
   const { locationWork, setLocationWork, goToNextStep, goToPreviousStep } =
@@ -31,8 +23,6 @@ export function LocationWorkComponent() {
   const [cityInput, setCityInput] = useState(locationWork.city || "");
   const debouncedCity = useDebouncedValue(cityInput, 2000);
   const { data: citySuggestions, isLoading: isCityLoading } = useCitySearch(debouncedCity);
-  const [coords, setCoords] = useState<{ lat: number; lon: number } | null>(null);
-  const { data: reverseResult, isLoading: isReverseLoading } = useReverseGeocode(coords?.lat ?? null, coords?.lon ?? null, !!coords);
   const [geoState, setGeoState] = useState<'idle' | 'loading' | 'success' | 'error'>("idle");
   const [geoMsg, setGeoMsg] = useState("");
 
