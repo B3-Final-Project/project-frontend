@@ -8,9 +8,9 @@ import { UpdateProfileDto } from "@/lib/routes/profiles/dto/update-profile.dto";
 import { useCitySearch } from "@/hooks/react-query/geolocate";
 import React from "react";
 import { Autocomplete } from "@/components/ui/Autocomplete";
-import { GeolocateAPI } from "@/lib/routes/geolocate";
 import { useDebouncedValue } from "@/hooks/useDebouncedValue";
 import { MapPin, Loader2 } from "lucide-react";
+import { GeolocateRouter } from "@/lib/routes/geo-location";
 
 export function LocationWorkDialog() {
   const [cityInput, setCityInput] = React.useState("");
@@ -23,7 +23,7 @@ export function LocationWorkDialog() {
     setGeoLoading(true);
     navigator.geolocation.getCurrentPosition(
       (pos) => {
-        GeolocateAPI.reverseGeocode(pos.coords.latitude, pos.coords.longitude)
+        GeolocateRouter.reverseGeocode({lat: pos.coords.latitude, lon: pos.coords.longitude})
           .then((data) => {
             if (data.city) {
               setCityInput(data.city);
