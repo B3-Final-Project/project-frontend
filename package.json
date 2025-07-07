@@ -8,6 +8,7 @@
     "start": "next start",
     "lint": "next lint",
     "test": "",
+    "test:e2e": "playwright test",
     "sops:decrypt": "AWS_PROFILE=b3 sops --decrypt --input-type dotenv --output-type dotenv .env.enc > .env",
     "sops:encrypt": "AWS_PROFILE=b3 sops --encrypt --input-type dotenv --kms arn:aws:kms:eu-west-3:989418411786:key/c1c80af3-4a26-4a6f-bcc0-18a9fdcc82ba .env > .env.enc"
   },
@@ -30,6 +31,7 @@
     "clsx": "^2.1.1",
     "framer-motion": "^12.9.1",
     "input-otp": "^1.4.2",
+    "jest": "^30.0.4",
     "lucide-react": "^0.468.0",
     "next": "^15.3.3",
     "oidc-client-ts": "^3.2.0",
@@ -47,6 +49,7 @@
     "zod": "^3.24.2"
   },
   "devDependencies": {
+    "@playwright/test": "^1.53.2",
     "@tanstack/eslint-plugin-query": "^4.38.0",
     "@types/node": "^20",
     "@types/react": "^19",
