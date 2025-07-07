@@ -38,7 +38,7 @@ export function GenericProfileDialog<T>({
       setFormData(extractFormDataFromProfile(updated, user!));
       toast({ title: 'Saved', description: 'Profile updated.' });
     },
-    onError: (_err) => {
+    onError: () => {
       toast({ title: 'Error', description: 'Update failed.' });
     },
   });
