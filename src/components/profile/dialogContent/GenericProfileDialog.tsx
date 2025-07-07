@@ -1,7 +1,7 @@
 "use client";
 
 import { DialogContent, DialogTitle } from "@/components/ui/dialog";
-import { ReactNode, useEffect, useState } from "react";
+import { ReactNode, useEffect, useState, useRef } from "react";
 import {
   useProfileQuery,
   useUpdatePartialProfileMutation,
@@ -46,20 +46,29 @@ export function GenericProfileDialog<T>({
   const user = data?.user;
 
   const [formData, setFormData] = useState<T>(initialFormData);
+  const [hasUserModifications, setHasUserModifications] = useState(false);
+  const initialProfileData = useRef<T | null>(null);
 
   useEffect(() => {
     if (profile && user) {
-      setFormData(extractFormDataFromProfile(profile, user));
+      const extractedData = extractFormDataFromProfile(profile, user);
+      
+      // Only update formData if user hasn't made modifications
+      if (!hasUserModifications) {
+        setFormData(extractedData);
+        initialProfileData.current = extractedData;
+      }
     }
-  }, [profile, user, extractFormDataFromProfile]);
+  }, [profile, user, extractFormDataFromProfile, hasUserModifications]);
 
   const handleInputChange = (fieldName: string, value: string | number) => {
+    setHasUserModifications(true);
     setFormData((prevData) => ({ ...prevData, [fieldName]: value }));
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    updateProfile.mutate(buildUpdatePayload(formData))
+    updateProfile.mutate(buildUpdatePayload(formData));
   };
 
   if (isLoading) return <div>Loading...</div>;
