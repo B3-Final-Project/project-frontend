@@ -11,8 +11,8 @@ import { useCitySearch } from "@/hooks/react-query/geolocate";
 import { Loader2, Check, MapPin } from "lucide-react";
 import React from "react";
 import { Autocomplete } from "@/components/ui/Autocomplete";
-import { GeolocateAPI } from "@/lib/routes/geolocate";
 import { useDebouncedValue } from "@/hooks/useDebouncedValue";
+import { GeolocateRouter } from "@/lib/routes/geo-location";
 
 export function LocationWorkComponent() {
   const { locationWork, setLocationWork, goToNextStep, goToPreviousStep } =
@@ -83,7 +83,7 @@ export function LocationWorkComponent() {
     }
     navigator.geolocation.getCurrentPosition(
       (pos) => {
-        GeolocateAPI.reverseGeocode(pos.coords.latitude, pos.coords.longitude)
+        GeolocateRouter.reverseGeocode({lat: pos.coords.latitude, lon: pos.coords.longitude})
           .then((data) => {
             if (data.city) {
               setCityInput(data.city);
@@ -123,6 +123,7 @@ export function LocationWorkComponent() {
                   handleChange("city", val);
                 }}
                 onSelect={(val) => {
+                  val = val.split(",")[0].trim();
                   setCityInput(val);
                   handleChange("city", val);
                 }}
