@@ -65,6 +65,7 @@ export function LocationWorkDialog() {
         };
 
         const handleCitySelect = (val: string) => {
+          val = val.split(",")[0].trim();
           setCityInput(val);
           handleInputChange("city", val);
         };

@@ -123,6 +123,7 @@ export function LocationWorkComponent() {
                   handleChange("city", val);
                 }}
                 onSelect={(val) => {
+                  val = val.split(",")[0].trim();
                   setCityInput(val);
                   handleChange("city", val);
                 }}
